@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -13,26 +13,35 @@ import IconButton from '../../../components/common/iconbutton/iconButton';
 import TaskCard from '../../../components/common/taskCard/taskCard';
 import QuotesSection from '../../../components/common/qoutesSection/qoutesSection';
 import MoodSection from '../../../components/common/moodSection/moodSection';
-import { colors } from '../../../components/constants/colors/colors';
+
 import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
+import colors from '../../../components/constants/colors/colors';
+import Button from '../../../components/common/button/button';
+import BottomSheet from '../../../components/common/bottomSheet/bottomSheet';
+import CompleteTask from '../../../components/common/completeTask/completeTask';
 
 
 
-export default function Home() {
+export default function Home({ navigation }) {
+  const [visible, setVisible] = useState(false);
   const heroImage = require('../../../../assets/png/twinkle.png');
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <View style={styles.imageWrapper}>
-            <Image source={heroImage} style={styles.avatar} />
-          </View>
-          <View style={styles.greeting}>
-            <Text style={styles.greetingSmall}>Good morning, Alex!</Text>
-            <Text style={styles.greetingLarge}>Ready for your Spark journey?</Text>
-          </View>
+
+      {/* Header */}
+      <View style={styles.headerRow}>
+        <View style={styles.imageWrapper}>
+          <Image source={heroImage} style={styles.avatar} />
         </View>
+        <View style={styles.greeting}>
+          <Text style={styles.greetingSmall}>Good morning, Alex!</Text>
+          <Text style={styles.greetingLarge}>Ready for your Spark journey?</Text>
+        </View>
+      </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.container}
+      >
 
         {/* Top stat cards */}
         <StatsSection />
@@ -43,16 +52,19 @@ export default function Home() {
         {/* Today's Task card */}
         <View style={styles.header}>
           <Text style={styles.taskText}>Today's Task</Text>
-          <IconButton iconSrc={require("../../../../assets/png/add.png")} />
+          <IconButton onPress={() => navigation.navigate("AddTask")} iconSrc={require("../../../../assets/png/add.png")} />
         </View>
-        <TaskCard />
+        <TaskCard navigation={navigation} onDone={() => navigation.navigate("DailyStreak")} />
 
         {/* Cheer Dose */}
         <QuotesSection />
 
         {/* Mood selector */}
-        <MoodSection />
-        <View style={{ height: 40 }} />
+        <MoodSection navigation={navigation} />
+        <Button title="Open Bottom Sheet" onPress={() => setVisible(true)} />
+        <BottomSheet visible={visible} onClose={() => setVisible(false)}>
+          <CompleteTask />
+        </BottomSheet>
       </ScrollView>
     </SafeAreaView>
   );
@@ -66,8 +78,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.white,
   },
-  container: { padding: 16 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  container: {
+    paddingHorizontal: 16
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 10
+  },
   greeting: {
     flex: 1,
     paddingLeft: 12

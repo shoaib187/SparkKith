@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { colors } from '../../constants/colors/colors';
+import colors from '../../constants/colors/colors';
+
 
 const quotes = [
   "“What did the big flower say to the little flower? Hi, bud!”",

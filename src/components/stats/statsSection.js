@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import { FONT_SIZES } from '../constants/sizes/responsiveFont'
-import { colors } from '../constants/colors/colors'
+import colors from '../constants/colors/colors'
+
 
 export default function StatsSection() {
   return (
@@ -30,7 +31,8 @@ export default function StatsSection() {
 
 const styles = StyleSheet.create({
   statsRow: {
-    flexDirection: 'row', justifyContent: 'space-between', marginTop: 24
+    flexDirection: 'row', justifyContent: 'space-between',
+    marginTop: 14
   },
   statCard: {
     flex: 1,

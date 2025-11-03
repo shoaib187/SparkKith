@@ -1,8 +1,9 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import React from 'react';
-import { colors } from '../../constants/colors/colors';
+import colors from '../../constants/colors/colors';
 
-export default function TaskCard() {
+
+export default function TaskCard({ navigation, onDone }) {
   return (
     <View style={styles.taskCard}>
       {/* Emoji */}
@@ -38,7 +39,7 @@ export default function TaskCard() {
 
       {/* Buttons */}
       <View style={styles.taskFooterRow}>
-        <TouchableOpacity style={styles.doneButton} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.doneButton} activeOpacity={0.8} onPress={onDone}>
           <Text style={styles.doneText}>DONE</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.skipButton} activeOpacity={0.8}>
@@ -56,10 +57,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.qoutesCard,
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
   },
   leafBox: {
     width: 70,

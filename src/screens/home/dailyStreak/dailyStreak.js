@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import colors from '../../../components/constants/colors/colors';
+import Button from '../../../components/common/button/button';
+import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
 
 const days = ['Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr'];
 
-export default function DailyStreak() {
+export default function DailyStreak({ navigation }) {
   const [today, setToday] = useState(null);
   const [completedDays, setCompletedDays] = useState([]);
 
@@ -25,13 +28,18 @@ export default function DailyStreak() {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../../../assets/icons/flame.png')}
-        style={styles.flame}
-      />
+      <View style={{ position: "relative" }}>
+        <Image
+          source={require('../../../../assets/png/glowing.png')}
+          style={[styles.flame, { transform: [{ scale: 3 }], position: "absolute", }]}
+        />
+        <Image
+          source={require('../../../../assets/icons/flame.png')}
+          style={styles.flame}
+        />
+      </View>
       <Text style={styles.number}>1</Text>
       <Text style={styles.dayStreak}>Day Streak</Text>
-
       <View style={styles.daysContainer}>
         {days.map((day, index) => {
           const isToday = index === today;
@@ -40,11 +48,7 @@ export default function DailyStreak() {
             <TouchableOpacity
               key={day}
               onPress={() => handleDayPress(index)}
-              style={[
-                styles.dayCircle,
-                isToday && styles.todayCircle,
-                isCompleted && styles.completedCircle,
-              ]}
+              style={styles.dayPicker}
             >
               <Text
                 style={[
@@ -54,6 +58,11 @@ export default function DailyStreak() {
               >
                 {day}
               </Text>
+              <View style={[
+                styles.dayCircle,
+                isToday && styles.todayCircle,
+                isCompleted && styles.completedCircle,
+              ]} />
             </TouchableOpacity>
           );
         })}
@@ -63,9 +72,7 @@ export default function DailyStreak() {
         Awesome work! Stay consistent. Keep your self-care streak going in SparkKith!
       </Text>
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>LET’S GO!</Text>
-      </TouchableOpacity>
+      <Button title='LET’S GO!' onPress={() => navigation.navigate("TaskCompleted")} style={{ width: '100%' }} />
     </View>
   );
 }
@@ -73,14 +80,14 @@ export default function DailyStreak() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#BFE8F7',
+    backgroundColor: colors.blue,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 14
   },
   flame: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     marginBottom: 20,
   },
   number: {
@@ -96,19 +103,19 @@ const styles = StyleSheet.create({
   daysContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff54',
     borderRadius: 12,
     padding: 10,
-    width: '90%',
     marginBottom: 25,
+    width: '100%'
   },
   dayCircle: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#29292916',
   },
   todayCircle: {
     borderWidth: 2,
@@ -119,27 +126,22 @@ const styles = StyleSheet.create({
   },
   dayText: {
     color: '#333',
-    fontWeight: '500',
+    fontWeight: '800',
   },
   dayTextCompleted: {
     color: '#fff',
   },
   description: {
     textAlign: 'center',
-    color: '#334155',
-    fontSize: 14,
-    width: '80%',
+    color: colors.description,
+    fontSize: FONT_SIZES.md,
+    width: '90%',
     marginBottom: 30,
   },
-  button: {
-    backgroundColor: '#FFB400',
-    borderRadius: 12,
-    paddingVertical: 15,
-    paddingHorizontal: 50,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
+  dayPicker: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6
+  }
 });

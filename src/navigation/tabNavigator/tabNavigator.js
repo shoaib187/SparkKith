@@ -1,11 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { HomeStack } from '../homeStack/homeStack';
 import { CommunityStack } from '../communityStack/communityStack';
 import { InsightsStack } from '../insightsStack/insightsStack';
 import { ProfileStack } from '../profileStack/profileStack';
-
 
 const Tab = createBottomTabNavigator();
 
@@ -14,36 +13,38 @@ export default function TabNavigator() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarShowLabel: true,
+        tabBarShowLabel: false,
         tabBarStyle: styles.tabBar,
+        // eslint-disable-next-line react/no-unstable-nested-components
         tabBarIcon: ({ focused }) => {
           let iconSource;
-
           switch (route.name) {
             case 'Home':
               iconSource = require('../../../assets/tabs/home.png');
               break;
-            case 'Streak':
+            case 'Community':
               iconSource = require('../../../assets/tabs/users.png');
               break;
-            case 'Profile':
+            case 'Insights':
               iconSource = require('../../../assets/tabs/progress.png');
               break;
-            case 'Settings':
+            case 'Profile':
               iconSource = require('../../../assets/tabs/user.png');
               break;
-            default:
-              iconSource = require('../../../assets/tabs/home.png');
           }
 
           return (
-            <Image
-              source={iconSource}
+            <View
               style={[
-                styles.icon,
-                { tintColor: focused ? '#FB923C' : '#A1A1AA' },
+                styles.iconContainer,
+                focused && styles.focusedIconContainer, // optional focus style
               ]}
-            />
+            >
+              <Image
+                source={iconSource}
+                style={[styles.icon]}
+              />
+            </View>
           );
         },
       })}
@@ -58,17 +59,27 @@ export default function TabNavigator() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: 70,
+    height: 60,
+    paddingTop: 10,
     backgroundColor: '#fff',
-    borderTopWidth: 0,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: -3 },
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 50,
+  },
+  focusedIconContainer: {
+    backgroundColor: '#FFF4E5',
+    borderRadius: 12,
+    borderWidth: 1.1,
+    borderColor: '#FFB858',
+    height: 45,
+    width: 45
   },
   icon: {
     width: 26,
     height: 26,
+    resizeMode: 'contain',
   },
 });

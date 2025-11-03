@@ -1,9 +1,9 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
 import React from 'react'
 
-export default function IconButton({ iconSrc }) {
+export default function IconButton({ iconSrc, style, onPress }) {
   return (
-    <TouchableOpacity style={styles.iconButton}>
+    <TouchableOpacity style={[styles.iconButton, style]} onPress={onPress}>
       <Image source={iconSrc} style={styles.iconImage} />
     </TouchableOpacity>
   )

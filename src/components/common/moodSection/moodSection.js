@@ -1,9 +1,10 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import React, { useState } from 'react';
-import { colors } from '../../constants/colors/colors';
-import { FONT_SIZES } from '../../constants/sizes/responsiveFont';
 
-export default function MoodSection() {
+import { FONT_SIZES } from '../../constants/sizes/responsiveFont';
+import colors from '../../constants/colors/colors';
+
+export default function MoodSection({ navigation }) {
   const [selectedMood, setSelectedMood] = useState(null);
 
   const moods = [
@@ -25,7 +26,11 @@ export default function MoodSection() {
               styles.moodItem,
               selectedMood === mood.id && styles.selectedMood,
             ]}
-            onPress={() => setSelectedMood(mood.id)}
+            onPress={() => {
+              setSelectedMood(mood.id)
+              navigation.navigate("ReflectMood")
+            }
+            }
             activeOpacity={0.8}
           >
             <Image source={mood.image} style={styles.moodImage} />
