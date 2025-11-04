@@ -11,9 +11,11 @@ const InsightsStack = () => {
       screenOptions={{
         headerShown: false,
       }}
+      // initialRouteName='InsightsHomePage'
+      initialRouteName='History'
     >
+      <Stack.Screen name="History" component={screens.History} />
       <Stack.Screen name="InsightsHomePage" component={screens.InsightsHomePage} />
-      {/* <Stack.Screen name="DailyStreaks" component={screens.DailyStreak} /> */}
     </Stack.Navigator>
   );
 }

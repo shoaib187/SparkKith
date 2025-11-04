@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 
-export default function Header({ title, navigation }) {
+export default function Header({ title, navigation, onSettingPress, showSettings = false }) {
   return (
     <View style={styles.headerContainer}>
       <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -11,7 +11,14 @@ export default function Header({ title, navigation }) {
         />
       </Pressable>
       <Text style={styles.headerTitle}>{title}</Text>
-      <View style={styles.rightPlaceholder} />
+      {!showSettings && <View style={styles.rightPlaceholder} />}
+      {showSettings && <Pressable onPress={onSettingPress} style={styles.backButton}>
+        <Image
+          source={require("../../../../assets/icons/settings.png")}
+          style={styles.backIcon}
+        />
+      </Pressable>
+      }
     </View>
   );
 }

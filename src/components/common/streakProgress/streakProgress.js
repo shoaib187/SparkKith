@@ -2,10 +2,10 @@ import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import { FONT_SIZES } from '../../constants/sizes/responsiveFont'
 
-export default function StreakProgress() {
+export default function StreakProgress({ title }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Streak Saver Badge</Text>
+      <Text style={styles.sectionTitle}>{title || "Streak Saver Badge"}</Text>
       <View style={styles.progressBarBackground}>
         <View style={[styles.progressBarFill, { width: '45%' }]} />
         <View style={[styles.progressBarLine, { width: '38%' }]} />

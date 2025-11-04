@@ -11,7 +11,8 @@ const colors = {
   blue: "#ADD8E7",
   charcol: "#D7A7A6",
   lightBg: "#E6D7C430",
-  lightBackground: "#FDFCFC"
+  lightBackground: "#FDFCFC",
+  lightPink: "#FFB85815"
 }
 
 
