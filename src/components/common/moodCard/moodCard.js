@@ -2,9 +2,9 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import colors from "../../constants/colors/colors";
 
-const MoodCard = ({ mood, time, icon, tags = [], note }) => {
+const MoodCard = ({ style, mood, time, icon, tags = [], note }) => {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, style]}>
       <View style={styles.header}>
         <View style={styles.iconContainer}>
           <Image source={icon} style={styles.icon} />

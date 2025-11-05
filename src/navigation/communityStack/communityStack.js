@@ -12,7 +12,6 @@ const CommunityStack = () => {
       }}
     >
       <Stack.Screen name="CommunityHomePage" component={screens.CommunityHomePage} />
-      {/* <Stack.Screen name="DailyStreaks" component={screens.DailyStreak} /> */}
     </Stack.Navigator>
   );
 }

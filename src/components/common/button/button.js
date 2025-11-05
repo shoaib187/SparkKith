@@ -1,14 +1,16 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Image, View } from 'react-native';
 
 const Button = ({
   title = 'Button',
   onPress,
-  bgColor = '#FFB858',   // default background color
-  textColor = '#fff',    // default text color
+  bgColor = '#FFB858',
+  textColor = '#fff',
   disabled = false,
   style,
   textStyle,
+  icon,
+  iconStyle,
 }) => {
   return (
     <TouchableOpacity
@@ -21,9 +23,12 @@ const Button = ({
         style,
       ]}
     >
-      <Text style={[styles.text, { color: textColor }, textStyle]}>
-        {title}
-      </Text>
+      <View style={styles.content}>
+        {icon && <Image source={icon} style={[styles.icon, iconStyle]} />}
+        <Text style={[styles.text, { color: textColor }, textStyle]}>
+          {title}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -35,10 +40,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  content: {
+    flexDirection: 'row',  // to align icon + text in a row
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,                // spacing between icon and text (React Native 0.71+)
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
   text: {
     fontSize: 16,
     fontWeight: '900',
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
 });
 

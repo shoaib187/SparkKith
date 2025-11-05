@@ -112,7 +112,6 @@ export default function History({ navigation }) {
           />
         ) : (
           <View>
-
             <MoodCard
               mood="Sad"
               time="12:00 PM"

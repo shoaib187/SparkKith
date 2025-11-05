@@ -3,7 +3,7 @@ import React from 'react';
 import colors from '../../constants/colors/colors';
 
 
-export default function TaskCard({ navigation, onDone }) {
+export default function TaskCard({ navigation, onDone, onSkip }) {
   return (
     <View style={styles.taskCard}>
       {/* Emoji */}
@@ -42,7 +42,7 @@ export default function TaskCard({ navigation, onDone }) {
         <TouchableOpacity style={styles.doneButton} activeOpacity={0.8} onPress={onDone}>
           <Text style={styles.doneText}>DONE</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.skipButton} activeOpacity={0.8}>
+        <TouchableOpacity onPress={onSkip} style={styles.skipButton} activeOpacity={0.8}>
           <Text style={styles.skipText}>SKIP</Text>
         </TouchableOpacity>
       </View>

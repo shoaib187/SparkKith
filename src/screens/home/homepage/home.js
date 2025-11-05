@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -6,6 +6,8 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  Alert,
+  BackHandler,
 } from 'react-native';
 import StatsSection from '../../../components/stats/statsSection';
 import StreakProgress from '../../../components/common/streakProgress/streakProgress';
@@ -16,7 +18,6 @@ import MoodSection from '../../../components/common/moodSection/moodSection';
 
 import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
 import colors from '../../../components/constants/colors/colors';
-import Button from '../../../components/common/button/button';
 import BottomSheet from '../../../components/common/bottomSheet/bottomSheet';
 import CompleteTask from '../../../components/common/completeTask/completeTask';
 
@@ -25,6 +26,27 @@ import CompleteTask from '../../../components/common/completeTask/completeTask';
 export default function Home({ navigation }) {
   const [visible, setVisible] = useState(false);
   const heroImage = require('../../../../assets/png/twinkle.png');
+
+
+  useEffect(() => {
+    // handle hardware back press
+    const backAction = () => {
+      Alert.alert('SparkKith!', 'Are you sure you want to exit the app?', [
+        { text: 'Cancel', onPress: () => null, style: 'cancel' },
+        { text: 'YES', onPress: () => BackHandler.exitApp() },
+      ]);
+      return true; // prevent default behavior (exit)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    // cleanup
+    return () => backHandler.remove();
+  }, []);
+
   return (
     <SafeAreaView style={styles.safe}>
 
@@ -54,18 +76,17 @@ export default function Home({ navigation }) {
           <Text style={styles.taskText}>Today's Task</Text>
           <IconButton onPress={() => navigation.navigate("AddTask")} iconSrc={require("../../../../assets/png/add.png")} />
         </View>
-        <TaskCard navigation={navigation} onDone={() => navigation.navigate("DailyStreak")} />
+        <TaskCard navigation={navigation} onSkip={() => setVisible(true)} onDone={() => navigation.navigate("DailyStreak")} />
 
         {/* Cheer Dose */}
         <QuotesSection />
 
         {/* Mood selector */}
         <MoodSection navigation={navigation} />
-        <Button title="Open Bottom Sheet" onPress={() => setVisible(true)} />
-        <BottomSheet visible={visible} onClose={() => setVisible(false)}>
-          <CompleteTask />
-        </BottomSheet>
       </ScrollView>
+      <BottomSheet visible={visible} onClose={() => setVisible(false)}>
+        <CompleteTask />
+      </BottomSheet>
     </SafeAreaView>
   );
 }
@@ -79,7 +100,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   container: {
-    paddingHorizontal: 16
+    paddingHorizontal: 16,
+    paddingBottom: 16
   },
   headerRow: {
     flexDirection: 'row',

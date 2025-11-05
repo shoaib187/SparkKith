@@ -36,7 +36,7 @@ const kithData = [
   },
 ];
 
-const Community = () => {
+const Community = ({ navigation }) => {
   const [selected, setSelected] = useState(null);
 
   const handleSelect = (id) => {
@@ -83,7 +83,10 @@ const Community = () => {
           { backgroundColor: selected ? '#f4b400' : '#ccc' },
         ]}
         disabled={!selected}
-        onPress={() => console.log('Continue with:', selected)}
+        onPress={() => {
+          console.log('Continue with:', selected)
+          navigation.navigate("Welcome")
+        }}
       >
         <Text style={styles.buttonText}>CONTINUE</Text>
       </TouchableOpacity>

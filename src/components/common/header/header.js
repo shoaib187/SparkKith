@@ -1,20 +1,29 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 
-export default function Header({ title, navigation, onSettingPress, showSettings = false }) {
+export default function Header({ title, navigation, onSettingPress, showBack = true, showSettings = false, showCalendar = false }) {
   return (
     <View style={styles.headerContainer}>
       <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Image
-          source={require("../../../../assets/png/back-arrow.png")}
-          style={styles.backIcon}
-        />
+        {showBack &&
+          <Image
+            source={require("../../../../assets/png/back-arrow.png")}
+            style={styles.backIcon}
+          />
+        }
       </Pressable>
       <Text style={styles.headerTitle}>{title}</Text>
-      {!showSettings && <View style={styles.rightPlaceholder} />}
+      {!showSettings || !showCalendar && <View style={styles.rightPlaceholder} />}
       {showSettings && <Pressable onPress={onSettingPress} style={styles.backButton}>
         <Image
           source={require("../../../../assets/icons/settings.png")}
+          style={styles.backIcon}
+        />
+      </Pressable>
+      }
+      {showCalendar && <Pressable onPress={onSettingPress} style={styles.backButton}>
+        <Image
+          source={require("../../../../assets/icons/calendar.png")}
           style={styles.backIcon}
         />
       </Pressable>
