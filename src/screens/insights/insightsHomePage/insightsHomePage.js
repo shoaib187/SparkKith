@@ -26,7 +26,7 @@ export default function InsightsHomePage({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bgColor }}>
-      <Header navigation={navigation} title={"Insights"} showCalendar showBack={false} />
+      <Header onSettingPress={() => navigation.navigate("History")} navigation={navigation} title={"Insights"} showCalendar showBack={false} />
       <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }}>
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
         {activeTab === "task" ? <TaskActivityChart /> : (

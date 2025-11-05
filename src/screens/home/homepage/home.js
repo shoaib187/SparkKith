@@ -20,6 +20,7 @@ import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
 import colors from '../../../components/constants/colors/colors';
 import BottomSheet from '../../../components/common/bottomSheet/bottomSheet';
 import CompleteTask from '../../../components/common/completeTask/completeTask';
+import { useIsFocused } from '@react-navigation/native';
 
 
 
@@ -28,24 +29,24 @@ export default function Home({ navigation }) {
   const heroImage = require('../../../../assets/png/twinkle.png');
 
 
+  const isFocused = useIsFocused(); // ✅ Detect if we are on Home parent screen
+
   useEffect(() => {
-    // handle hardware back press
     const backAction = () => {
-      Alert.alert('SparkKith!', 'Are you sure you want to exit the app?', [
-        { text: 'Cancel', onPress: () => null, style: 'cancel' },
-        { text: 'YES', onPress: () => BackHandler.exitApp() },
-      ]);
-      return true; // prevent default behavior (exit)
+      if (isFocused) { // ✅ Only trigger when Home is focused
+        Alert.alert('SparkKith!', 'Are you sure you want to exit the app?', [
+          { text: 'Cancel', onPress: () => null, style: 'cancel' },
+          { text: 'YES', onPress: () => BackHandler.exitApp() },
+        ]);
+        return true; // Prevent default exit
+      }
+      return false; // Allow normal navigation back if not on main Home
     };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    // cleanup
     return () => backHandler.remove();
-  }, []);
+  }, [isFocused]); // ✅ Re-run effect when focus changes
 
   return (
     <SafeAreaView style={styles.safe}>

@@ -85,7 +85,7 @@ export default function History({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header title="History" />
+      <Header title="History" navigation={navigation} />
 
       <View style={styles.innerContainer}>
         <Text style={styles.dateText}>Today, Friday 19 Nov</Text>
