@@ -1,10 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import Button from '../../../components/common/button/button';
 import colors from '../../../components/constants/colors/colors';
 import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-export default function ContinueWith({ navigation }) {
+export default function ContinueWith({ navigation, route }) {
+  const { activeItem } = route.params;
+  // console.log("Active Item:", activeItem);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: "601942645800-ltrrr2pat9aoo03c96dlrd346v5bfn42.apps.googleusercontent.com"
+    })
+  }, []);
+
+  const googleSignIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices()
+      const userInfo = await GoogleSignin.signIn();
+      if (userInfo?.data?.user) {
+        navigation.navigate('Register', { activeItem, userInfo })
+      }
+      console.log("user", userInfo)
+    } catch (error) {
+      console.log("Err", error)
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Image
@@ -20,14 +43,14 @@ export default function ContinueWith({ navigation }) {
       <View style={styles.buttonContainer}>
         <Button
           title="Continue with Google"
-          onPress={() => navigation.navigate('Welcome')}
+          onPress={googleSignIn}
           icon={require('../../../../assets/png/google.png')}
           style={[styles.button, { backgroundColor: '#fff' }]}
           textStyle={{ color: '#000' }}
         />
         <Button
           title="Continue with Email"
-          onPress={() => navigation.navigate('Welcome')}
+          onPress={() => navigation.navigate('Register', { activeItem })}
           icon={require('../../../../assets/png/email.png')}
           style={[styles.button, { backgroundColor: "black" }]}
         />

@@ -9,11 +9,13 @@ const Stack = createStackNavigator();
 const AuthStack = () => {
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }} initialRouteName='ContinueWith'>
-      <Stack.Screen name="ContinueWith" component={screens.ContinueWith} />
-      <Stack.Screen name="Welcome" component={screens.WelcomPage} />
-      <Stack.Screen name="Community" component={Community} />
+      screenOptions={{ headerShown: false }} initialRouteName='Onboarding'>
       <Stack.Screen name="Onboarding" component={screens.OnboardingScreen} />
+      <Stack.Screen name="Community" component={Community} />
+      <Stack.Screen name="ContinueWith" component={screens.ContinueWith} />
+      <Stack.Screen name="Register" component={screens.Register} />
+      <Stack.Screen name="Login" component={screens.Login} />
+      <Stack.Screen name="Welcome" component={screens.WelcomPage} />
       <Stack.Screen name="Tab" component={TabNavigator} />
     </Stack.Navigator>
   );

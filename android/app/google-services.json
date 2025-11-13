@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "601942645800",
+    "project_id": "sparkkith-18f9f",
+    "storage_bucket": "sparkkith-18f9f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601942645800:android:7b8c1dfd6286087eb9a91d",
+        "android_client_info": {
+          "package_name": "com.sparkkith"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "601942645800-ltrrr2pat9aoo03c96dlrd346v5bfn42.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnuTm5631Zd3i_8Zqdr5Nky6l8LHf9GSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "601942645800-ltrrr2pat9aoo03c96dlrd346v5bfn42.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

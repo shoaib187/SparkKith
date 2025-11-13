@@ -1,5 +1,7 @@
 import Community from "../../../screens/auth/community/community";
 import ContinueWith from "../../../screens/auth/continueWith/continueWith";
+import Login from "../../../screens/auth/login/login";
+import Register from "../../../screens/auth/register/register";
 import WelcomPage from "../../../screens/auth/welcom/welcomPage";
 import CommunityHomePage from "../../../screens/community/communityHomePage/communityHomePage";
 import AddTask from "../../../screens/home/addTask/addTask";
@@ -21,6 +23,8 @@ export const screens = {
   ContinueWith,
   WelcomPage,
   OnboardingScreen,
+  Register,
+  Login,
   // home screens
   Home,
   DailyStreak,

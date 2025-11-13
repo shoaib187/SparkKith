@@ -5,9 +5,9 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  FlatList,
 } from 'react-native';
 import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
+import { getSpark } from '../../../utils/spark/api';
 
 const kithData = [
   {
@@ -36,12 +36,17 @@ const kithData = [
   },
 ];
 
-const Community = ({ navigation }) => {
+const Community = ({ navigation, route }) => {
+  const { activeItem } = route?.params;
+  console.log("community", activeItem)
+
   const [selected, setSelected] = useState(null);
 
   const handleSelect = (id) => {
     setSelected(id);
     const chosen = kithData.find((item) => item.id === id);
+    // navigation.navigate("ContinueWith", activeItem, chosen)
+    navigation.navigate("ContinueWith", { activeItem, chosen });
     console.log('Selected Kith:', chosen);
   };
 

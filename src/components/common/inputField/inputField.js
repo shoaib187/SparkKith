@@ -22,6 +22,7 @@ const InputField = ({
   wrapperStyle,
   multiline,
   textAlignVertical,
+  editable
 }) => {
   const isEmailField = keyboardType === 'email-address';
   const isPasswordField = label?.toLowerCase().includes('password');
@@ -54,7 +55,8 @@ const InputField = ({
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
           textAlignVertical={textAlignVertical}
-          style={[styles.input]}
+          style={[styles.input, { opacity: editable ? 1 : .5 }]}
+          editable={editable}
         />
       </View>
       {showError && isInvalidEmail && (
