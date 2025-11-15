@@ -13,7 +13,7 @@ export default function Header({ title, navigation, onSettingPress, showBack = t
         }
       </Pressable>
       <Text style={styles.headerTitle}>{title}</Text>
-      {!showSettings || !showCalendar && <View style={styles.rightPlaceholder} />}
+      {/* {!showSettings || !showCalendar && <View style={styles.rightPlaceholder} />}
       {showSettings && <Pressable onPress={onSettingPress} style={styles.backButton}>
         <Image
           source={require("../../../../assets/icons/settings.png")}
@@ -27,7 +27,30 @@ export default function Header({ title, navigation, onSettingPress, showBack = t
           style={styles.backIcon}
         />
       </Pressable>
-      }
+      } */}
+
+
+      {!showSettings && !showCalendar ? (
+        <View style={styles.rightPlaceholder} />
+      ) : showSettings ? (
+        <Pressable onPress={onSettingPress} style={styles.backButton}>
+          <Image
+            source={require("../../../../assets/icons/settings.png")}
+            style={styles.backIcon}
+          />
+        </Pressable>
+      ) : (
+        showCalendar && (
+          <Pressable onPress={onSettingPress} style={styles.backButton}>
+            <Image
+              source={require("../../../../assets/icons/calendar.png")}
+              style={styles.backIcon}
+            />
+          </Pressable>
+        )
+      )}
+
+
     </View>
   );
 }
@@ -60,5 +83,7 @@ const styles = StyleSheet.create({
   },
   rightPlaceholder: {
     width: 30, // keeps title centered even if no right icon
+    // backgroundColor: 'red',
+    height: 30
   },
 });

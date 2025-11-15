@@ -8,7 +8,7 @@ import { baseUrl } from '../../../utils/api';
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({ emailOrUsername, password }, { rejectWithValue }) => {
-    console.log(emailOrUsername, password)
+    // console.log(emailOrUsername, password)
     try {
       const response = await axios.post(`${baseUrl}/api/auth/mobile/login`, { emailOrUsername, password });
       return response.data;
@@ -40,7 +40,22 @@ export const fetchUserProfile = createAsyncThunk(
   'auth/fetchUserProfile',
   async (token, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${baseUrl}/api/auth/profile`, {
+      const response = await axios.get(`${baseUrl}/api/user/get-profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: 'Failed to fetch profile' });
+    }
+  }
+);
+// Async thunk for editing user profile
+export const editUserProfile = createAsyncThunk(
+  'auth/editUserProfile',
+  async ({ token, updatedData }, { rejectWithValue }) => {
+    try {
+      console.log("update", updatedData, token)
+      const response = await axios.put(`${baseUrl}/api/user/edit-profile`, updatedData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -133,10 +148,24 @@ const authSlice = createSlice({
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.isAuthenticated = true;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || 'Failed to fetch profile';
+      })
+      // edit user profile
+      .addCase(editUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(editUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+      })
+      .addCase(editUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || 'Failed to fetch profile';
       })

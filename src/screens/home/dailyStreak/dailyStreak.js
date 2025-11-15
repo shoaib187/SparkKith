@@ -6,7 +6,8 @@ import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
 
 const days = ['Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr'];
 
-export default function DailyStreak({ navigation }) {
+export default function DailyStreak({ navigation, route }) {
+  const { item } = route?.params
   const [today, setToday] = useState(null);
   const [completedDays, setCompletedDays] = useState([]);
 
@@ -15,6 +16,7 @@ export default function DailyStreak({ navigation }) {
     const mappedDay = currentDay === 0 ? 1 : currentDay + 1; // Aligning Sa as index 0
     setToday(mappedDay % 7);
   }, []);
+
 
   const handleDayPress = (index) => {
     if (index === today) {
@@ -72,7 +74,9 @@ export default function DailyStreak({ navigation }) {
         Awesome work! Stay consistent. Keep your self-care streak going in SparkKith!
       </Text>
 
-      <Button title='LET’S GO!' onPress={() => navigation.navigate("TaskCompleted")} style={{ width: '100%' }} />
+      <Button title={'LET’S GO!'}
+        onPress={() => navigation.navigate("TaskCompleted", { item })}
+        style={{ width: '100%' }} />
     </View>
   );
 }

@@ -5,13 +5,14 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ToastAndroid,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import Header from '../../../components/common/header/header';
 import InputField from '../../../components/common/inputField/inputField';
 import colors from '../../../components/constants/colors/colors';
 import Button from '../../../components/common/button/button';
-import { loginUser } from '../../../redux/slices/authSlice/authSlice';
+import { loginUser, setUser } from '../../../redux/slices/authSlice/authSlice';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function Login({ navigation }) {
@@ -33,14 +34,7 @@ export default function Login({ navigation }) {
   const handleLogin = async () => {
     // validation checks
     if (!emailOrUsername.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please fill all fields');
-      return;
-    }
-
-    // Basic email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailOrUsername.trim())) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address');
+      ToastAndroid.show('Please fill all fields', ToastAndroid.LONG);
       return;
     }
 
@@ -49,20 +43,21 @@ export default function Login({ navigation }) {
 
       const res = await dispatch(loginUser({ emailOrUsername, password }));
       const data = res.payload;
-      console.log(data)
+      // console.log("res", res)
 
       if (data?.token) {
         setLoading(false);
-        Alert.alert('Welcome!', 'Login successful');
+        await dispatch(setUser(data))
+        ToastAndroid.show('Login successful', ToastAndroid.LONG);
         navigation.replace('Tab'); // replace with your main/home screen
       } else {
         setLoading(false);
-        Alert.alert('Login Failed', data?.message || 'Invalid credentials');
+        ToastAndroid.show(data?.message || 'Invalid credentials', ToastAndroid.LONG);
       }
     } catch (error) {
       setLoading(false);
       console.log('Login Error:', error);
-      Alert.alert('Error', error.response?.data?.message || 'Something went wrong');
+      ToastAndroid.show(error.response?.data?.message || 'Something went wrong', ToastAndroid.LONG);
     }
   };
 

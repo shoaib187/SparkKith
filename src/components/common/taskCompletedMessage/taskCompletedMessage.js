@@ -1,0 +1,42 @@
+import { StyleSheet } from "react-native";
+import { View, Text } from 'react-native'
+import React from 'react'
+import Button from "../button/button";
+
+export default function TaskCompletedMessage({ undoTask }) {
+  return (
+    <View style={styles.completedContainer}>
+      <Text style={styles.completedEmoji}>🎉</Text>
+      <Text style={styles.completedTitle}>You completed your daily task!</Text>
+      <Text style={styles.completedSubtitle}>Great job staying consistent! 🌟</Text>
+      <Button title="Undo Task" onPress={undoTask} style={{ width: '100%', marginTop: 20 }} />
+    </View>
+  )
+}
+const styles = StyleSheet.create({
+  completedContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    marginVertical: 20,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+  },
+  completedEmoji: {
+    fontSize: 40,
+    marginBottom: 10,
+  },
+  completedTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: "#222",
+    textAlign: 'center',
+  },
+  completedSubtitle: {
+    fontSize: 14,
+    // color: '#047857',
+    textAlign: 'center',
+    marginTop: 6,
+  },
+
+})

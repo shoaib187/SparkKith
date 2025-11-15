@@ -1,10 +1,12 @@
+
 import { StyleSheet } from 'react-native'
 import React, { useEffect } from 'react'
 import SplashScreen from 'react-native-splash-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppNavigator from './src/navigation/appNavigator/appNavigator';
 import { Provider } from 'react-redux';
-import store from './src/redux/store/store';
+import store, { persistor } from './src/redux/store/store';
+import { PersistGate } from 'redux-persist/integration/react';
 
 export default function App() {
   useEffect(() => {
@@ -17,7 +19,9 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <Provider store={store}>
-        <AppNavigator />
+        <PersistGate loading={null} persistor={persistor}>
+          <AppNavigator />
+        </PersistGate>
         {/* <SocialLogin /> */}
       </Provider>
     </SafeAreaView>

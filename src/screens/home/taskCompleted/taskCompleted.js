@@ -5,19 +5,23 @@ import Button from '../../../components/common/button/button';
 
 const { width } = Dimensions.get('window');
 
-export default function TaskCompleted() {
+export default function TaskCompleted({ route, navigation }) {
+  const { selectedTask } = route?.params;
+  // console.log("selectedTask from TaskCompleted", selectedTask);
+
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../../../assets/icons/wow.png')} // change to your image path
+        source={require('../../../../assets/icons/wow.png')}
         style={styles.mainImage}
         resizeMode="contain"
       />
 
-      <Text style={styles.title}>Task Complete!</Text>
+      <Text style={styles.title}>{selectedTask?.title || "Task Complete!"}</Text>
+      <Text numberOfLines={2} style={styles.description}>{selectedTask?.description}</Text>
 
       <View style={styles.bottomRow}>
-        {/* Left Card */}
+        {/* Left Card: Total Points */}
         <View style={[styles.outerCard, { backgroundColor: colors.charcol }]}>
           <Text style={styles.cardTitle}>Total Points</Text>
           <View style={styles.innerCard}>
@@ -25,11 +29,13 @@ export default function TaskCompleted() {
               source={require('../../../../assets/icons/star.png')}
               style={[styles.icon, { tintColor: colors.charcol }]}
             />
-            <Text style={[styles.innerText, { color: colors.charcol }]}>20</Text>
+            <Text style={[styles.innerText, { color: colors.charcol }]}>
+              {selectedTask?.points || 0}
+            </Text>
           </View>
         </View>
 
-        {/* Right Card */}
+        {/* Right Card: Streak */}
         <View style={[styles.outerCard, { backgroundColor: '#FFB02E' }]}>
           <Text style={styles.cardTitle}>Streak</Text>
           <View style={styles.innerCard}>
@@ -37,12 +43,19 @@ export default function TaskCompleted() {
               source={require('../../../../assets/icons/fire.png')}
               style={styles.icon}
             />
-            <Text style={[styles.innerText, { color: '#FFB02E' }]}>1</Text>
+            <Text style={[styles.innerText, { color: '#FFB02E' }]}>
+              {selectedTask?.streak || 1}
+            </Text>
           </View>
         </View>
-
       </View>
-      <Button title='Continue' style={{ marginTop: 50, width: '90%', backgroundColor: colors.blue }} textColor='white' />
+
+      <Button
+        title='Continue'
+        style={{ marginTop: 50, width: '90%', backgroundColor: colors.blue }}
+        textColor='white'
+        onPress={() => navigation.navigate("HomePage")}
+      />
     </View>
   );
 }
@@ -65,6 +78,13 @@ const styles = StyleSheet.create({
     color: colors.buttonColor,
     textAlign: 'center',
     marginTop: 20
+  },
+  description: {
+    fontSize: 16,
+    color: colors.gray,
+    textAlign: 'center',
+    marginTop: 8,
+    paddingHorizontal: 20
   },
   bottomRow: {
     flexDirection: 'row',

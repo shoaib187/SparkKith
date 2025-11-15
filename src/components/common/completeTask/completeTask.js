@@ -1,41 +1,55 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import colors from '../../constants/colors/colors';
 import Button from '../button/button';
 
-export default function CompleteTask({ onDone, onUndo }) {
+export default function CompleteTask({ onDone, onUndo, selectedTask }) {
+  if (!selectedTask) return null;
+  console.log("isDone", selectedTask)
   return (
     <View style={styles.taskCard}>
       {/* Emoji Section */}
       <View style={styles.leafBox}>
         <Text style={styles.leafEmoji}>🌿</Text>
       </View>
+
+      {/* Optional skipped or done label */}
       <Text style={[styles.taskSubtitle, { marginVertical: 6 }]}>
-        You skipped
+        {selectedTask.done ? "Task Completed" : "You skipped"}
       </Text>
 
       {/* Task Title & Description */}
       <View style={styles.taskTextContainer}>
-        <Text style={styles.taskTitle}>Take 3 deep breaths</Text>
-        <Text style={styles.taskSubtitle}>
-          Take 3 deep breaths and let go of one worry.
-        </Text>
+        <Text style={styles.taskTitle}>{selectedTask.title}</Text>
+        <Text style={styles.taskSubtitle}>{selectedTask.description}</Text>
       </View>
-      {/* Buttons */}
 
+      {/* Buttons */}
       <Button
         title="Undo"
-        textColor="#111827"
-        style={{ width: "100%", backgroundColor: 'transparent' }}
+        textColor={selectedTask.done ? "#fff" : "#111827"}
+        style={{
+          width: "100%",
+          backgroundColor: selectedTask.done ? colors.buttonColor : "transparent",
+          opacity: selectedTask.done ? 1 : 0.4,
+        }}
         onPress={onUndo}
+        disabled={!selectedTask.done}
       />
+
       <Button
         title="Done"
-        color={colors.buttonColor}
-        textColor="#fff"
-        style={{ width: '100%' }}
+        textColor={!selectedTask.done ? "#fff" : "#111827"}
+        style={{
+          width: "100%",
+          backgroundColor: !selectedTask.done ? colors.buttonColor : "transparent",
+          opacity: !selectedTask.done ? 1 : 0.4,
+        }}
         onPress={onDone}
+        disabled={selectedTask.done}
       />
+
+
     </View>
   );
 }
@@ -51,6 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    // backgroundColor: '#E0F7FA',
   },
   leafEmoji: {
     fontSize: 32,
@@ -58,6 +73,7 @@ const styles = StyleSheet.create({
   taskTextContainer: {
     alignItems: 'center',
     marginBottom: 14,
+    paddingHorizontal: 10,
   },
   taskTitle: {
     fontSize: 18,
@@ -71,26 +87,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 6,
     lineHeight: 20,
-  },
-  rewardsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 18,
-    gap: 14,
-  },
-  rewardItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  rewardIcon: {
-    width: 22,
-    height: 22,
-  },
-  rewardText: {
-    fontSize: 14,
-    color: '#111827',
-    fontWeight: '500',
   },
 });

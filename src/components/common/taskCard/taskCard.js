@@ -1,11 +1,14 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import React from 'react';
 import colors from '../../constants/colors/colors';
+import Button from '../button/button';
 
+export default function TaskCard({ task, onDone, onSkip, onPress, selectedTask, loading }) {
+  if (!task) return null;
 
-export default function TaskCard({ navigation, onDone, onSkip }) {
   return (
     <View style={styles.taskCard}>
+
       {/* Emoji */}
       <View style={styles.leafBox}>
         <Text style={styles.leafEmoji}>🌿</Text>
@@ -13,38 +16,33 @@ export default function TaskCard({ navigation, onDone, onSkip }) {
 
       {/* Title & Description */}
       <View style={styles.taskTitleWrap}>
-        <Text style={styles.taskTitle}>Take 3 deep breaths</Text>
-        <Text style={styles.taskSubtitle}>
-          Take 3 deep breaths and let go of one worry.
-        </Text>
+        <Text numberOfLines={1} style={styles.taskTitle}>{task?.title}</Text>
+        <Text numberOfLines={2} style={styles.taskSubtitle}>{task?.description}</Text>
       </View>
 
       {/* Rewards */}
       <View style={styles.taskReward}>
-        <View style={styles.rewardItem}>
+        <TouchableOpacity onPress={onPress} style={styles.rewardItem}>
           <Image
             source={require('../../../../assets/icons/star.png')}
             style={styles.rewardIcon}
           />
-          <Text style={styles.rewardNumber}>+10 points</Text>
-        </View>
-        <View style={styles.rewardItem}>
+          <Text style={styles.rewardNumber}>+{task.points} points</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={onPress} style={styles.rewardItem}>
           <Image
             source={require('../../../../assets/icons/fire.png')}
             style={styles.rewardIcon}
           />
           <Text style={styles.rewardLabel}>1 day streak</Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       {/* Buttons */}
       <View style={styles.taskFooterRow}>
-        <TouchableOpacity style={styles.doneButton} activeOpacity={0.8} onPress={onDone}>
-          <Text style={styles.doneText}>DONE</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onSkip} style={styles.skipButton} activeOpacity={0.8}>
-          <Text style={styles.skipText}>SKIP</Text>
-        </TouchableOpacity>
+        <Button title='Done' onPress={onDone} disabled={loading} style={{ width: '40%' }} />
+        <Button title='SKIP' onPress={onSkip} disabled={loading} style={{ width: '40%', backgroundColor: 'transparent', borderWidth: 1, borderColor: '#ddd' }} textStyle={{ color: "#444" }} />
       </View>
     </View>
   );
@@ -61,21 +59,13 @@ const styles = StyleSheet.create({
   leafBox: {
     width: 70,
     height: 70,
-    // borderWidth: 1,
-    // borderColor: '#D1FAE5',
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    // backgroundColor: '#ECFDF5',
     marginBottom: 16,
   },
-  leafEmoji: {
-    fontSize: 28,
-  },
-  taskTitleWrap: {
-    alignItems: 'center',
-    marginBottom: 12,
-  },
+  leafEmoji: { fontSize: 28 },
+  taskTitleWrap: { alignItems: 'center', marginBottom: 12 },
   taskTitle: {
     fontSize: 18,
     fontWeight: '700',
@@ -98,13 +88,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 6,
     flexDirection: 'row',
-    gap: 4
+    gap: 4,
   },
-  rewardIcon: {
-    width: 24,
-    height: 24,
-    marginBottom: 4,
-  },
+  rewardIcon: { width: 24, height: 24 },
   taskFooterRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -118,11 +104,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 36,
     borderRadius: 10,
   },
-  doneText: {
-    fontWeight: '700',
-    color: '#111827',
-    fontSize: 14,
-  },
+  doneText: { fontWeight: '700', color: '#fff', fontSize: 14 },
   skipButton: {
     paddingVertical: 10,
     paddingHorizontal: 36,
@@ -130,9 +112,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
-  skipText: {
-    color: '#6B7280',
-    fontWeight: '600',
-    fontSize: 14,
-  },
+  skipText: { color: '#6B7280', fontWeight: '600', fontSize: 14 },
 });

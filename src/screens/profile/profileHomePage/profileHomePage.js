@@ -24,17 +24,12 @@ export default function ProfileHomePage({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header title={"Profile"} onSettingPress={() => navigation.navigate("Settings")} showSettings />
+      <Header title={"Profile"} showBack={false} onSettingPress={() => navigation.navigate("Settings")} showSettings />
       <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
-        {/* Profile Card */}
         <ProfileCard />
-        {/* Overview */}
         <ProfileOverview />
-        {/* Next Badge */}
         <StreakProgress title={"Next Badge"} />
         <Text style={{ color: colors.description }}>90 points to your next badge</Text>
-
-        {/* Badge Gallery */}
         <BadgeSection badges={badges} />
       </ScrollView>
     </View>

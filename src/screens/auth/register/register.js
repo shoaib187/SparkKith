@@ -6,10 +6,10 @@ import {
   ScrollView,
   Image,
   Alert,
-  ToastAndroid
+  ToastAndroid,
+  TouchableOpacity
 } from 'react-native';
-import axios from 'axios';
-import { baseUrl } from '../../../utils/api';
+
 import Header from '../../../components/common/header/header';
 import InputField from '../../../components/common/inputField/inputField';
 import colors from '../../../components/constants/colors/colors';
@@ -20,7 +20,7 @@ import { registerUser } from '../../../redux/slices/authSlice/authSlice';
 export default function Register({ navigation, route }) {
   const { activeItem, userInfo } = route.params;
   const dispatch = useDispatch()
-  console.log(activeItem, userInfo)
+  // console.log("activeItem", activeItem)
   const user = userInfo?.data?.user
   // console.log("user", user)
 
@@ -38,6 +38,7 @@ export default function Register({ navigation, route }) {
   //     setSparkId(activeItem?._id || '');
   //   }
   // }, [activeItem]);
+
   useEffect(() => {
     if (userInfo?.type === 'success' && userInfo?.data?.user) {
       // Google login data
@@ -93,7 +94,7 @@ export default function Register({ navigation, route }) {
       const res = await dispatch(registerUser(formData))
       if (res.payload.status === "success") {
         setLoading(false);
-        Alert.alert('Success', 'Registration successful!');
+        ToastAndroid.show('Registration successful!', ToastAndroid.LONG);
         navigation.navigate('Login');
       }
       if (res.payload.message === "Email already exists") {
@@ -123,7 +124,6 @@ export default function Register({ navigation, route }) {
         {/* Input Fields */}
         <InputField label="Name" editable={false} placeholder="John Doe" value={name} onChangeText={setName} />
         <InputField label="Username" placeholder="johndoe" value={username} onChangeText={setUsername} />
-        <InputField label="Spark ID" editable={false} value={sparkId} />
         <InputField label="Email" placeholder="example@gmail.com" keyboardType="email-address" value={email} onChangeText={setEmail} />
         <InputField label="Password" placeholder="*******" secureTextEntry value={password} onChangeText={setPassword} />
 
@@ -134,6 +134,14 @@ export default function Register({ navigation, route }) {
           onPress={handleRegister}
         // onPress={() => navigation.navigate("Login")}
         />
+        <View style={{ justifyContent: 'center', alignItems: 'center', paddingVertical: 20 }}>
+          <View style={styles.signUpWrapper}>
+            <Text>Already have an Account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <Text style={styles.loginText}>Login</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </ScrollView>
     </View>
   );
@@ -154,4 +162,14 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     resizeMode: 'cover',
   },
+  loginText: {
+    fontWeight: '900',
+    color: "black"
+  },
+  signUpWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4
+  }
 });

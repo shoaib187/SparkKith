@@ -85,7 +85,7 @@ export default function CommunityHomePage() {
         )}
 
       </ScrollView>
-      <BottomSheet visible={!visible} onClose={() => setVisible(!visible)} >
+      <BottomSheet visible={visible} onClose={() => setVisible(!visible)} >
         <PointsSheet />
       </BottomSheet>
     </View>

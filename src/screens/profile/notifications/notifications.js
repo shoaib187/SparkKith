@@ -1,14 +1,25 @@
 import { View, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Header from '../../../components/common/header/header'
 import TextButton from '../../../components/common/textButton/textButton'
+import { requestAndroidPermission, sendNotification } from '../../../utils/notification/api'
 
 export default function Notifications({ navigation }) {
+  useEffect(() => {
+    requestAndroidPermission()
+  }, [])
+  const handleTest = async () => {
+    const res = await sendNotification({
+      title: 'Task Completed',
+      body: 'You completed your daily task! 🎉'
+    });
+    console.log(res)
+  }
   return (
     <View style={styles.container}>
       <Header title={"Notifications"} navigation={navigation} />
       <View style={styles.wrapper}>
-        <TextButton title={"Enable Push Notifications"} />
+        <TextButton onPress={handleTest} title={"Enable Push Notifications"} />
       </View>
     </View>
   )
