@@ -61,7 +61,7 @@ export default function InsightsHomePage({ navigation }) {
           </View>
         )}
       </ScrollView>
-      <BottomSheet visible={!visible} onClose={() => setVisible(!visible)}>
+      <BottomSheet visible={visible} onClose={() => setVisible(!visible)}>
         {selected ? (
           <Text style={{ marginTop: 20, fontSize: 17, textAlign: 'center', fontWeight: '900' }}>
             Selected Date: {selected}

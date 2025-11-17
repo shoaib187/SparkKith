@@ -2,20 +2,30 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { FONT_SIZES } from '../../constants/sizes/responsiveFont';
 import colors from '../../constants/colors/colors';
+import { getEmojiForTask } from '../../../utils/services/services';
 
 export default function Task({ item }) {
-  const isPending = item.status === 'pending';
-  const isDone = item.status === 'done';
-  const isSkipped = item.status === 'skipped';
+  const isDone = item.status;
+  const emoji = getEmojiForTask(item.title, item.desc);
+
+  // check if task is today
+  const todayStr = new Date().toISOString().split('T')[0];
+  const taskDateStr = new Date(item.date).toISOString().split('T')[0];
+  const isToday = todayStr === taskDateStr;
+
+  // If task is done OR not today => apply opacity and disable
+  const disabled = isDone || !isToday;
+  const opacity = disabled ? 0.6 : 1;
 
   return (
     <TouchableOpacity
-      style={[styles.card, { opacity: isPending ? 1 : 0.6 }]}
+      style={[styles.card, { opacity }]}
       activeOpacity={0.8}
+      disabled={disabled}
     >
-      {/* Icon Section */}
+      {/* Emoji Section */}
       <View style={styles.iconContainer}>
-        <Image source={item.icon} style={styles.icon} />
+        <Text style={styles.emoji}>{emoji}</Text>
         {isDone && (
           <Image
             source={require('../../../../assets/png/check1.png')}
@@ -30,9 +40,8 @@ export default function Task({ item }) {
           style={[
             styles.title,
             {
-              textDecorationLine:
-                isDone || isSkipped ? 'line-through' : 'none',
-              color: isPending ? '#000' : colors.description,
+              textDecorationLine: isDone ? 'line-through' : 'none',
+              color: isDone ? '#000' : colors.textPrimary,
             },
           ]}
         >
@@ -42,7 +51,7 @@ export default function Task({ item }) {
       </View>
 
       {/* Skipped Label */}
-      {isSkipped && (
+      {!isDone && !isToday && (
         <Text style={styles.skippedLabel}>Skipped</Text>
       )}
     </TouchableOpacity>
@@ -69,10 +78,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 10,
   },
-  icon: {
-    width: 26,
-    height: 26,
-    resizeMode: 'contain',
+  emoji: {
+    fontSize: 26,
   },
   checkIcon: {
     width: 18,

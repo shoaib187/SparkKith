@@ -3,7 +3,15 @@ import React from 'react'
 import { FONT_SIZES } from '../constants/sizes/responsiveFont'
 import colors from '../constants/colors/colors'
 
-export default function ProfileOverview() {
+export default function ProfileOverview({ stats }) {
+  const badgeMilestones = [{ points: 50, badge: "hydration hero" }, { points: 150, badge: "zen master" }, { points: 250, badge: "sleep star" }, { points: 350, badge: "energy booster" }, { points: 450, badge: "streak saver" }, { points: 550, badge: "challenge champion" }];
+  const getAchievementsCount = (points) => {
+    return badgeMilestones.filter(m => points >= m.points).length;
+  };
+
+  const achievements = getAchievementsCount(stats?.totalPoints || 0);
+
+
   return (
     <View>
       <Text style={styles.sectionTitle}>Overview</Text>
@@ -20,7 +28,7 @@ export default function ProfileOverview() {
           <View style={styles.smallCard}>
             <Image source={require("../../../assets/icons/star.png")} style={{ width: 26, height: 26 }} />
             <View>
-              <Text style={styles.boldText}>1,034</Text>
+              <Text style={styles.boldText}>{stats?.totalPoints}</Text>
               <Text style={styles.smallText}>Total Points</Text>
             </View>
           </View>
@@ -28,7 +36,7 @@ export default function ProfileOverview() {
           <View style={styles.smallCard}>
             <Image source={require("../../../assets/icons/trophy.png")} style={{ width: 26, height: 26 }} />
             <View>
-              <Text style={styles.boldText}>4</Text>
+              <Text style={styles.boldText}>{achievements}</Text>
               <Text style={styles.smallText}>Achievements</Text>
             </View>
           </View>

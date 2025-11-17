@@ -44,9 +44,14 @@ export const sendNotification = async ({ title, body, androidChannelId }) => {
     await notifee.displayNotification({
       title,
       body,
-      android: { channelId, smallIcon: 'ic_launcher', pressAction: { id: 'default' }, sound: "default" },
-      ios: { sound: 'default' },
+      android: {
+        channelId,
+        smallIcon: 'ic_launcher',
+        sound: 'default',
+        pressAction: { id: 'default' },
+      },
     });
+
 
     return { success: true };
   } catch (error) {

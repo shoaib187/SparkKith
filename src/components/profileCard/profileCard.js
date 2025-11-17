@@ -2,12 +2,15 @@ import { View, Text, StyleSheet, Image } from 'react-native'
 import React from 'react'
 import colors from '../constants/colors/colors'
 
-export default function ProfileCard() {
+export default function ProfileCard({ userInfo }) {
   return (
     <View style={styles.profileCard}>
-      <Image style={styles.image} source={require("../../../assets/png/twinkle.png")} />
-      <Text style={styles.profileName}>John Doe</Text>
-      <Text style={styles.profileSubText}>@johndoe · Joined October 2025</Text>
+      <Image style={styles.image}
+        source={require("../../../assets/png/twinkle.png")}
+      // source={{ uri: userInfo?.profileImage }}
+      />
+      <Text style={styles.profileName}>{userInfo?.firstName + " " + userInfo?.lastName}</Text>
+      <Text style={styles.profileSubText}>@{userInfo?.firstName} · Joined October 2025</Text>
       <Text style={styles.highlight}>
         You are a proud member of Zen Den
       </Text>

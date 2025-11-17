@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   StyleSheet,
 } from 'react-native';
 import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
-import { getSpark } from '../../../utils/spark/api';
 
 const kithData = [
   {
@@ -38,6 +37,7 @@ const kithData = [
 
 const Community = ({ navigation, route }) => {
   const { activeItem } = route?.params;
+
   console.log("community", activeItem)
 
   const [selected, setSelected] = useState(null);

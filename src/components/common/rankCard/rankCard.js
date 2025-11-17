@@ -2,20 +2,21 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
 import colors from '../../constants/colors/colors';
 
-export default function RankCard({ item, onPress }) {
+export default function RankCard({ item, onPress, your }) {
+  // console.log(item)
   return (
     <TouchableOpacity
-      key={item.id}
+      key={item._id}
       style={styles.rankCard}
       activeOpacity={0.8}
       onPress={onPress}
     >
       <View>
         <View style={styles.rankLeft}>
-          <Text style={styles.emoji}>{item.emoji}</Text>
-          <Text style={styles.rankName}>{item.name}</Text>
+          <Text style={styles.emoji}>{item?.emoji}</Text>
+          <Text style={styles.rankName}>{item?.name}</Text>
 
-          {item.you && (
+          {item?.email === your && (
             <View style={styles.youTag}>
               <Text style={styles.youText}>You</Text>
             </View>
@@ -28,13 +29,13 @@ export default function RankCard({ item, onPress }) {
               source={require('../../../../assets/icons/fire.png')}
               style={styles.icon}
             />
-            <Text style={styles.streak}>{item.streak}</Text>
+            <Text style={styles.streak}>{item?.streak}{item?.streak > 1 ? " days" : " day"}</Text>
           </View>
         )}
       </View>
 
       <View style={styles.rankRight}>
-        <Text style={styles.rankPoints}>{item.points}</Text>
+        <Text style={styles.rankPoints}>{item?.totalPoints}</Text>
         <Text style={styles.rankPoint}>Pts</Text>
       </View>
     </TouchableOpacity>

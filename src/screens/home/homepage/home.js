@@ -34,8 +34,8 @@ export default function Home({ navigation }) {
   const { tasks } = useSelector(state => state.tasks);
   const { token, user } = useSelector(state => state.auth);
   // console.log("token", token)
-  // console.log("user", user)
-  console.log("tasks", tasks)
+  console.log("user", user)
+  // console.log("tasks", tasks)
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -100,9 +100,7 @@ export default function Home({ navigation }) {
       const res = await dispatch(
         undoTask({ taskId: selectedTask?._id, token })
       );
-
       ToastAndroid.show("Task reverted!", ToastAndroid.SHORT);
-
       await dispatch(getTodayTasks(token));
       setVisible(false);
     } catch (error) {
@@ -131,7 +129,7 @@ export default function Home({ navigation }) {
   // Filter task for today
   const today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
   const todaysTask = tasks.find(task => task.time.split('T')[0] === today);
-  console.log("todaysTask", tasks)
+  // console.log("todaysTask", tasks)
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -160,39 +158,6 @@ export default function Home({ navigation }) {
             iconSrc={require("../../../../assets/png/add.png")}
           />
         </View>
-
-        {/* {todaysTask ? (
-          <TaskCard
-            onPress={() => navigation.navigate("DailyStreak", { item: todaysTask })}
-            navigation={navigation}
-            task={todaysTask}
-            onSkip={() => {
-              setSelectedTask(todaysTask)
-              setVisible(true)
-            }}
-            onDone={() => {
-              // navigation.navigate("DailyStreak", { item: todaysTask })
-              setSelectedTask(todaysTask)
-              setVisible(true)
-            }}
-          />
-        ) : (
-          <View style={styles.noTaskContainer}>
-            <View style={styles.noTaskIcon}>
-              <Text style={styles.noTaskEmoji}>📝</Text>
-            </View>
-            <Text style={styles.noTaskTitle}>No tasks for today</Text>
-            <Text style={styles.noTaskSubtitle}>
-              Enjoy your free time or create a new task to stay productive!
-            </Text>
-            <Button
-              title='Create a Task'
-              style={styles.createTaskButton}
-              onPress={() => navigation.navigate("AddTask")}
-            />
-          </View>
-        )} */}
-
 
         {todaysTask ? (
           todaysTask?.done ? (

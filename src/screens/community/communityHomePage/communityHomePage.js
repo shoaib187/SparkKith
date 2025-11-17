@@ -1,13 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList } from "react-native";
 import colors from "../../../components/constants/colors/colors";
 import RankCard from "../../../components/common/rankCard/rankCard";
 import CommunityStats from "../../../components/communityStats/communityStats";
 import BottomSheet from "../../../components/common/bottomSheet/bottomSheet";
 import PointsSheet from "../../../components/common/pointsSheet/pointsSheet";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTopPerformers } from "../../../redux/slices/communitySlice/communitySlice";
 
 export default function CommunityHomePage() {
   const [activeTab, setActiveTab] = useState("leaderboard");
+
+  const dispatch = useDispatch()
+  const { performers } = useSelector(state => state.performers)
+  const { token, user } = useSelector(state => state.auth);
+  console.log(token)
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchTopPerformers(token))
+    }
+  }, [dispatch])
+
+  // console.log(performers)
+  const your = user?.email
+  // console.log(your)
 
   const rankings = [
     { id: 1, emoji: "🌿", name: "Zen Den", points: "12,450", you: false },
@@ -16,15 +32,29 @@ export default function CommunityHomePage() {
     { id: 4, emoji: "🌞", name: "Joy Squad", points: "8,740", you: false },
   ];
 
-  const members = [
-    { id: 1, name: "Shoaib", streak: "10 days", points: "12,450 Pts", emoji: "👑" },
-    { id: 2, name: "Ahsan", streak: "9 days", points: "10,980 Pts", emoji: "🔥" },
-    { id: 3, name: "Sara", streak: "8 days", points: "9,320 Pts", emoji: "💬" },
-    { id: 4, name: "Ali", streak: "7 days", points: "8,740 Pts", emoji: "🌞" },
-  ];
-
 
   const [visible, setVisible] = useState(false)
+  const ranking = performers?.map((item, index) => {
+    let emoji = "🌿"; // default
+    switch (index) {
+      case 0:
+        emoji = "🥇"; // first place
+        break;
+      case 1:
+        emoji = "🥈"; // second place
+        break;
+      case 2:
+        emoji = "🥉"; // third place
+        break;
+      default:
+        emoji = "🌟"; // others
+    }
+    return {
+      ...item,
+      emoji,
+    };
+  });
+
 
   return (
     <View style={styles.container}>
@@ -71,22 +101,24 @@ export default function CommunityHomePage() {
             <Text style={styles.rankTitle}>This Week's Rankings</Text>
             <FlatList
               data={rankings}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={(item) => item?.id.toString()}
               renderItem={({ item }) => <RankCard item={item} onPress={() => setVisible(!visible)} />}
             />
           </>
         ) : (
           <>
             <Text style={styles.rankTitle}>Top 5 Members</Text>
-            {members.map((m) => (
-              <RankCard item={m} onPress={() => setVisible(!visible)} />
-            ))}
+            <FlatList
+              data={ranking}
+              keyExtractor={(item) => item?._id}
+              renderItem={({ item }) => <RankCard item={item} onPress={() => setVisible(!visible)} your={your} key={item?._id} />}
+            />
           </>
         )}
 
       </ScrollView>
       <BottomSheet visible={visible} onClose={() => setVisible(!visible)} >
-        <PointsSheet />
+        <PointsSheet selected />
       </BottomSheet>
     </View>
   );

@@ -4,6 +4,9 @@ import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authReducer from "../slices/authSlice/authSlice";
 import tasksReducer from "../slices/taskSlice/taskSlice";
+import feelingReducer from "../slices/feelingSlice/feelingSlice";
+import communityReducer from "../slices/communitySlice/communitySlice";
+import profileReducer from "../slices/profileSlice/profileSlice";
 
 // Persist config ONLY for auth
 const authPersistConfig = {
@@ -19,6 +22,9 @@ export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
     tasks: tasksReducer,
+    feelings: feelingReducer,
+    performers: communityReducer,
+    profile: profileReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

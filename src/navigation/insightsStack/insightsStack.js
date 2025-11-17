@@ -16,6 +16,7 @@ const InsightsStack = () => {
     >
       <Stack.Screen name="InsightsHomePage" component={screens.InsightsHomePage} />
       <Stack.Screen name="History" component={screens.History} />
+      <Stack.Screen name="AddTask" component={screens.AddTask} />
     </Stack.Navigator>
   );
 }

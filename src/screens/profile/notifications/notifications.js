@@ -10,10 +10,10 @@ export default function Notifications({ navigation }) {
   }, [])
   const handleTest = async () => {
     const res = await sendNotification({
-      title: 'Task Completed',
+      title: 'Test Notification',
       body: 'You completed your daily task! 🎉'
     });
-    console.log(res)
+    // console.log(res)
   }
   return (
     <View style={styles.container}>
