@@ -8,12 +8,20 @@ import colors from "../../../components/constants/colors/colors";
 import BadgeSection from "../../../components/badgeSection/badgeSection";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile } from "../../../redux/slices/profileSlice/profileSlice";
+const badgeMilestones = [
+  { points: 50, badge: "hydration hero" },
+  { points: 150, badge: "zen master" },
+  { points: 250, badge: "sleep star" },
+  { points: 350, badge: "energy booster" },
+  { points: 450, badge: "streak saver" },
+  { points: 550, badge: "challenge champion" },
+];
+
 
 export default function ProfileHomePage({ navigation }) {
   const dispatch = useDispatch();
   const { token } = useSelector(state => state.auth);
-  const { profileData } = useSelector(state => state.profile);
-  // console.log("profileData", profileData)
+  const { profileData, loading } = useSelector(state => state.profile);
   useEffect(() => {
     if (token) {
       dispatch(fetchUserProfile(token));
@@ -30,11 +38,54 @@ export default function ProfileHomePage({ navigation }) {
     { id: 6, emoji: require("../../../../assets/badges/badge6.png"), name: "Challenge Champ" },
   ];
 
+  const getNextBadgePoints = (totalPoints) => {
+    // find the next milestone where required points are greater than current points
+    const nextMilestone = badgeMilestones.find(m => m.points > totalPoints);
+
+    if (!nextMilestone) return 0; // User already has highest badge
+
+    return nextMilestone.points - totalPoints;
+  };
+
+  const pointsToNextBadge = getNextBadgePoints(profileData?.totalPoints || 0);
+
+  const getBadgeProgress = (totalPoints) => {
+    const milestones = badgeMilestones;
+
+    // find the index of the next milestone
+    const nextIndex = milestones.findIndex(m => m.points > totalPoints);
+
+    // if user already max badge → full progress
+    if (nextIndex === -1) {
+      return { progress: 100, nextBadge: null };
+    }
+
+    const nextMilestone = milestones[nextIndex];
+    const prevMilestone = milestones[nextIndex - 1] || { points: 0 };
+
+    const range = nextMilestone.points - prevMilestone.points;
+    const progress = ((totalPoints - prevMilestone.points) / range) * 100;
+
+    return {
+      progress: Math.min(progress, 100),
+      nextBadge: nextMilestone.badge,
+    };
+  };
+
+  const { progress } = getBadgeProgress(profileData?.totalPoints || 0);
+
+
+
   // mark badges as active based on API response
   const updatedBadges = badges.map(badge => ({
     ...badge,
     active: profileData?.badge?.toLowerCase() === badge.name.toLowerCase(),
   }));
+
+
+  if (loading) {
+    return <Text>Loading.....</Text>
+  }
 
   return (
     <View style={styles.container}>
@@ -50,9 +101,9 @@ export default function ProfileHomePage({ navigation }) {
       >
         <ProfileCard userInfo={profileData} />
         <ProfileOverview stats={profileData} />
-        <StreakProgress title={"Next Badge"} />
+        <StreakProgress progress={progress} title={"Next Badge"} />
         <Text style={{ color: colors.description }}>
-          90 points to your next badge
+          {pointsToNextBadge} points to your next badge
         </Text>
         <BadgeSection badges={updatedBadges} />
       </ScrollView>

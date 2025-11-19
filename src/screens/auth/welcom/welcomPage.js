@@ -28,7 +28,7 @@ export default function WelcomePage({ navigation }) {
       </Text>
 
       <Button
-        onPress={() => navigation.navigate('Onboarding')}
+        onPress={() => navigation.navigate('Login')}
         title="Let's Go!"
         style={styles.button}
       />

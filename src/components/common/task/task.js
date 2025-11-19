@@ -47,7 +47,7 @@ export default function Task({ item }) {
         >
           {item.title}
         </Text>
-        <Text style={styles.desc}>{item.desc}</Text>
+        <Text numberOfLines={2} style={styles.desc}>{item.desc}</Text>
       </View>
 
       {/* Skipped Label */}

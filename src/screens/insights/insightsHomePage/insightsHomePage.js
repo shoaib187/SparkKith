@@ -8,17 +8,54 @@ import MyBarChart from '../../../components/common/barchart/barchart';
 import TaskActivityChart from '../../../components/common/timeRangeDropdown/timeRangeDropdown';
 import BottomSheet from '../../../components/common/bottomSheet/bottomSheet';
 import MoodCard from '../../../components/common/moodCard/moodCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { getFeelingsByDate } from '../../../redux/slices/feelingSlice/feelingSlice';
 
 export default function InsightsHomePage({ navigation }) {
+  const dispatch = useDispatch();
   const [selected, setSelected] = useState('');
   const [activeTab, setActiveTab] = useState("task");
   const [visible, setVisible] = useState(false)
+  const { token } = useSelector(state => state.auth)
+  const { feelingsByDate } = useSelector(state => state.feelings)
+  console.log("feelingsByDate", feelingsByDate)
+
+  const handleGetFeelings = (date) => {
+    if (!date) return;
+
+    dispatch(getFeelingsByDate({
+      token,
+      payload: { date }  // pass the date in the payload
+    }));
+  };
+
 
   const dots = {
     work: { key: 'work', color: '#6FA8DC' },   // light blue
     gym: { key: 'gym', color: '#93C47D' },    // light green
     relax: { key: 'relax', color: '#E06666' }, // light red
   };
+
+
+  // Capitalize first letter of mood string
+  const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
+  // Return mood icon based on feeling
+  const getIconForMood = (feeling) => {
+    switch (feeling.toLowerCase()) {
+      case 'sad':
+        return require("../../../../assets/icons/sad.png");
+      case 'good':
+        return require("../../../../assets/icons/good.png");
+      case 'great':
+        return require("../../../../assets/icons/great.png");
+      case 'excited':
+        return require("../../../../assets/icons/fire.png");
+      default:
+        return require("../../../../assets/icons/good.png");
+    }
+  };
+
 
 
   // Get today's date in YYYY-MM-DD format
@@ -33,8 +70,9 @@ export default function InsightsHomePage({ navigation }) {
           <View>
             <Calendar
               onDayPress={day => {
-                setSelected(day.dateString)
-                setVisible(!visible)
+                setSelected(day.dateString);
+                setVisible(true);
+                handleGetFeelings(day.dateString);
               }}
               markingType={'multi-dot'}
               markedDates={{
@@ -61,40 +99,39 @@ export default function InsightsHomePage({ navigation }) {
           </View>
         )}
       </ScrollView>
-      <BottomSheet visible={visible} onClose={() => setVisible(!visible)}>
-        {selected ? (
-          <Text style={{ marginTop: 20, fontSize: 17, textAlign: 'center', fontWeight: '900' }}>
+      <BottomSheet visible={visible} onClose={() => setVisible(false)}>
+        {selected && (
+          <Text
+            style={{
+              marginTop: 20,
+              fontSize: 17,
+              textAlign: 'center',
+              fontWeight: '900',
+            }}
+          >
             Selected Date: {selected}
           </Text>
-        ) : null}
-        <MoodCard
-          mood="Sad"
-          time="12:00 PM"
-          icon={require("../../../../assets/icons/sad.png")}
-          style={{ borderWidth: 1, borderColor: '#eee' }}
-        />
+        )}
 
-        <MoodCard
-          mood="Good"
-          time="06:00 PM"
-          icon={require("../../../../assets/icons/good.png")}
-          tags={[
-            { label: "Me", icon: require("../../../../assets/reasons/me.png") },
-            { label: "Study", icon: require("../../../../assets/reasons/study.png") },
-            { label: "Family", icon: require("../../../../assets/reasons/family.png") },
-            { label: "Friends", icon: require("../../../../assets/reasons/friends.png") },
-          ]}
-          note="I am feeling exhausted."
-          style={{ borderWidth: 1, borderColor: '#eee' }}
-        />
-
-        <MoodCard
-          mood="Greate"
-          time="12:00 PM"
-          icon={require("../../../../assets/icons/great.png")}
-          style={{ borderWidth: 1, borderColor: '#eee' }}
-        />
+        {feelingsByDate && feelingsByDate.length > 0 ? (
+          feelingsByDate.map((item, index) => (
+            <MoodCard
+              key={item._id || index}
+              mood={capitalizeFirstLetter(item.feeling)}
+              time={new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              icon={getIconForMood(item.feeling)} // helper function to return icon based on mood
+              tags={item.reason?.map(r => ({ label: r })) || []}
+              note={item.note}
+              style={{ borderWidth: 1, borderColor: '#eee', marginVertical: 8 }}
+            />
+          ))
+        ) : (
+          <Text style={{ textAlign: 'center', marginVertical: 20 }}>
+            No moods recorded for this date
+          </Text>
+        )}
       </BottomSheet>
+
     </View>
   );
 }

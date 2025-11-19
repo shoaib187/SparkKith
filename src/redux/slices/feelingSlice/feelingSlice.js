@@ -23,9 +23,13 @@ export const createFeeling = createAsyncThunk(
 // get/by-date
 export const getFeelingsByDate = createAsyncThunk(
   "feeling/getFeelingsByDate",
-  async (payload, { rejectWithValue }) => {
+  async ({ token, payload }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${baseUrl}/api/user/feeling/get/by-date`, payload);
+      const res = await axios.post(`${baseUrl}/api/user/feeling/get/by-date`, payload, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       return res.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -81,7 +85,7 @@ const feelingSlice = createSlice({
       })
       .addCase(getFeelingsByDate.fulfilled, (state, action) => {
         state.loading = false;
-        state.feelingsByDate = action.payload;
+        state.feelingsByDate = action.payload?.data;
       })
       .addCase(getFeelingsByDate.rejected, (state, action) => {
         state.loading = false;

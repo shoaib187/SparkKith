@@ -4,18 +4,18 @@ import { FONT_SIZES } from '../constants/sizes/responsiveFont'
 import colors from '../constants/colors/colors'
 
 
-export default function StatsSection() {
+export default function StatsSection({ stats }) {
   return (
     <View style={styles.statsRow}>
       <View style={styles.statCard}>
         <Text style={styles.statEmoji}>🔥</Text>
-        <Text style={styles.statNumber}>2</Text>
+        <Text style={styles.statNumber}>{stats?.streak?.value}</Text>
         <Text style={styles.statLabel}>Streak</Text>
       </View>
 
       <View style={styles.statCard}>
         <Text style={styles.statEmoji}>🏆</Text>
-        <Text style={styles.statNumber}>10</Text>
+        <Text style={styles.statNumber}>{stats?.totalPoints}</Text>
         <Text style={styles.statLabel}>Points</Text>
       </View>
 

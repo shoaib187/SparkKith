@@ -6,7 +6,7 @@ const Stack = createStackNavigator();
 
 const HomeStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='HomePage'>
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'scale_from_center' }} initialRouteName='HomePage'>
       <Stack.Screen name="HomePage" component={screens.Home} />
       <Stack.Screen name="DailyStreak" component={screens.DailyStreak} />
       <Stack.Screen name="TaskCompleted" component={screens.TaskCompleted} />

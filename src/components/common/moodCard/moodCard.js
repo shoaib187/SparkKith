@@ -20,13 +20,13 @@ const MoodCard = ({ style, mood, time, icon, tags = [], note }) => {
           {tags.map((tag, index) => (
             <View key={index} style={styles.tag}>
               {tag.icon && <Image source={tag.icon} style={styles.tagIcon} />}
-              <Text style={styles.tagText}>{tag.label}</Text>
+              <Text numberOfLines={2} style={styles.tagText}>{tag.label}</Text>
             </View>
           ))}
         </View>
       )}
 
-      {note ? <Text style={styles.noteText}>{note}</Text> : null}
+      {note ? <Text numberOfLines={2} style={styles.noteText}>{note}</Text> : null}
     </View>
   );
 };
@@ -79,7 +79,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     margin: 4,
-    flex: .3,
+    flex: 1,
+    flexWrap: 'wrap',
+    justifyContent: 'center'
   },
   tagIcon: {
     width: 16,
@@ -90,6 +92,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 13,
     color: "#333",
+    // textAlign: 'center'
   },
   noteText: {
     marginTop: 8,

@@ -7,19 +7,24 @@ import BottomSheet from "../../../components/common/bottomSheet/bottomSheet";
 import PointsSheet from "../../../components/common/pointsSheet/pointsSheet";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTopPerformers } from "../../../redux/slices/communitySlice/communitySlice";
+import { getWeeklyCommunityRankings } from "../../../redux/slices/taskSlice/taskSlice";
 
 export default function CommunityHomePage() {
   const [activeTab, setActiveTab] = useState("leaderboard");
 
   const dispatch = useDispatch()
   const { performers } = useSelector(state => state.performers)
+  const { communityRanking } = useSelector(state => state.tasks)
   const { token, user } = useSelector(state => state.auth);
+
   console.log(token)
+  console.log("communityRanking", communityRanking)
   useEffect(() => {
     if (token) {
       dispatch(fetchTopPerformers(token))
+      dispatch(getWeeklyCommunityRankings(token))
     }
-  }, [dispatch])
+  }, [dispatch, token])
 
   // console.log(performers)
   const your = user?.email
@@ -100,8 +105,8 @@ export default function CommunityHomePage() {
           <>
             <Text style={styles.rankTitle}>This Week's Rankings</Text>
             <FlatList
-              data={rankings}
-              keyExtractor={(item) => item?.id.toString()}
+              data={communityRanking}
+              keyExtractor={(item) => item?._id}
               renderItem={({ item }) => <RankCard item={item} onPress={() => setVisible(!visible)} />}
             />
           </>
@@ -111,7 +116,7 @@ export default function CommunityHomePage() {
             <FlatList
               data={ranking}
               keyExtractor={(item) => item?._id}
-              renderItem={({ item }) => <RankCard item={item} onPress={() => setVisible(!visible)} your={your} key={item?._id} />}
+              renderItem={({ item }) => <RankCard item={item} your={your} key={item?._id} />}
             />
           </>
         )}

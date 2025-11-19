@@ -7,6 +7,9 @@ import {
   StyleSheet,
 } from 'react-native';
 import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
+import { getSpark } from '../../../utils/spark/api';
+import Button from '../../../components/common/button/button';
+import Loading from '../../../components/common/loading/loading';
 
 const kithData = [
   {
@@ -36,19 +39,55 @@ const kithData = [
 ];
 
 const Community = ({ navigation, route }) => {
-  const { activeItem } = route?.params;
+  const { activeItem } = route?.params || {};
+  const [community, setCommunity] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [chosen, setChosen] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   console.log("community", activeItem)
 
-  const [selected, setSelected] = useState(null);
+  useEffect(() => {
+    getcommunities();
+  }, []);
+
+  const getcommunities = async () => {
+    try {
+      setLoading(true);
+      const res = await getSpark();
+      setCommunity(res?.sparks || []);
+      console.log("res", res);
+    } catch (error) {
+      console.log("error ", error);
+      // Fallback to kithData if API fails
+      setCommunity(kithData);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSelect = (id) => {
     setSelected(id);
-    const chosen = kithData.find((item) => item.id === id);
-    // navigation.navigate("ContinueWith", activeItem, chosen)
-    navigation.navigate("ContinueWith", { activeItem, chosen });
-    console.log('Selected Kith:', chosen);
+    const selectedCommunity = community?.find((item) => item?._id === id || item?.id === id);
+    setChosen(selectedCommunity);
   };
+
+  const handleContinue = async () => {
+    if (!chosen) return;
+
+    console.log('Selected Kith:', chosen);
+    navigation.navigate("ContinueWith", {
+      activeItem,
+      chosen
+    });
+  };
+
+  if (loading) {
+    return <Loading />
+  }
+
+  // Fallback to kithData if community is empty
+  const displayData = community.length > 0 ? community : kithData;
 
   return (
     <View style={styles.container}>
@@ -63,38 +102,30 @@ const Community = ({ navigation, route }) => {
 
       {/* Cards */}
       <View style={styles.grid}>
-        {kithData.map((item) => {
-          const isSelected = selected === item.id;
+        {displayData.map((item) => {
+          const isSelected = selected === (item._id || item.id);
           return (
             <TouchableOpacity
-              key={item.id}
+              key={item._id || item.id}
               style={[styles.card, isSelected && styles.selectedCard]}
-              onPress={() => handleSelect(item.id)}
+              onPress={() => handleSelect(item._id || item.id)}
               activeOpacity={0.8}
             >
               {isSelected && <View style={styles.badge} />}
-              <Image source={{ uri: item.image }} style={styles.image} />
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardSubtitle}>"{item.subtitle}"</Text>
+              <Image
+                source={{ uri: item?.imageUrl || item?.image }}
+                style={styles.image}
+                onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
+              />
+              <Text style={styles.cardTitle}>{item?.name || item?.title}</Text>
+              <Text style={styles.cardSubtitle}>"{item?.description || item?.subtitle}"</Text>
             </TouchableOpacity>
           );
         })}
       </View>
 
       {/* Continue Button */}
-      <TouchableOpacity
-        style={[
-          styles.button,
-          { backgroundColor: selected ? '#f4b400' : '#ccc' },
-        ]}
-        disabled={!selected}
-        onPress={() => {
-          console.log('Continue with:', selected)
-          navigation.navigate("Welcome")
-        }}
-      >
-        <Text style={styles.buttonText}>CONTINUE</Text>
-      </TouchableOpacity>
+      <Button disabled={!selected} title='"Continue' onPress={handleContinue} />
     </View>
   );
 };
@@ -136,6 +167,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#eee',
+    position: 'relative',
   },
   selectedCard: {
     borderColor: '#3B82F6',
@@ -150,11 +182,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: FONT_SIZES.md,
     color: '#333',
+    textAlign: 'center',
   },
   cardSubtitle: {
     color: '#999',
     fontSize: FONT_SIZES.sm,
     marginTop: 2,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   badge: {
     position: 'absolute',

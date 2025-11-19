@@ -6,8 +6,9 @@ import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function ContinueWith({ navigation, route }) {
-  const { activeItem } = route.params;
-  // console.log("Active Item:", activeItem);
+  const { activeItem, chosen } = route.params;
+  console.log("onboarding avatar:", activeItem);
+  console.log("commnunity", chosen);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -22,7 +23,7 @@ export default function ContinueWith({ navigation, route }) {
       if (userInfo?.data?.user) {
         navigation.navigate('Register', { activeItem, userInfo })
       }
-      console.log("user", userInfo)
+      // console.log("user", userInfo)
     } catch (error) {
       console.log("Err", error)
     }
@@ -50,7 +51,7 @@ export default function ContinueWith({ navigation, route }) {
         />
         <Button
           title="Continue with Email"
-          onPress={() => navigation.navigate('Register', { activeItem })}
+          onPress={() => navigation.navigate('Register', { activeItem, chosen })}
           icon={require('../../../../assets/png/email.png')}
           style={[styles.button, { backgroundColor: "black" }]}
         />

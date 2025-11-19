@@ -5,14 +5,18 @@ import colors from '../constants/colors/colors'
 export default function ProfileCard({ userInfo }) {
   return (
     <View style={styles.profileCard}>
-      <Image style={styles.image}
-        source={require("../../../assets/png/twinkle.png")}
-      // source={{ uri: userInfo?.profileImage }}
+      <Image
+        style={styles.image}
+        source={
+          userInfo?.profilePicture
+            ? { uri: userInfo.profilePicture }
+            : require("../../../assets/png/twinkle.png")
+        }
       />
       <Text style={styles.profileName}>{userInfo?.firstName + " " + userInfo?.lastName}</Text>
-      <Text style={styles.profileSubText}>@{userInfo?.firstName} · Joined October 2025</Text>
+      <Text style={styles.profileSubText}>@{userInfo?.firstName} · Joined {userInfo?.joinedOn?.slice(0, 10)}</Text>
       <Text style={styles.highlight}>
-        You are a proud member of Zen Den
+        You are a proud member of {userInfo?.spark?.name}
       </Text>
     </View>
   )

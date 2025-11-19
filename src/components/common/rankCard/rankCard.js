@@ -3,7 +3,7 @@ import React from 'react';
 import colors from '../../constants/colors/colors';
 
 export default function RankCard({ item, onPress, your }) {
-  // console.log(item)
+
   return (
     <TouchableOpacity
       key={item._id}
@@ -13,29 +13,32 @@ export default function RankCard({ item, onPress, your }) {
     >
       <View>
         <View style={styles.rankLeft}>
-          <Text style={styles.emoji}>{item?.emoji}</Text>
-          <Text style={styles.rankName}>{item?.name}</Text>
+          <Text style={styles.emoji}>{item?.emoji || ""}</Text>
+          <Image source={{ uri: item?.sparkImage || item?.imageUrl }} style={{ width: 20, height: 20, marginRight: 4 }} />
+          <Text style={styles.rankName}>{item?.name || ""}</Text>
 
-          {item?.email === your && (
+
+          {(item?.email === your || item?.isUserSpark) && (
             <View style={styles.youTag}>
               <Text style={styles.youText}>You</Text>
             </View>
           )}
+
         </View>
 
         {item?.streak && (
           <View style={styles.streakContainer}>
             <Image
-              source={require('../../../../assets/icons/fire.png')}
+              source={require("../../../../assets/icons/fire.png")}
               style={styles.icon}
             />
-            <Text style={styles.streak}>{item?.streak}{item?.streak > 1 ? " days" : " day"}</Text>
+            <Text style={styles.streak}>{item?.streak || ""}{item?.streak > 1 ? " days streak" : " day streak"}</Text>
           </View>
         )}
       </View>
 
       <View style={styles.rankRight}>
-        <Text style={styles.rankPoints}>{item?.totalPoints}</Text>
+        <Text style={styles.rankPoints}>{item?.totalPoints || ""}</Text>
         <Text style={styles.rankPoint}>Pts</Text>
       </View>
     </TouchableOpacity>

@@ -19,7 +19,7 @@ export default function ProfileOverview({ stats }) {
         <View style={styles.streakCard}>
           <Image source={require("../../../assets/icons/fire.png")} style={{ width: 26, height: 26 }} />
           <View>
-            <Text style={styles.boldText}>3 day streak</Text>
+            <Text style={styles.boldText}>{stats?.max_streak?.value} day streak</Text>
             <Text style={styles.smallText}>Longest self-care streak ever!</Text>
           </View>
         </View>

@@ -104,6 +104,22 @@ export const getWeeklyRankings = createAsyncThunk(
     }
   }
 );
+// get weekly ranking
+export const getWeeklyCommunityRankings = createAsyncThunk(
+  "tasks/getWeeklyCommunityRankings",
+  async (token, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/spark-ranking`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Error fetching rankings");
+    }
+  }
+);
 
 // tasksSlice
 const tasksSlice = createSlice({
@@ -111,6 +127,7 @@ const tasksSlice = createSlice({
   initialState: {
     tasks: [],
     rankings: [],
+    communityRanking: [],
     loading: false,
     error: null,
   },
@@ -209,6 +226,19 @@ const tasksSlice = createSlice({
         state.rankings = action.payload.data;
       })
       .addCase(getWeeklyRankings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // weekly rankings community
+      .addCase(getWeeklyCommunityRankings.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getWeeklyCommunityRankings.fulfilled, (state, action) => {
+        state.loading = false;
+        state.communityRanking = action.payload.rankings;
+      })
+      .addCase(getWeeklyCommunityRankings.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
