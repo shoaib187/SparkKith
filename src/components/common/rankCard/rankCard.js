@@ -18,7 +18,7 @@ export default function RankCard({ item, onPress, your }) {
           <Text style={styles.rankName}>{item?.name || ""}</Text>
 
 
-          {(item?.email === your || item?.isUserSpark) && (
+          {(item?.email === your) && (
             <View style={styles.youTag}>
               <Text style={styles.youText}>You</Text>
             </View>
@@ -38,7 +38,7 @@ export default function RankCard({ item, onPress, your }) {
       </View>
 
       <View style={styles.rankRight}>
-        <Text style={styles.rankPoints}>{item?.totalPoints || ""}</Text>
+        <Text style={styles.rankPoints}>{item?.totalPoints || 0}</Text>
         <Text style={styles.rankPoint}>Pts</Text>
       </View>
     </TouchableOpacity>

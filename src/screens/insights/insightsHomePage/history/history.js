@@ -1,40 +1,86 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
 import Header from '../../../../components/common/header/header';
 import IconButton from '../../../../components/common/iconbutton/iconButton';
 import MonthPagingTimeline from '../../../../components/common/monthPagingTimeline/monthPagingTimeline';
 import Tabs from '../../../../components/common/task/tabs';
 import Task from '../../../../components/common/task/task';
-import colors from '../../../../components/constants/colors/colors';
-import { FONT_SIZES } from '../../../../components/constants/sizes/responsiveFont';
 import MoodCard from '../../../../components/common/moodCard/moodCard';
 
+import colors from '../../../../components/constants/colors/colors';
+import { FONT_SIZES } from '../../../../components/constants/sizes/responsiveFont';
+
+import { getTriggeredTasks } from '../../../../redux/slices/taskSlice/taskSlice';
+import { getFeelingsByDate } from '../../../../redux/slices/feelingSlice/feelingSlice';
+
+// Mood data
+const moods = [
+  { id: "neutral", label: "Okay", icon: require("../../../../../assets/icons/okay.png") },
+  { id: "happy", label: "Good", icon: require("../../../../../assets/icons/good.png") },
+  { id: "excited", label: "Great", icon: require("../../../../../assets/icons/great.png") },
+  { id: "sad", label: "Sad", icon: require("../../../../../assets/icons/sad.png") },
+  { id: "angry", label: "Angry", icon: require("../../../../../assets/icons/angry.png") },
+];
+
 export default function History({ navigation }) {
+  const dispatch = useDispatch();
+
+  // const { tasks } = useSelector((state) => state?.tasks);
+  const { triggeredTasks } = useSelector((state) => state.tasks);
+  const { feelingsByDate } = useSelector(state => state.feelings);
+  const { token } = useSelector((state) => state?.auth);
+
   const [activeTab, setActiveTab] = useState('task');
-  const { tasks } = useSelector((state) => state.tasks);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // filter tasks for selected date
+  // Fetch triggered tasks on mount
+  useEffect(() => {
+    if (token) {
+      dispatch(getTriggeredTasks(token));
+    }
+  }, [token, dispatch]);
+
+  // Helper: Get mood icon by ID
+  const getMoodIcon = (moodId) => {
+    const mood = moods.find(m => m.id.toLowerCase() === moodId?.toLowerCase());
+    return mood ? mood.icon : moods[0].icon;
+  };
+
+  // Filter tasks based on the selected date
   const tasksForSelectedDate = useMemo(() => {
     const selectedDateStr = selectedDate.toISOString().split('T')[0];
-    return tasks.filter(task => task.date.split('T')[0] === selectedDateStr);
-  }, [tasks, selectedDate]);
+    return triggeredTasks?.filter(task => task.date?.split('T')[0] === selectedDateStr);
+  }, [triggeredTasks, selectedDate]);
 
-  const handleDateSelect = (date) => setSelectedDate(date);
-
-  // map real tasks to suggestion-like structure
+  // Map tasks into UI-friendly objects
   const suggestions = useMemo(() => {
-    return tasksForSelectedDate.map((task, index) => ({
+    return tasksForSelectedDate.map(task => ({
       id: task._id,
       title: task.title,
       desc: task.description,
-      status: task.done ? true : false, // real status
-      date: task.date
+      status: Boolean(task.done),
+      date: task.date,
     }));
   }, [tasksForSelectedDate]);
 
-  console.log(tasks)
+  // Fetch mood logs for selected date
+  const handleGetFeelings = (date) => {
+    if (!date) return;
+
+    dispatch(getFeelingsByDate({
+      token,
+      payload: { date }
+    }));
+  };
+
+  // On date selection
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    const dateStr = date.toISOString().split('T')[0];
+    handleGetFeelings(dateStr);
+  };
 
   return (
     <View style={styles.container}>
@@ -52,14 +98,20 @@ export default function History({ navigation }) {
         <MonthPagingTimeline
           onDateSelect={handleDateSelect}
           selectedDate={selectedDate}
-          sessionsData={{}} // you can pass sessions if needed
+          sessionsData={{}}
         />
 
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <View style={styles.headerRow}>
           <Text style={styles.tabTitle}>{activeTab}</Text>
-          <IconButton onPress={() => navigation.navigate("AddTask")} iconSrc={require('../../../../../assets/png/add.png')} />
+
+          {activeTab === "task" && (
+            <IconButton
+              onPress={() => navigation.navigate("AddTask")}
+              iconSrc={require('../../../../../assets/png/add.png')}
+            />
+          )}
         </View>
 
         {activeTab === 'task' ? (
@@ -68,27 +120,24 @@ export default function History({ navigation }) {
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContainer}
             ListEmptyComponent={
-              <Text style={{ textAlign: 'center', marginTop: 20, color: colors.textSecondary }}>
-                No tasks found for this date
-              </Text>
+              <Text style={styles.emptyText}>No tasks found for this date</Text>
             }
             renderItem={({ item }) => <Task item={item} />}
           />
+
         ) : (
           <View>
-            {tasksForSelectedDate.length === 0 ? (
-              <Text style={{ textAlign: 'center', marginTop: 20, color: colors.textSecondary }}>
-                No moods recorded for this date
-              </Text>
+            {feelingsByDate?.length === 0 ? (
+              <Text style={styles.emptyText}>No moods recorded for this date</Text>
             ) : (
-              tasksForSelectedDate.map((task) => (
+              feelingsByDate.map((entry) => (
                 <MoodCard
-                  key={task?._id}
-                  mood={task?.mood || 'Neutral'}
-                  time={new Date(task.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  note={task?.note}
-                  icon={require("../../../../../assets/icons/sad.png")}
-                  tags={task?.reasons?.map(r => ({ label: r })) || []}
+                  key={entry._id}
+                  mood={entry.feeling}
+                  time={entry.createdAt?.slice(0, 10)}
+                  note={entry.note}
+                  icon={getMoodIcon(entry.feeling)}
+                  tags={(entry.reasons || []).map(r => ({ label: r }))}
                 />
               ))
             )}
@@ -99,6 +148,7 @@ export default function History({ navigation }) {
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -122,190 +172,14 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.lg * 0.9,
     fontWeight: '900',
     textTransform: 'capitalize',
-    flex: 1,
     color: colors.textPrimary,
   },
   listContainer: {
     paddingBottom: 80,
   },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: colors.textSecondary,
+  },
 });
-
-
-// import React, { useState } from 'react';
-// import { View, Text, FlatList, StyleSheet } from 'react-native';
-// import Header from '../../../../components/common/header/header';
-// import IconButton from '../../../../components/common/iconbutton/iconButton';
-// import MonthPagingTimeline from '../../../../components/common/monthPagingTimeline/monthPagingTimeline';
-// import Tabs from '../../../../components/common/task/tabs';
-// import Task from '../../../../components/common/task/task';
-// import colors from '../../../../components/constants/colors/colors';
-// import { FONT_SIZES } from '../../../../components/constants/sizes/responsiveFont';
-// import MoodCard from '../../../../components/common/moodCard/moodCard';
-// import { useSelector } from 'react-redux';
-
-// export default function History({ navigation }) {
-//   const [activeTab, setActiveTab] = useState('task');
-//   const { tasks } = useSelector(state => state.tasks);
-//   console.log("tasks from history", tasks)
-//   const [selectedDate, setSelectedDate] = useState(new Date());
-
-//   const suggestions = [
-//     {
-//       id: '1',
-//       icon: require('../../../../../assets/png/goal.png'),
-//       title: 'Focus Session',
-//       desc: 'Block distractions and stay on one task.',
-//       status: 'pending',
-//     },
-//     {
-//       id: '2',
-//       icon: require('../../../../../assets/png/goal.png'),
-//       title: 'Stretch Break',
-//       desc: 'Relax your muscles and reset your posture.',
-//       status: 'done',
-//     },
-//     {
-//       id: '3',
-//       icon: require('../../../../../assets/png/goal.png'),
-//       title: 'Meditation',
-//       desc: 'Calm your mind and improve focus.',
-//       status: 'skipped',
-//     },
-//     {
-//       id: '4',
-//       icon: require('../../../../../assets/png/goal.png'),
-//       title: 'Meditation',
-//       desc: 'Calm your mind and improve focus.',
-//       status: 'done',
-//     },
-//   ];
-
-//   const [sessionsData] = useState({
-//     [new Date().toISOString().split('T')[0]]: [
-//       {
-//         id: 1,
-//         title: 'Yoga Meditation Session',
-//         time: '10:00 AM',
-//         duration: '60 mins',
-//         instructor: 'John Doe',
-//         level: 'Beginner',
-//         participants: 15,
-//         maxParticipants: 20,
-//       },
-//       {
-//         id: 2,
-//         title: 'Advanced Pranayama',
-//         time: '2:00 PM',
-//         duration: '45 mins',
-//         instructor: 'Jane Smith',
-//         level: 'Advanced',
-//         participants: 18,
-//         maxParticipants: 25,
-//       },
-//     ],
-//     [new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]]: [
-//       {
-//         id: 3,
-//         title: 'Morning Flow Yoga',
-//         time: '8:00 AM',
-//         duration: '75 mins',
-//         instructor: 'Mike Johnson',
-//         level: 'Intermediate',
-//         participants: 12,
-//         maxParticipants: 15,
-//       },
-//     ],
-//   });
-
-//   const handleDateSelect = (date) => setSelectedDate(date);
-
-//   return (
-//     <View style={styles.container}>
-//       <Header title="History" navigation={navigation} />
-
-//       <View style={styles.innerContainer}>
-//         <Text style={styles.dateText}>Today, Friday 19 Nov</Text>
-
-//         <MonthPagingTimeline
-//           onDateSelect={handleDateSelect}
-//           selectedDate={selectedDate}
-//           sessionsData={sessionsData}
-//         />
-
-//         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
-//         <View style={styles.headerRow}>
-//           <Text style={styles.tabTitle}>{activeTab}</Text>
-//           <IconButton iconSrc={require('../../../../../assets/png/add.png')} />
-//         </View>
-
-//         {activeTab === 'task' ? (
-//           <FlatList
-//             data={suggestions}
-//             keyExtractor={(item) => item.id}
-//             contentContainerStyle={styles.listContainer}
-//             renderItem={({ item }) => <Task item={item} />}
-//           />
-//         ) : (
-//           <View>
-//             <MoodCard
-//               mood="Sad"
-//               time="12:00 PM"
-//               icon={require("../../../../../assets/icons/sad.png")}
-//             />
-
-//             <MoodCard
-//               mood="Good"
-//               time="06:00 PM"
-//               icon={require("../../../../../assets/icons/good.png")}
-//               tags={[
-//                 { label: "Me", icon: require("../../../../../assets/reasons/me.png") },
-//                 { label: "Study", icon: require("../../../../../assets/reasons/study.png") },
-//                 { label: "Family", icon: require("../../../../../assets/reasons/family.png") },
-//                 { label: "Friends", icon: require("../../../../../assets/reasons/friends.png") },
-//               ]}
-//               note="I am feeling exhausted."
-//             />
-
-//             <MoodCard
-//               mood="Greate"
-//               time="12:00 PM"
-//               icon={require("../../../../../assets/icons/great.png")}
-//             />
-//           </View>
-//         )}
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: colors.bgColor,
-//   },
-//   innerContainer: {
-//     paddingHorizontal: 16,
-//   },
-//   dateText: {
-//     fontSize: FONT_SIZES.md,
-//     color: colors.textPrimary,
-//     marginVertical: 8,
-//   },
-//   headerRow: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'space-between',
-//     marginVertical: 6,
-//   },
-//   tabTitle: {
-//     fontSize: FONT_SIZES.lg * 0.9,
-//     fontWeight: '900',
-//     textTransform: 'capitalize',
-//     flex: 1,
-//     color: colors.textPrimary,
-//   },
-//   listContainer: {
-//     paddingBottom: 80,
-//   },
-// });

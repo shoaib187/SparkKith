@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createTask, getTodayTasks } from "../../../redux/slices/taskSlice/taskSlice";
 import Button from "../../../components/common/button/button";
 import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
+import { taskSuggestion } from "../../../utils/services/services";
 
 export default function AddTask({ navigation }) {
   const dispatch = useDispatch();
@@ -29,6 +30,33 @@ export default function AddTask({ navigation }) {
   const [visible, setVisible] = useState(false)
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [searchText, setSearchText] = useState("");
+
+  // On mount, pick 5 random suggestions
+  useEffect(() => {
+    const shuffled = taskSuggestion.sort(() => 0.5 - Math.random());
+    setFilteredSuggestions(shuffled.slice(0, 5));
+  }, []);
+
+
+  // Filter suggestions when user types
+  useEffect(() => {
+    if (searchText.trim() === "") {
+      // Show 5 random if search is empty
+      const shuffled = taskSuggestion.sort(() => 0.5 - Math.random());
+      setFilteredSuggestions(shuffled.slice(0, 5));
+    } else {
+      const filtered = taskSuggestion.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchText.toLowerCase()) ||
+          item.description.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+    }
+  }, [searchText]);
+
 
   const [taskDateTime, setTaskDateTime] = useState({
     date: null,
@@ -144,7 +172,6 @@ export default function AddTask({ navigation }) {
       reminder: taskDateTime.reminder,
       timeFrame: taskDateTime.selectedTimeFrame,
     };
-
     dispatch(createTask({ taskData: payload, token }))
       .unwrap()
       .then(async (response) => {
@@ -187,26 +214,8 @@ export default function AddTask({ navigation }) {
     return `${dateStr} • ${taskDateTime.timeLabel}`;
   };
 
-  const suggestions = [
-    {
-      id: "1",
-      icon: require("../../../../assets/png/goal.png"),
-      title: "Focus Session",
-      desc: "Block distractions and stay on one task.",
-    },
-    {
-      id: "2",
-      icon: require("../../../../assets/png/goal.png"),
-      title: "Stretch Break",
-      desc: "Relax your muscles and reset your posture.",
-    },
-    {
-      id: "3",
-      icon: require("../../../../assets/png/goal.png"),
-      title: "Meditation",
-      desc: "Calm your mind and improve focus.",
-    },
-  ];
+
+
 
   return (
     <View style={styles.container}>
@@ -226,7 +235,11 @@ export default function AddTask({ navigation }) {
               placeholder="Task title..."
               placeholderTextColor="#9CA3AF"
               value={title}
-              onChangeText={setTitle}
+              // onChangeText={setTitle}
+              onChangeText={(text) => {
+                setTitle(text);
+                setSearchText(text); // Use title input to filter suggestions
+              }}
             />
           </View>
 
@@ -266,11 +279,16 @@ export default function AddTask({ navigation }) {
         {/* Suggestions Section */}
         <Text style={styles.suggestionHeading}>Suggestions</Text>
         <FlatList
-          data={suggestions}
-          keyExtractor={(item) => item.id}
+          data={filteredSuggestions}
+          keyExtractor={(item) => item.description}
           contentContainerStyle={{ paddingHorizontal: 14 }}
           renderItem={({ item }) => (
-            <SuggestionCard item={item} />
+            <SuggestionCard
+              onPress={() => {
+                setTitle(item.title);
+                setDescription(item.description);
+              }}
+              item={item} />
           )}
           scrollEnabled={false}
         />

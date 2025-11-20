@@ -43,5 +43,5 @@ export const screens = {
   ProfileHomePage,
   Settings,
   EditProfile,
-  Notifications
+  Notifications,
 }

@@ -24,21 +24,21 @@ import BottomSheet from "../../../components/common/bottomSheet/bottomSheet";
 import CompleteTask from "../../../components/common/completeTask/completeTask";
 import TaskCompletedMessage from "../../../components/common/taskCompletedMessage/taskCompletedMessage";
 import NoTaskAssigned from "../../../components/common/noTaskAssigned/noTaskAssigned";
-
-import { getTodayTasks, markAsDoneTask, undoTask } from "../../../redux/slices/taskSlice/taskSlice";
-import { fetchUserProfile } from "../../../redux/slices/authSlice/authSlice";
+import { getTodayTasks, getTriggeredTasks, markAsDoneTask, undoTask } from "../../../redux/slices/taskSlice/taskSlice";
 
 import colors from "../../../components/constants/colors/colors";
 import { FONT_SIZES } from "../../../components/constants/sizes/responsiveFont";
+import HomeSkeleton from "../../../components/skeletons/homeSkeleton/homeSkeleton";
+import { fetchUserProfile } from "../../../redux/slices/profileSlice/profileSlice";
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
 
-  const { tasks } = useSelector((state) => state.tasks);
+  const { tasks, triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
   const { token } = useSelector((state) => state.auth);
   const { profileData } = useSelector((state) => state.profile);
-  console.log("profileData", profileData)
+  // console.log("triggeredTasks", triggeredTasks)
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -54,6 +54,7 @@ export default function Home({ navigation }) {
     if (token && isFocused) {
       dispatch(getTodayTasks(token));
       dispatch(fetchUserProfile(token));
+      dispatch(getTriggeredTasks(token))
     }
   }, [dispatch, token, isFocused]);
 
@@ -121,7 +122,7 @@ export default function Home({ navigation }) {
     setRefreshing(true);
     try {
       if (token) {
-        await dispatch(getTodayTasks(token));
+        await dispatch(getTriggeredTasks(token));
         await dispatch(fetchUserProfile(token));
       }
     } catch (err) {
@@ -135,9 +136,12 @@ export default function Home({ navigation }) {
    * TODAY'S TASK FILTER
    --------------------------------*/
   const today = new Date().toISOString().split("T")[0];
-  const todaysTask = tasks?.find((t) => t.time?.split("T")[0] === today);
+  const todaysTask = triggeredTasks?.find((t) => t.time?.split("T")[0] === today);
 
   const streakValue = Number(profileData?.streak?.value || 0);
+  if (loadingTasks) {
+    return <HomeSkeleton />
+  }
 
   return (
     <SafeAreaView style={styles.safe}>

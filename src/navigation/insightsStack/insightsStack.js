@@ -10,9 +10,9 @@ const InsightsStack = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
+        animation: 'scale_from_center',
       }}
       initialRouteName='InsightsHomePage'
-    // initialRouteName='History'
     >
       <Stack.Screen name="InsightsHomePage" component={screens.InsightsHomePage} />
       <Stack.Screen name="History" component={screens.History} />

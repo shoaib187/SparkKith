@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView } from 'react-native'
+import { View, StyleSheet, ScrollView, Text, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import InputField from '../../../components/common/inputField/inputField'
 import colors from '../../../components/constants/colors/colors'
@@ -6,11 +6,11 @@ import Header from '../../../components/common/header/header'
 import Button from '../../../components/common/button/button'
 import { useDispatch, useSelector } from 'react-redux'
 import { editUserProfile } from '../../../redux/slices/authSlice/authSlice'
+import { fetchUserProfile } from '../../../redux/slices/profileSlice/profileSlice'
 
 export default function EditProfile({ navigation }) {
   const dispatch = useDispatch()
-  const { user, token } = useSelector(state => state.auth)
-  console.log("user", user)
+  const { user, token, loading } = useSelector(state => state.auth)
 
   const [form, setForm] = useState({
     name: user?.name || "",
@@ -39,10 +39,11 @@ export default function EditProfile({ navigation }) {
       name: form.name,
       email: form.email,
       username: form.username,
-      ...(form.password && { password: form.password }), // only send password if entered
+      ...(form.password && { password: form.password }),
     }
 
     const res = await dispatch(editUserProfile({ updatedData: payload, token }))
+    await dispatch(fetchUserProfile(token));
     console.log("res", res)
   }
 
@@ -51,7 +52,7 @@ export default function EditProfile({ navigation }) {
       <Header title={"Edit Profile"} navigation={navigation} />
 
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
         <InputField
@@ -87,12 +88,16 @@ export default function EditProfile({ navigation }) {
         <Button
           title="Save"
           onPress={handleEdit}
-          style={{
-            backgroundColor: "#FAF6F0",
-            marginTop: 14,
-          }}
+          style={styles.saveButton}
           textColor="black"
         />
+
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color={colors.buttonColor} />
+            <Text style={styles.loadingText}>Updating profile...</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   )
@@ -102,5 +107,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgColor,
+  },
+  scrollContainer: {
+    paddingHorizontal: 16,
+  },
+  saveButton: {
+    backgroundColor: "#FAF6F0",
+    marginTop: 14,
+  },
+  loadingContainer: {
+    padding: 10,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 5,
+    color: colors.buttonColor,
   },
 })

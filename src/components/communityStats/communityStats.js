@@ -1,32 +1,34 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Image } from 'react-native'
 import React from 'react'
 import colors from '../constants/colors/colors'
 
 export default function CommunityStats({ stats }) {
+  if (!stats) return;
+  const { spark } = stats
   return (
     <View style={styles.communityCard}>
       <Text style={styles.subTitle}>Your Community</Text>
       <View style={styles.communityHeader}>
-        <Text style={styles.emoji}>🌿</Text>
-        <Text style={styles.communityName}>Zen Den</Text>
+        <Image source={{ uri: spark?.imageUrl }} style={styles.emojiImage} />
+        <Text style={styles.communityName}>{spark?.name}</Text>
       </View>
 
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
-          <Text style={styles.emoji}>🔥</Text>
-          <Text style={styles.statValue}>2</Text>
-          <Text style={styles.statLabel}>Streak</Text>
+          <Text style={styles.emoji}>👨🏿‍💼</Text>
+          <Text style={styles.statValue}>{spark?.totalMembers}</Text>
+          <Text style={styles.statLabel}>Members</Text>
         </View>
         <View style={styles.statBox}>
           <Text style={styles.emoji}>⭐</Text>
-          <Text style={styles.statValue}>10</Text>
+          <Text style={styles.statValue}>{spark?.totalPoints}</Text>
           <Text style={styles.statLabel}>Points</Text>
         </View>
-        <View style={styles.statBox}>
+        {/* <View style={styles.statBox}>
           <Text style={styles.emoji}>🏅</Text>
           <Text style={styles.statValue}>0</Text>
           <Text style={styles.statLabel}>Badge</Text>
-        </View>
+        </View> */}
       </View>
     </View>
   )
@@ -55,7 +57,11 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   emoji: {
-    fontSize: 20,
+    fontSize: 22
+  },
+  emojiImage: {
+    width: 30,
+    height: 30
   },
   statsRow: {
     flexDirection: "row",

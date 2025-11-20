@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import StreakProgress from "../../../components/common/streakProgress/streakProgress";
 import ProfileCard from "../../../components/profileCard/profileCard";
 import Header from "../../../components/common/header/header";
@@ -8,6 +8,7 @@ import colors from "../../../components/constants/colors/colors";
 import BadgeSection from "../../../components/badgeSection/badgeSection";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile } from "../../../redux/slices/profileSlice/profileSlice";
+import ProfileSkeleton from "../../../components/skeletons/profileSkeleton/profileSkeleton";
 const badgeMilestones = [
   { points: 50, badge: "hydration hero" },
   { points: 150, badge: "zen master" },
@@ -22,6 +23,10 @@ export default function ProfileHomePage({ navigation }) {
   const dispatch = useDispatch();
   const { token } = useSelector(state => state.auth);
   const { profileData, loading } = useSelector(state => state.profile);
+  // console.log("profileData", profileData);
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
   useEffect(() => {
     if (token) {
       dispatch(fetchUserProfile(token));
@@ -82,9 +87,15 @@ export default function ProfileHomePage({ navigation }) {
     active: profileData?.badge?.toLowerCase() === badge.name.toLowerCase(),
   }));
 
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await dispatch(fetchUserProfile(token))
+    setRefreshing(false)
+  }
+
 
   if (loading) {
-    return <Text>Loading.....</Text>
+    return <ProfileSkeleton />
   }
 
   return (
@@ -98,6 +109,7 @@ export default function ProfileHomePage({ navigation }) {
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 16 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
         <ProfileCard userInfo={profileData} />
         <ProfileOverview stats={profileData} />

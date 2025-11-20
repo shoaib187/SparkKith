@@ -120,6 +120,38 @@ export const getWeeklyCommunityRankings = createAsyncThunk(
     }
   }
 );
+// get triggered tasks
+export const getTriggeredTasks = createAsyncThunk(
+  "tasks/getTriggeredTasks",
+  async (token, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/user/tasks/get-trigger-tasks`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Error fetching triggered tasks");
+    }
+  }
+);
+// get triggered tasks
+export const getTaskAnalytics = createAsyncThunk(
+  "tasks/getTaskAnalytics",
+  async ({ token, period }, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/user/tasks/get-analytics?period=${period}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Error fetching analytics tasks");
+    }
+  }
+);
 
 // tasksSlice
 const tasksSlice = createSlice({
@@ -128,6 +160,8 @@ const tasksSlice = createSlice({
     tasks: [],
     rankings: [],
     communityRanking: [],
+    triggeredTasks: [],
+    taskAnalytics: null,
     loading: false,
     error: null,
   },
@@ -215,6 +249,19 @@ const tasksSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // get triggered's tasks
+      .addCase(getTriggeredTasks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getTriggeredTasks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.triggeredTasks = action.payload.data;
+      })
+      .addCase(getTriggeredTasks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
       // weekly rankings
       .addCase(getWeeklyRankings.pending, (state) => {
@@ -239,6 +286,19 @@ const tasksSlice = createSlice({
         state.communityRanking = action.payload.rankings;
       })
       .addCase(getWeeklyCommunityRankings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // get task analytics
+      .addCase(getTaskAnalytics.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getTaskAnalytics.fulfilled, (state, action) => {
+        state.loading = false;
+        state.taskAnalytics = action.payload;
+      })
+      .addCase(getTaskAnalytics.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

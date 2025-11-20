@@ -3,21 +3,23 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import colors from '../../constants/colors/colors';
 
 
-export default function PointsSheet() {
+export default function PointsSheet({ selected }) {
+  // console.log("serlce", selected)
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.iconContainer}>
           <Image
-            source={require('../../../../assets/icons/fire.png')}
+            // source={require('../../../../assets/icons/fire.png')}
+            source={{ uri: selected?.imageUrl }}
             style={styles.headerIcon}
           />
         </View>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>Glow Getters</Text>
+          <Text style={styles.headerTitle}>{selected?.name}</Text>
           <Text style={styles.headerDescription}>
-            847 active members
+            {selected?.totalMembers || 0} active members
           </Text>
         </View>
       </View>
@@ -32,7 +34,7 @@ export default function PointsSheet() {
               style={styles.cardIcon}
             />
             <Text style={styles.cardTitle}>Total Points</Text>
-            <Text style={styles.cardValue}>12,450</Text>
+            <Text style={styles.cardValue}>{selected?.totalPoints || 0}</Text>
           </View>
 
           <View style={styles.card}>
@@ -41,7 +43,7 @@ export default function PointsSheet() {
               style={styles.cardIcon}
             />
             <Text style={styles.cardTitle}>Weekly Points</Text>
-            <Text style={styles.cardValue}>980</Text>
+            <Text style={styles.cardValue}>{selected?.weeklyPoints || 0}</Text>
           </View>
         </View>
 

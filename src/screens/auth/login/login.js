@@ -6,6 +6,7 @@ import {
   ScrollView,
   Alert,
   ToastAndroid,
+  TouchableOpacity,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import Header from '../../../components/common/header/header';
@@ -86,7 +87,6 @@ export default function Login({ navigation }) {
           value={password}
           onChangeText={setPassword}
         />
-
         <Button
           title={loading ? 'Logging in...' : 'Login'}
           style={{ backgroundColor: '#FAF6F0', marginTop: 14 }}

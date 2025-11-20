@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../../constants/colors/colors";
 
 export default function TimeRangeDropdown({ selectedRange, onSelectRange }) {
-  const ranges = ['Daily', 'Weekly', 'Monthly'];
+  const ranges = ['Weekly', 'Monthly', 'Yearly'];
   const [isOpen, setIsOpen] = useState(false);
 
   return (

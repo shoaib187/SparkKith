@@ -9,11 +9,10 @@ export default function Notifications({ navigation }) {
     requestAndroidPermission()
   }, [])
   const handleTest = async () => {
-    const res = await sendNotification({
+    await sendNotification({
       title: 'Test Notification',
       body: 'You completed your daily task! 🎉'
     });
-    // console.log(res)
   }
   return (
     <View style={styles.container}>

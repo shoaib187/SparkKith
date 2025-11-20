@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import notifee, { IOSAuthorizationStatus, AndroidImportance } from '@notifee/react-native';
+import notifee, { IOSAuthorizationStatus, AndroidImportance, AndroidAuthorizationStatus } from '@notifee/react-native';
 
 
 /**
@@ -57,5 +57,26 @@ export const sendNotification = async ({ title, body, androidChannelId }) => {
   } catch (error) {
     console.error('Notification error:', error);
     return { success: false, error };
+  }
+};
+
+
+
+
+export const checkNotificationPermission = async () => {
+  try {
+    const settings = await notifee.getNotificationSettings();
+
+    if (Platform.OS === 'ios') {
+      // iOS
+      return settings.authorizationStatus >= IOSAuthorizationStatus.AUTHORIZED;
+    } else {
+      // Android
+      // settings.authorizationStatus: 0 = denied, 1 = authorized
+      return settings.authorizationStatus === 1;
+    }
+  } catch (error) {
+    console.error('Error checking notification permissions:', error);
+    return false;
   }
 };

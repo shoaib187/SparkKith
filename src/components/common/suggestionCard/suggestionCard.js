@@ -3,15 +3,15 @@ import React from 'react'
 import { FONT_SIZES } from '../../constants/sizes/responsiveFont'
 import colors from '../../constants/colors/colors'
 
-export default function SuggestionCard({ item }) {
+export default function SuggestionCard({ item, onPress }) {
   return (
-    <TouchableOpacity style={styles.suggestionCard}>
+    <TouchableOpacity style={styles.suggestionCard} onPress={onPress}>
       <View style={styles.suggestionIconBg}>
-        <Image source={item.icon} style={styles.suggestionIcon} />
+        <Text style={styles.suggestionIcon}>{item?.emoji}</Text>
       </View>
       <View style={styles.suggestionTextWrap}>
         <Text style={styles.suggestionTitle}>{item.title}</Text>
-        <Text style={styles.suggestionDesc}>{item.desc}</Text>
+        <Text style={styles.suggestionDesc}>{item.description}</Text>
       </View>
     </TouchableOpacity>
   )
@@ -36,9 +36,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   suggestionIcon: {
-    width: 26,
-    height: 26,
-    resizeMode: "contain",
+    fontSize: 22
   },
   suggestionTextWrap: {
     flex: 1,

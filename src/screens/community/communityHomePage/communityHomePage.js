@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList, ActivityIndicator } from "react-native";
 import colors from "../../../components/constants/colors/colors";
 import RankCard from "../../../components/common/rankCard/rankCard";
 import CommunityStats from "../../../components/communityStats/communityStats";
@@ -8,58 +8,38 @@ import PointsSheet from "../../../components/common/pointsSheet/pointsSheet";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTopPerformers } from "../../../redux/slices/communitySlice/communitySlice";
 import { getWeeklyCommunityRankings } from "../../../redux/slices/taskSlice/taskSlice";
+import CommunitySkeleton from "../../../components/skeletons/communitySkeleton/communitySkeleton";
 
 export default function CommunityHomePage() {
   const [activeTab, setActiveTab] = useState("leaderboard");
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
 
-  const dispatch = useDispatch()
-  const { performers } = useSelector(state => state.performers)
-  const { communityRanking } = useSelector(state => state.tasks)
+  const dispatch = useDispatch();
+  const { performers, loading: performersLoading } = useSelector(state => state.performers);
+  const { communityRanking, loading: rankingLoading } = useSelector(state => state.tasks);
   const { token, user } = useSelector(state => state.auth);
+  const { profileData } = useSelector((state) => state.profile);
+  // console.log("profileData", profileData)
 
-  console.log(token)
-  console.log("communityRanking", communityRanking)
+  const yourEmail = user?.email;
+
   useEffect(() => {
     if (token) {
-      dispatch(fetchTopPerformers(token))
-      dispatch(getWeeklyCommunityRankings(token))
+      dispatch(fetchTopPerformers(token));
+      dispatch(getWeeklyCommunityRankings(token));
     }
-  }, [dispatch, token])
+  }, [dispatch, token]);
 
-  // console.log(performers)
-  const your = user?.email
-  // console.log(your)
-
-  const rankings = [
-    { id: 1, emoji: "🌿", name: "Zen Den", points: "12,450", you: false },
-    { id: 2, emoji: "🔥", name: "Glow Getters", points: "10,980", you: true },
-    { id: 3, emoji: "💬", name: "Vibe Tribe", points: "9,320", you: false },
-    { id: 4, emoji: "🌞", name: "Joy Squad", points: "8,740", you: false },
-  ];
-
-
-  const [visible, setVisible] = useState(false)
-  const ranking = performers?.map((item, index) => {
-    let emoji = "🌿"; // default
-    switch (index) {
-      case 0:
-        emoji = "🥇"; // first place
-        break;
-      case 1:
-        emoji = "🥈"; // second place
-        break;
-      case 2:
-        emoji = "🥉"; // third place
-        break;
-      default:
-        emoji = "🌟"; // others
-    }
-    return {
-      ...item,
-      emoji,
-    };
+  // Prepare top performers with emojis
+  const rankingData = performers?.map((item, index) => {
+    const emojis = ["🥇", "🥈", "🥉"];
+    return { ...item, emoji: emojis[index] || "🌟" };
   });
 
+  if (rankingLoading || performersLoading) {
+    return <CommunitySkeleton />
+  }
 
   return (
     <View style={styles.container}>
@@ -67,7 +47,7 @@ export default function CommunityHomePage() {
         <Text style={styles.title}>Community</Text>
 
         {/* Community Stats Section */}
-        <CommunityStats />
+        <CommunityStats stats={profileData} />
 
         {/* Tabs */}
         <View style={styles.tabContainer}>
@@ -75,12 +55,7 @@ export default function CommunityHomePage() {
             style={[styles.tab, activeTab === "leaderboard" && styles.activeTab]}
             onPress={() => setActiveTab("leaderboard")}
           >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "leaderboard" && styles.activeTabText,
-              ]}
-            >
+            <Text style={[styles.tabText, activeTab === "leaderboard" && styles.activeTabText]}>
               Leaderboard
             </Text>
           </TouchableOpacity>
@@ -89,41 +64,48 @@ export default function CommunityHomePage() {
             style={[styles.tab, activeTab === "members" && styles.activeTab]}
             onPress={() => setActiveTab("members")}
           >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "members" && styles.activeTabText,
-              ]}
-            >
+            <Text style={[styles.tabText, activeTab === "members" && styles.activeTabText]}>
               Members
             </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Conditional Section */}
+        {/* Conditional Sections */}
         {activeTab === "leaderboard" ? (
           <>
             <Text style={styles.rankTitle}>This Week's Rankings</Text>
-            <FlatList
-              data={communityRanking}
-              keyExtractor={(item) => item?._id}
-              renderItem={({ item }) => <RankCard item={item} onPress={() => setVisible(!visible)} />}
-            />
+            {rankingLoading ? (
+              <ActivityIndicator size="small" color={colors.buttonColor} style={styles.loader} />
+            ) : (
+              <FlatList
+                data={communityRanking}
+                keyExtractor={(item) => item?._id}
+                renderItem={({ item }) => <RankCard item={item} onPress={() => {
+                  setSelected(item)
+                  setVisible(true)
+                }} />}
+              />
+            )}
           </>
         ) : (
           <>
             <Text style={styles.rankTitle}>Top 5 Members</Text>
-            <FlatList
-              data={ranking}
-              keyExtractor={(item) => item?._id}
-              renderItem={({ item }) => <RankCard item={item} your={your} key={item?._id} />}
-            />
+            {performersLoading ? (
+              <ActivityIndicator size="small" color={colors.buttonColor} style={styles.loader} />
+            ) : (
+              <FlatList
+                data={rankingData}
+                keyExtractor={(item) => item?._id}
+                renderItem={({ item }) => <RankCard item={item} your={yourEmail} />}
+              />
+            )}
           </>
         )}
-
       </ScrollView>
-      <BottomSheet visible={visible} onClose={() => setVisible(!visible)} >
-        <PointsSheet selected />
+
+      {/* Bottom Sheet for Points */}
+      <BottomSheet visible={visible} onClose={() => setVisible(false)}>
+        <PointsSheet selected={selected} />
       </BottomSheet>
     </View>
   );
@@ -173,28 +155,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 6,
   },
-  memberCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 14,
-    marginBottom: 8,
-  },
-  memberEmoji: {
-    fontSize: 24,
-    marginRight: 10,
-  },
-  memberInfo: {
-    flexDirection: "column",
-  },
-  memberName: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#111827",
-  },
-  memberRole: {
-    fontSize: 13,
-    color: "#6B7280",
+  loader: {
+    marginVertical: 10,
   },
 });
+

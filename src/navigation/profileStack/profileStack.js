@@ -10,6 +10,7 @@ const ProfileStack = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
+        animation: 'scale_from_center',
       }}
     >
       <Stack.Screen name="ProfileHomePage" component={screens.ProfileHomePage} />
