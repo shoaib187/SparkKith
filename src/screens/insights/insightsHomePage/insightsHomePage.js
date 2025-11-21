@@ -11,6 +11,7 @@ import MoodCard from '../../../components/common/moodCard/moodCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFeelingAnalytics, getFeelingsByDate } from '../../../redux/slices/feelingSlice/feelingSlice';
 import { getTaskAnalytics } from '../../../redux/slices/taskSlice/taskSlice';
+import InsightsSkeleton from '../../../components/skeletons/insightsSkeleton/insightsSkeleton';
 
 export default function InsightsHomePage({ navigation }) {
   const dispatch = useDispatch();
@@ -21,7 +22,7 @@ export default function InsightsHomePage({ navigation }) {
 
   const { token } = useSelector(state => state.auth)
   const { feelingsByDate, analytics } = useSelector(state => state.feelings)
-  const { taskAnalytics } = useSelector(state => state.tasks)
+  const { taskAnalytics, loading } = useSelector(state => state.tasks)
 
   // console.log("analytics", taskAnalytics)
 
@@ -87,6 +88,10 @@ export default function InsightsHomePage({ navigation }) {
 
   // Get today's date in YYYY-MM-DD format
   const today = new Date().toISOString().split('T')[0];
+
+  if (loading) {
+    return <InsightsSkeleton />
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bgColor }}>

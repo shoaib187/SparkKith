@@ -18,6 +18,9 @@ export default function CustomDateTimePicker({ onChange }) {
   const [remind, setRemind] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDate, setCustomDate] = useState(null);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [customTime, setCustomTime] = useState(null);
+
 
   // Time frame configurations with specific hours
   const timeFrames = {
@@ -108,6 +111,28 @@ export default function CustomDateTimePicker({ onChange }) {
     });
   }, [customDate, selectedTime, selectedDate, remind]);
 
+  useEffect(() => {
+    if (!customDate || !customTime) return;
+
+    const finalDateTime = new Date(
+      customDate.getFullYear(),
+      customDate.getMonth(),
+      customDate.getDate(),
+      customTime.getHours(),
+      customTime.getMinutes()
+    );
+
+    onChange({
+      date: customDate,
+      time: customTime,
+      notificationTime: finalDateTime,
+      reminder: remind,
+      selectedTimeFrame: null,
+      timeLabel: `${customTime.getHours() % 12 || 12}:${customTime.getMinutes().toString().padStart(2, '0')} ${customTime.getHours() >= 12 ? 'PM' : 'AM'}`,
+    });
+  }, [customDate, customTime, remind]);
+
+
   const handleDateSelection = (item) => {
     setSelectedDate(item);
     if (item === "On Date") {
@@ -125,18 +150,44 @@ export default function CustomDateTimePicker({ onChange }) {
     setSelectedTime(timeFrame);
   };
 
+  // const onDateChange = (event, date) => {
+  //   if (event.type === "set") {
+  //     setShowDatePicker(false);
+  //     setCustomDate(date);
+  //   } else {
+  //     setShowDatePicker(false);
+  //     // If user cancels date picker and was on "On Date", revert to Today
+  //     if (selectedDate === "On Date") {
+  //       setSelectedDate("Today");
+  //     }
+  //   }
+  // };
+
+
   const onDateChange = (event, date) => {
-    if (event.type === "set") {
+    if (event.type === "set" && date) {
       setShowDatePicker(false);
       setCustomDate(date);
+
+      // Show time picker after picking a date
+      setShowTimePicker(true);
+      setRemind(true); // enable reminder
     } else {
       setShowDatePicker(false);
-      // If user cancels date picker and was on "On Date", revert to Today
-      if (selectedDate === "On Date") {
-        setSelectedDate("Today");
-      }
+      if (selectedDate === "On Date") setSelectedDate("Today");
     }
   };
+
+  const onTimeChange = (event, time) => {
+    if (event.type === "set" && time) {
+      setShowTimePicker(false);
+      setCustomTime(time);
+    } else {
+      setShowTimePicker(false);
+    }
+  };
+
+
 
   const formattedDate = customDate
     ? customDate.toLocaleDateString()
@@ -328,6 +379,17 @@ export default function CustomDateTimePicker({ onChange }) {
           minimumDate={new Date()}
         />
       )}
+
+      {showTimePicker && (
+        <DateTimePicker
+          value={customTime || new Date()}
+          mode="time"
+          is24Hour={false}
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          onChange={onTimeChange}
+        />
+      )}
+
     </View>
   );
 }
@@ -484,389 +546,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
-// import React, { useEffect, useState } from "react";
-// import {
-//   View,
-//   Text,
-//   Image,
-//   TouchableOpacity,
-//   StyleSheet,
-//   Switch,
-//   Platform,
-// } from "react-native";
-// import DateTimePicker from "@react-native-community/datetimepicker";
-// import { FONT_SIZES } from "../../constants/sizes/responsiveFont";
-// import colors from "../../constants/colors/colors";
-
-// export default function CustomDateTimePicker({ onChange }) {
-//   const [selectedDate, setSelectedDate] = useState("Today");
-//   const [selectedTime, setSelectedTime] = useState("Anytime");
-//   const [remind, setRemind] = useState(false);
-//   const [showDatePicker, setShowDatePicker] = useState(false);
-//   const [customDate, setCustomDate] = useState(null);
-
-//   // Time frame configurations with specific hours
-//   const timeFrames = {
-//     "Anytime": { hour: 12, minute: 0, label: "12:00 PM" }, // 12 PM
-//     "Start the day": { hour: 8, minute: 0, label: "8:00 AM" }, // 8 AM
-//     "Afternoon": { hour: 14, minute: 0, label: "2:00 PM" }, // 2 PM
-//     "Bedtime": { hour: 21, minute: 0, label: "9:00 PM" }, // 9 PM
-//   };
-
-//   useEffect(() => {
-//     // Create a new date object for today
-//     let finalDate = new Date();
-
-//     // Reset time part to avoid timezone issues
-//     finalDate.setHours(0, 0, 0, 0);
-
-//     // Handle date selection
-//     if (selectedDate === "Tomorrow") {
-//       finalDate.setDate(finalDate.getDate() + 1);
-//     } else if (selectedDate === "On Date" && customDate) {
-//       finalDate = new Date(customDate);
-//       finalDate.setHours(0, 0, 0, 0); // Reset time part
-//     }
-
-//     // Handle time frame selection
-//     const timeConfig = timeFrames[selectedTime];
-//     const finalTime = new Date(finalDate);
-//     finalTime.setHours(timeConfig.hour, timeConfig.minute, 0, 0);
-
-//     const notificationTime = new Date(finalTime);
-
-//     // Ensure notification time is in the future
-//     const now = new Date();
-//     if (notificationTime <= now) {
-//       console.log('Notification time is in past, adjusting...');
-//       notificationTime.setDate(notificationTime.getDate() + 1);
-//     }
-
-//     // Debug logs to see what's happening
-//     console.log('Selected Date:', selectedDate);
-//     console.log('Final Date:', finalDate.toISOString());
-//     console.log('Notification Time:', notificationTime.toISOString());
-//     console.log('Selected Time Frame:', selectedTime);
-
-//     onChange({
-//       date: finalDate,
-//       time: finalTime,
-//       notificationTime: notificationTime,
-//       reminder: remind,
-//       selectedTimeFrame: selectedTime,
-//       timeLabel: timeFrames[selectedTime]?.label,
-//     });
-//   }, [customDate, selectedTime, selectedDate, remind]);
-
-//   const handleDateSelection = (item) => {
-//     setSelectedDate(item);
-//     if (item === "On Date") {
-//       setShowDatePicker(true);
-//     } else {
-//       setCustomDate(null);
-//     }
-//   };
-
-//   const handleTimeSelection = (timeFrame) => {
-//     setSelectedTime(timeFrame);
-//   };
-
-//   const onDateChange = (event, date) => {
-//     if (event.type === "set") {
-//       setShowDatePicker(false);
-//       setCustomDate(date);
-//     } else {
-//       setShowDatePicker(false);
-//       // If user cancels date picker and was on "On Date", revert to Today
-//       if (selectedDate === "On Date") {
-//         setSelectedDate("Today");
-//       }
-//     }
-//   };
-
-//   const formattedDate = customDate
-//     ? customDate.toLocaleDateString()
-//     : "Select date";
-
-//   return (
-//     <View style={styles.container}>
-//       <Text
-//         style={{
-//           textAlign: "center",
-//           fontSize: FONT_SIZES.lg,
-//           fontWeight: "900",
-//           marginBottom: 12,
-//         }}
-//       >
-//         Date and Time
-//       </Text>
-
-//       {/* Date Section */}
-//       <View style={styles.section}>
-//         <View style={styles.row}>
-//           <View style={styles.iconBg}>
-//             <Image
-//               source={require("../../../../assets/png/calendar.png")}
-//               style={styles.icon}
-//             />
-//           </View>
-//           <Text style={styles.sectionTitle}>Date</Text>
-//         </View>
-
-//         <View style={styles.rowOptions}>
-//           {["Today", "Tomorrow", "On Date"].map((item) => (
-//             <TouchableOpacity
-//               key={item}
-//               style={[
-//                 styles.optionButton,
-//                 selectedDate === item && styles.optionActive,
-//               ]}
-//               onPress={() => handleDateSelection(item)}
-//             >
-//               <Text
-//                 style={[
-//                   styles.optionText,
-//                   selectedDate === item && styles.optionTextActive,
-//                 ]}
-//               >
-//                 {item}
-//               </Text>
-//             </TouchableOpacity>
-//           ))}
-//         </View>
-
-//         {/* Show chosen custom date */}
-//         {selectedDate === "On Date" && customDate && (
-//           <View style={{ marginTop: 10 }}>
-//             <Text style={styles.selectedDateText}>
-//               📅 {formattedDate}
-//             </Text>
-//           </View>
-//         )}
-
-//         {/* Show current selection */}
-//         <View style={{ marginTop: 8 }}>
-//           <Text style={styles.debugText}>
-//             Selected: {selectedDate} • {selectedTime}
-//           </Text>
-//         </View>
-//       </View>
-
-//       {/* Time Section */}
-//       <View style={styles.section}>
-//         <View style={styles.row}>
-//           <View style={styles.iconBg}>
-//             <Image
-//               source={require("../../../../assets/png/clock.png")}
-//               style={styles.icon}
-//             />
-//           </View>
-//           <Text style={styles.sectionTitle}>Time</Text>
-//         </View>
-
-//         <View style={[styles.timeRow, { opacity: remind ? 1 : 0.5 }]}>
-//           {[
-//             { label: "Anytime", icon: require("../../../../assets/png/ask.png") },
-//             { label: "Start the day", icon: require("../../../../assets/png/sun.png") },
-//             { label: "Afternoon", icon: require("../../../../assets/png/cloud-sun.png") },
-//             { label: "Bedtime", icon: require("../../../../assets/png/moon.png") },
-//           ].map((time) => (
-//             <TouchableOpacity
-//               key={time.label}
-//               disabled={!remind}
-//               style={[
-//                 styles.timeColumn,
-//                 selectedTime === time.label && styles.timeActive
-//               ]}
-//               onPress={() => handleTimeSelection(time.label)}
-//             >
-//               <Image
-//                 source={time.icon}
-//                 style={[
-//                   styles.timeIcon,
-//                   selectedTime === time.label
-//                 ]}
-//               />
-//               <Text
-//                 style={[
-//                   styles.timeText,
-//                   selectedTime === time.label && styles.timeTextActive,
-//                 ]}
-//               >
-//                 {time.label}
-//               </Text>
-//             </TouchableOpacity>
-//           ))}
-//         </View>
-//       </View>
-
-//       {/* Reminder Section */}
-//       <View style={styles.section}>
-//         <View style={[styles.row, { justifyContent: "space-between" }]}>
-//           <View style={styles.row}>
-//             <View style={styles.iconBg}>
-//               <Image
-//                 source={require("../../../../assets/png/bell.png")}
-//                 style={styles.icon}
-//               />
-//             </View>
-//             <View>
-//               <Text style={styles.sectionTitle}>Remind Me</Text>
-//               {remind && (
-//                 <Text style={styles.remindTimeText}>
-//                   {timeFrames[selectedTime]?.label} • {selectedTime}
-//                 </Text>
-//               )}
-//             </View>
-//           </View>
-//           <Switch
-//             value={remind}
-//             onValueChange={setRemind}
-//             thumbColor={remind ? "#60A5FA" : "#f4f3f4"}
-//             trackColor={{ false: "#D1D5DB", true: "#93C5FD" }}
-//           />
-//         </View>
-
-//         {remind && (
-//           <Text style={styles.reminderNote}>
-//             🔔 You'll receive a notification at {timeFrames[selectedTime]?.label}
-//           </Text>
-//         )}
-//       </View>
-
-//       {/* Date Picker */}
-//       {showDatePicker && (
-//         <DateTimePicker
-//           value={customDate || new Date()}
-//           mode="date"
-//           display={Platform.OS === "ios" ? "inline" : "default"}
-//           onChange={onDateChange}
-//           minimumDate={new Date()}
-//         />
-//       )}
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     backgroundColor: "#fff",
-//     marginTop: 4,
-//   },
-//   section: {
-//     marginBottom: 18,
-//   },
-//   row: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     gap: 8,
-//     marginBottom: 10,
-//   },
-//   icon: {
-//     width: 22,
-//     height: 22,
-//     resizeMode: "contain",
-//   },
-//   sectionTitle: {
-//     fontSize: 16,
-//     fontWeight: "600",
-//     color: "#111827",
-//   },
-//   rowOptions: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//   },
-//   iconBg: {
-//     backgroundColor: colors.lightBg,
-//     width: 34,
-//     height: 34,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     borderRadius: 50,
-//   },
-//   optionButton: {
-//     flex: 1,
-//     borderWidth: 1,
-//     borderColor: "#E5E7EB",
-//     paddingVertical: 10,
-//     borderRadius: 10,
-//     marginHorizontal: 4,
-//     alignItems: "center",
-//     backgroundColor: colors.lightBackground,
-//   },
-//   optionActive: {
-//     backgroundColor: `${colors.buttonColor}20`,
-//     borderColor: `${colors.buttonColor}`,
-//   },
-//   optionText: {
-//     fontSize: 14,
-//     color: "#6B7280",
-//   },
-//   optionTextActive: {
-//     color: colors.buttonColor,
-//     fontWeight: "900",
-//   },
-//   selectedDateText: {
-//     fontSize: 14,
-//     color: "#374151",
-//     textAlign: "center",
-//   },
-//   timeRow: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     flexWrap: "wrap",
-//     gap: 12,
-//   },
-//   timeColumn: {
-//     alignItems: "center",
-//     borderWidth: 1,
-//     borderColor: "#E5E7EB",
-//     paddingVertical: 18,
-//     borderRadius: 10,
-//     backgroundColor: colors.lightBackground,
-//     width: "48%",
-//   },
-//   timeActive: {
-//     backgroundColor: `${colors.buttonColor}20`,
-//     borderColor: `${colors.buttonColor}`,
-//   },
-//   timeIcon: {
-//     width: 26,
-//     height: 26,
-//     marginBottom: 6,
-//   },
-//   timeIconActive: {
-//     tintColor: colors.buttonColor,
-//   },
-//   timeText: {
-//     fontSize: 13,
-//     color: "#6B7280",
-//     textAlign: "center",
-//   },
-//   timeTextActive: {
-//     color: colors.buttonColor,
-//     fontWeight: "600",
-//   },
-//   timeLabel: {
-//     fontSize: 11,
-//     color: "#9CA3AF",
-//     marginTop: 2,
-//   },
-//   remindTimeText: {
-//     fontSize: 14,
-//     color: colors.description,
-//   },
-//   reminderNote: {
-//     fontSize: 12,
-//     color: "#60A5FA",
-//     marginTop: 8,
-//     fontStyle: "italic",
-//   },
-//   debugText: {
-//     fontSize: 12,
-//     color: "#6B7280",
-//     textAlign: "center",
-//     fontStyle: "italic",
-//   },
-// });

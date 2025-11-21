@@ -15,7 +15,7 @@ export default function CompleteTask({ onDone, onUndo, selectedTask }) {
 
       {/* Optional skipped or done label */}
       <Text style={[styles.taskSubtitle, { marginVertical: 6 }]}>
-        {selectedTask.done ? "Task Completed" : "You skipped"}
+        {selectedTask.done ? "Task Completed" : "Not yet completed!"}
       </Text>
 
       {/* Task Title & Description */}

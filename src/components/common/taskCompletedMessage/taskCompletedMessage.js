@@ -1,16 +1,16 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { View, Text } from 'react-native'
 import React from 'react'
 import Button from "../button/button";
 
-export default function TaskCompletedMessage({ undoTask }) {
+export default function TaskCompletedMessage({ undoTask, onPress }) {
   return (
-    <View style={styles.completedContainer}>
+    <TouchableOpacity style={styles.completedContainer} onPress={onPress} activeOpacity={1}>
       <Text style={styles.completedEmoji}>🎉</Text>
       <Text style={styles.completedTitle}>You completed your daily task!</Text>
       <Text style={styles.completedSubtitle}>Great job staying consistent! 🌟</Text>
       <Button title="Undo Task" onPress={undoTask} style={{ width: '100%', marginTop: 20 }} />
-    </View>
+    </TouchableOpacity>
   )
 }
 const styles = StyleSheet.create({

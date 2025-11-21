@@ -7,7 +7,8 @@ import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
 const days = ['Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr'];
 
 export default function DailyStreak({ navigation, route }) {
-  const { item } = route?.params
+  const { item, profileData } = route?.params
+  console.log("item", item)
   const [today, setToday] = useState(null);
   const [completedDays, setCompletedDays] = useState([]);
 
@@ -40,7 +41,7 @@ export default function DailyStreak({ navigation, route }) {
           style={styles.flame}
         />
       </View>
-      <Text style={styles.number}>1</Text>
+      <Text style={styles.number}>{profileData?.max_streak?.value || 0}</Text>
       <Text style={styles.dayStreak}>Day Streak</Text>
       <View style={styles.daysContainer}>
         {days.map((day, index) => {
@@ -75,7 +76,7 @@ export default function DailyStreak({ navigation, route }) {
       </Text>
 
       <Button title={'LET’S GO!'}
-        onPress={() => navigation.navigate("TaskCompleted", { item })}
+        onPress={() => navigation.navigate("HomePage")}
         style={{ width: '100%' }} />
     </View>
   );

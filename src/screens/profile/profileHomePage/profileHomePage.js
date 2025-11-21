@@ -9,6 +9,7 @@ import BadgeSection from "../../../components/badgeSection/badgeSection";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile } from "../../../redux/slices/profileSlice/profileSlice";
 import ProfileSkeleton from "../../../components/skeletons/profileSkeleton/profileSkeleton";
+
 const badgeMilestones = [
   { points: 50, badge: "hydration hero" },
   { points: 150, badge: "zen master" },

@@ -46,6 +46,13 @@ export const getEmojiForTask = (title, description) => {
 
 
 
+const badgeMilestones = [{ points: 50, badge: "hydration hero" }, { points: 150, badge: "zen master" }, { points: 250, badge: "sleep star" }, { points: 350, badge: "energy booster" }, { points: 450, badge: "streak saver" }, { points: 550, badge: "challenge champion" }];
+export const getAchievementsCount = (points) => {
+  return badgeMilestones.filter(m => points >= m.points).length;
+};
+
+
+
 
 
 export const taskSuggestion = [

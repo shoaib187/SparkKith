@@ -71,6 +71,8 @@ export default function AddTask({ navigation }) {
     setTaskDateTime(data);
   };
 
+
+
   // Function to schedule notification at the selected time
   const scheduleNotification = async (taskData) => {
     try {
@@ -295,7 +297,9 @@ export default function AddTask({ navigation }) {
       </ScrollView>
 
       <BottomSheet visible={visible} onClose={() => setVisible(!visible)}>
+        {/* <DateTimePicker onChange={handleDateTimeChange} /> */}
         <DateTimePicker onChange={handleDateTimeChange} />
+
       </BottomSheet>
 
       <View style={styles.bottomButton}>

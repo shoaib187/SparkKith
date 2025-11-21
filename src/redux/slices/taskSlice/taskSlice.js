@@ -137,6 +137,22 @@ export const getTriggeredTasks = createAsyncThunk(
   }
 );
 // get triggered tasks
+export const triggerTasks = createAsyncThunk(
+  "tasks/triggerTasks",
+  async (token, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/user/tasks/trigger-tasks`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Error fetching triggerTasks ");
+    }
+  }
+);
+// get triggered tasks
 export const getTaskAnalytics = createAsyncThunk(
   "tasks/getTaskAnalytics",
   async ({ token, period }, { rejectWithValue }) => {
@@ -299,6 +315,18 @@ const tasksSlice = createSlice({
         state.taskAnalytics = action.payload;
       })
       .addCase(getTaskAnalytics.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // get triggerTasks
+      .addCase(triggerTasks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(triggerTasks.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(triggerTasks.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

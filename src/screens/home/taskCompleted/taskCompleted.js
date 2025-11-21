@@ -7,7 +7,7 @@ const { width } = Dimensions.get('window');
 
 export default function TaskCompleted({ route, navigation }) {
   const { selectedTask } = route?.params;
-  // console.log("selectedTask from TaskCompleted", selectedTask);
+  console.log("selectedTask from TaskCompleted", selectedTask);
 
   return (
     <View style={styles.container}>

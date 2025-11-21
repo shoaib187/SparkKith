@@ -24,21 +24,24 @@ import BottomSheet from "../../../components/common/bottomSheet/bottomSheet";
 import CompleteTask from "../../../components/common/completeTask/completeTask";
 import TaskCompletedMessage from "../../../components/common/taskCompletedMessage/taskCompletedMessage";
 import NoTaskAssigned from "../../../components/common/noTaskAssigned/noTaskAssigned";
-import { getTodayTasks, getTriggeredTasks, markAsDoneTask, undoTask } from "../../../redux/slices/taskSlice/taskSlice";
+import { getTodayTasks, getTriggeredTasks, markAsDoneTask, triggerTasks, undoTask } from "../../../redux/slices/taskSlice/taskSlice";
 
 import colors from "../../../components/constants/colors/colors";
 import { FONT_SIZES } from "../../../components/constants/sizes/responsiveFont";
 import HomeSkeleton from "../../../components/skeletons/homeSkeleton/homeSkeleton";
 import { fetchUserProfile } from "../../../redux/slices/profileSlice/profileSlice";
+import { getAchievementsCount } from "../../../utils/services/services";
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
 
-  const { tasks, triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
+  const { triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
   const { token } = useSelector((state) => state.auth);
   const { profileData } = useSelector((state) => state.profile);
-  // console.log("triggeredTasks", triggeredTasks)
+  console.log("profileData", profileData)
+  console.log("triggeredTasks", triggeredTasks)
+  // console.log("tasks", tasks)
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -47,14 +50,17 @@ export default function Home({ navigation }) {
 
   const fallbackImage = require("../../../../assets/png/twinkle.png");
 
+  const achievements = getAchievementsCount(profileData?.totalPoints || 0);
+
   /** -------------------------------
    * FETCH DATA WHEN SCREEN FOCUSES
    --------------------------------*/
   useEffect(() => {
-    if (token && isFocused) {
+    if (token) {
       dispatch(getTodayTasks(token));
       dispatch(fetchUserProfile(token));
-      dispatch(getTriggeredTasks(token))
+      dispatch(getTriggeredTasks(token));
+      // dispatch(triggerTasks(token))
     }
   }, [dispatch, token, isFocused]);
 
@@ -87,7 +93,7 @@ export default function Home({ navigation }) {
       await dispatch(markAsDoneTask({ taskId: selectedTask._id, done: true, token }));
       ToastAndroid.show("Task marked as done!", ToastAndroid.SHORT);
 
-      await dispatch(getTodayTasks(token));
+      await dispatch(getTriggeredTasks(token));
       setVisible(false);
 
       navigation.navigate("TaskCompleted", { selectedTask });
@@ -106,7 +112,7 @@ export default function Home({ navigation }) {
       await dispatch(undoTask({ taskId: selectedTask._id, token }));
       ToastAndroid.show("Task reverted!", ToastAndroid.SHORT);
 
-      await dispatch(getTodayTasks(token));
+      await dispatch(getTriggeredTasks(token));
       setVisible(false);
     } catch {
       ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
@@ -137,6 +143,7 @@ export default function Home({ navigation }) {
    --------------------------------*/
   const today = new Date().toISOString().split("T")[0];
   const todaysTask = triggeredTasks?.find((t) => t.time?.split("T")[0] === today);
+
 
   const streakValue = Number(profileData?.streak?.value || 0);
   if (loadingTasks) {
@@ -172,7 +179,7 @@ export default function Home({ navigation }) {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         contentContainerStyle={styles.container}
       >
-        <StatsSection stats={profileData} />
+        <StatsSection stats={profileData} achievements={achievements} />
         <StreakProgress progress={streakValue} title="Streak Saver Badge" />
 
         {/* Today's Task Header */}
@@ -188,6 +195,9 @@ export default function Home({ navigation }) {
         {todaysTask ? (
           todaysTask.done ? (
             <TaskCompletedMessage
+              onPress={() => {
+                navigation.navigate("DailyStreak", { item: selectedTask, profileData })
+              }}
               undoTask={() => {
                 setSelectedTask(todaysTask);
                 setVisible(true);
@@ -197,7 +207,7 @@ export default function Home({ navigation }) {
             <TaskCard
               task={todaysTask}
               navigation={navigation}
-              onPress={() => navigation.navigate("DailyStreak", { item: todaysTask })}
+              onPress={() => navigation.navigate("DailyStreak", { item: selectedTask, profileData })}
               onSkip={() => {
                 setSelectedTask(todaysTask);
                 setVisible(true);
