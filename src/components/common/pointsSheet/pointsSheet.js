@@ -48,14 +48,14 @@ export default function PointsSheet({ selected }) {
         </View>
 
         {/* Row 2 - Full Width Card */}
-        <View style={[styles.card, styles.fullWidthCard]}>
+        {/* <View style={[styles.card, styles.fullWidthCard]}>
           <Image
             source={require('../../../../assets/png/rank.png')}
             style={styles.cardIcon}
           />
           <Text style={styles.cardTitle}>All-Time Points</Text>
           <Text style={styles.cardValue}>45,230</Text>
-        </View>
+        </View> */}
       </View>
     </View>
   );

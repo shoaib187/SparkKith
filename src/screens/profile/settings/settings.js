@@ -62,8 +62,8 @@ export default function Settings({ navigation }) {
       <View style={styles.sectionWrapper}>
         <Text style={styles.sectionTitle}>Support</Text>
         <View style={styles.innerSection}>
-          <TextButton title={"Help Center"} />
-          <TextButton title={"About Sparkith"} />
+          <TextButton title={"Help Center"} onPress={() => navigation.navigate("Help")} />
+          <TextButton onPress={() => navigation.navigate("About")} title={"About Sparkith"} />
         </View>
       </View>
 

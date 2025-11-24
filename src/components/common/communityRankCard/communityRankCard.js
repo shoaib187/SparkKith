@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
 import colors from '../../constants/colors/colors';
 
-export default function RankCard({ item, onPress, your }) {
+export default function CommunityRankCard({ item, onPress, your }) {
 
   return (
     <TouchableOpacity
@@ -13,34 +13,15 @@ export default function RankCard({ item, onPress, your }) {
     >
       <View>
         <View style={styles.rankLeft}>
-          {/* <Text style={styles.emoji}>{item?.emoji || ""}</Text> */}
-          <Image source={{ uri: item?.profilePicture || item?.imageUrl }} style={{ width: 24, height: 24, marginRight: 4, resizeMode: 'contain' }} />
+          <Image source={{ uri: item?.imageUrl }} style={{ width: 24, height: 24, marginRight: 4, resizeMode: 'contain' }} />
           <Text style={styles.rankName}>{item?.name || ""}</Text>
-
-
-          {item?.email === your && (
-            <View style={styles.youTag}>
-              <Text style={styles.youText}>You</Text>
-            </View>
-          )}
 
           {(item?.isUserSpark) && (
             <View style={styles.youTag}>
               <Text style={styles.youText}>You</Text>
             </View>
           )}
-
         </View>
-
-        {item?.streak && (
-          <View style={styles.streakContainer}>
-            <Image
-              source={require("../../../../assets/icons/fire.png")}
-              style={styles.icon}
-            />
-            <Text style={styles.streak}>{item?.streak || ""}{item?.streak > 1 ? " days streak" : " day streak"}</Text>
-          </View>
-        )}
       </View>
 
       <View style={styles.rankRight}>
@@ -69,9 +50,6 @@ const styles = StyleSheet.create({
   rankRight: {
     alignItems: 'flex-end',
   },
-  emoji: {
-    fontSize: 20,
-  },
   rankName: {
     fontSize: 15,
     fontWeight: '600',
@@ -97,20 +75,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '600',
     color: '#EF4444',
-  },
-  streakContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  streak: {
-    color: colors.description,
-    fontSize: 12,
-    marginLeft: 4,
-  },
-  icon: {
-    width: 16,
-    height: 16,
-    resizeMode: 'contain',
   },
 });

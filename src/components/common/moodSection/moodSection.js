@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 
 import { FONT_SIZES } from '../../constants/sizes/responsiveFont';
 import colors from '../../constants/colors/colors';
+import Button from '../button/button';
 
-export default function MoodSection({ navigation }) {
-  const [selectedMood, setSelectedMood] = useState(null);
+export default function MoodSection({ navigation, selectedMood, setSelectedMood }) {
 
   const moods = [
     { id: 1, label: 'Okay', image: require('../../../../assets/icons/okay.png') },
@@ -18,32 +18,40 @@ export default function MoodSection({ navigation }) {
   return (
     <View style={styles.moodSection}>
       <Text style={styles.sectionTitle}>How are you feeling right now?</Text>
-      <View style={styles.moodRow}>
-        {moods.map((mood) => (
-          <TouchableOpacity
-            key={mood.id}
-            style={[
-              styles.moodItem,
-              selectedMood === mood.id && styles.selectedMood,
-            ]}
-            onPress={() => {
-              setSelectedMood(mood.id)
-              navigation.navigate("ReflectMood")
-            }
-            }
-            activeOpacity={0.8}
-          >
-            <Image source={mood.image} style={styles.moodImage} />
-            <Text
+      <View style={styles.moodContent}>
+        <View style={styles.moodRow}>
+          {moods.map((mood) => (
+            <TouchableOpacity
+              key={mood.id}
               style={[
-                styles.moodLabel,
-                selectedMood === mood.id && styles.selectedText,
+                styles.moodItem,
+                selectedMood === mood.id && styles.selectedMood,
               ]}
+              onPress={() => {
+                setSelectedMood(mood.id);
+                // navigation.navigate("ReflectMood")
+              }
+              }
+              activeOpacity={0.8}
             >
-              {mood.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Image source={mood.image} style={styles.moodImage} />
+              <Text
+                style={[
+                  styles.moodLabel,
+                  selectedMood === mood.id && styles.selectedText,
+                ]}
+              >
+                {mood.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        {selectedMood &&
+          <View style={styles.actionWrapper}>
+            <Button style={{ width: '48%' }} title='Reflect' onPress={() => navigation.navigate("ReflectMood")} />
+            <Button style={{ width: '48%', backgroundColor: colors.lightBg, borderWidth: 1, borderColor: '#eee' }} title='Cancel' onPress={() => setSelectedMood(null)} textColor='black' />
+          </View>
+        }
       </View>
     </View>
   );
@@ -53,6 +61,12 @@ const styles = StyleSheet.create({
   moodSection: {
     marginTop: 24,
   },
+  moodContent: {
+    backgroundColor: colors.white,
+    borderRadius: 14,
+    marginTop: 16,
+    padding: 12
+  },
   sectionTitle: {
     fontSize: FONT_SIZES.md,
     fontWeight: '900',
@@ -60,10 +74,6 @@ const styles = StyleSheet.create({
   moodRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
-    backgroundColor: colors.white,
-    borderRadius: 14,
-    padding: 12
   },
   moodItem: {
     backgroundColor: '#fff',
@@ -94,4 +104,10 @@ const styles = StyleSheet.create({
     color: '#F59E0B',
     fontWeight: '700',
   },
+  actionWrapper: {
+    flexDirection: 'row',
+    width: '100%',
+    marginTop: 12,
+    justifyContent: 'space-between',
+  }
 });

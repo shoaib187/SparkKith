@@ -7,8 +7,8 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function ContinueWith({ navigation, route }) {
   const { activeItem, chosen } = route.params;
-  console.log("onboarding avatar:", activeItem);
-  console.log("commnunity", chosen);
+  // console.log("onboarding avatar:", activeItem);
+  // console.log("commnunity", chosen);
 
   useEffect(() => {
     GoogleSignin.configure({

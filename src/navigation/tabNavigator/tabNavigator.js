@@ -15,7 +15,7 @@ export default function TabNavigator() {
     const routeName = getFocusedRouteNameFromRoute(route) ?? '';
 
     // Add all screens where you want to HIDE the tab bar
-    if (['AddTask', 'DailyStreak', 'History', "Settings", "Notifications", "EditProfile", "TaskCompleted", "ReflectMood", "PrivacySettings"].includes(routeName)) {
+    if (['AddTask', 'DailyStreak', 'History', "Settings", "Notifications", "EditProfile", "TaskCompleted", "ReflectMood", "PrivacySettings", "About"].includes(routeName)) {
       return { display: 'none' };
     }
 

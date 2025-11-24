@@ -25,7 +25,7 @@ import { taskSuggestion } from "../../../utils/services/services";
 export default function AddTask({ navigation }) {
   const dispatch = useDispatch();
   const { token } = useSelector(state => state.auth)
-  const { tasks, loading } = useSelector(state => state?.tasks)
+  const { loading } = useSelector(state => state?.tasks)
 
   const [visible, setVisible] = useState(false)
   const [title, setTitle] = useState("");
@@ -219,6 +219,7 @@ export default function AddTask({ navigation }) {
 
 
 
+
   return (
     <View style={styles.container}>
       <Header title={"Add Task"} navigation={navigation} />
@@ -240,7 +241,7 @@ export default function AddTask({ navigation }) {
               // onChangeText={setTitle}
               onChangeText={(text) => {
                 setTitle(text);
-                setSearchText(text); // Use title input to filter suggestions
+                setSearchText(text);
               }}
             />
           </View>
@@ -258,7 +259,7 @@ export default function AddTask({ navigation }) {
                 {getTimeDisplayText()}
               </Text>
               {taskDateTime.reminder && (
-                <Text style={styles.reminderIndicator}>🔔 Reminder Enabled</Text>
+                <Text style={styles.reminderIndicator}>Reminder Enabled</Text>
               )}
             </View>
           </TouchableOpacity>
@@ -282,7 +283,7 @@ export default function AddTask({ navigation }) {
         <Text style={styles.suggestionHeading}>Suggestions</Text>
         <FlatList
           data={filteredSuggestions}
-          keyExtractor={(item) => item.description}
+          keyExtractor={(item) => item?.description}
           contentContainerStyle={{ paddingHorizontal: 14 }}
           renderItem={({ item }) => (
             <SuggestionCard
@@ -290,16 +291,21 @@ export default function AddTask({ navigation }) {
                 setTitle(item.title);
                 setDescription(item.description);
               }}
-              item={item} />
+              item={item}
+              key={item?.description}
+            />
           )}
           scrollEnabled={false}
+          ListEmptyComponent={() => (
+            <Text style={{ textAlign: "center", color: "#6B7280", marginTop: 20 }}>
+              No suggestions found.
+            </Text>
+          )}
         />
       </ScrollView>
 
       <BottomSheet visible={visible} onClose={() => setVisible(!visible)}>
-        {/* <DateTimePicker onChange={handleDateTimeChange} /> */}
         <DateTimePicker onChange={handleDateTimeChange} />
-
       </BottomSheet>
 
       <View style={styles.bottomButton}>

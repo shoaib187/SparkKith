@@ -5,7 +5,7 @@ import Button from '../button/button';
 
 export default function CompleteTask({ onDone, onUndo, selectedTask }) {
   if (!selectedTask) return null;
-  console.log("isDone", selectedTask)
+  // console.log("isDone", selectedTask)
   return (
     <View style={styles.taskCard}>
       {/* Emoji Section */}
@@ -48,8 +48,6 @@ export default function CompleteTask({ onDone, onUndo, selectedTask }) {
         onPress={onDone}
         disabled={selectedTask.done}
       />
-
-
     </View>
   );
 }

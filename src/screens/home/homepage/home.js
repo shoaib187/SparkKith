@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -39,12 +39,13 @@ export default function Home({ navigation }) {
   const { triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
   const { token } = useSelector((state) => state.auth);
   const { profileData } = useSelector((state) => state.profile);
-  console.log("profileData", profileData)
+  // console.log("profileData", profileData)
   console.log("triggeredTasks", triggeredTasks)
   // console.log("tasks", tasks)
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [selectedMood, setSelectedMood] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -60,7 +61,7 @@ export default function Home({ navigation }) {
       dispatch(getTodayTasks(token));
       dispatch(fetchUserProfile(token));
       dispatch(getTriggeredTasks(token));
-      // dispatch(triggerTasks(token))
+      dispatch(triggerTasks(token))
     }
   }, [dispatch, token, isFocused]);
 
@@ -224,7 +225,7 @@ export default function Home({ navigation }) {
         )}
 
         <QuotesSection />
-        <MoodSection navigation={navigation} />
+        <MoodSection navigation={navigation} selectedMood={selectedMood} setSelectedMood={setSelectedMood} />
       </ScrollView>
 
       {/* Bottom Sheet */}

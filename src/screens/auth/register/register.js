@@ -21,7 +21,7 @@ export default function Register({ navigation, route }) {
   const { activeItem, userInfo, chosen } = route.params;
   const dispatch = useDispatch()
   // console.log("register activeItem", activeItem)
-  // const user = userInfo?.data?.user
+  const user = userInfo?.data?.user
   // console.log("user", user)
 
   const [name, setName] = useState('');

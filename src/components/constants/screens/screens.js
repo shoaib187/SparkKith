@@ -1,9 +1,11 @@
+import About from "../../../screens/about/about";
 import Community from "../../../screens/auth/community/community";
 import ContinueWith from "../../../screens/auth/continueWith/continueWith";
 import Login from "../../../screens/auth/login/login";
 import Register from "../../../screens/auth/register/register";
 import WelcomPage from "../../../screens/auth/welcom/welcomPage";
 import CommunityHomePage from "../../../screens/community/communityHomePage/communityHomePage";
+import HelpCenter from "../../../screens/helpCenter/helpCenter";
 import AddTask from "../../../screens/home/addTask/addTask";
 import DailyStreak from "../../../screens/home/dailyStreak/dailyStreak";
 import Home from "../../../screens/home/homepage/home";
@@ -44,4 +46,6 @@ export const screens = {
   Settings,
   EditProfile,
   Notifications,
+  About,
+  HelpCenter
 }

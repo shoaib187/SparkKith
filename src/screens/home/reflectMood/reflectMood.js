@@ -24,7 +24,6 @@ const moods = [
   { id: "angry", label: "Angry", icon: require("../../../../assets/icons/angry.png") },
 ];
 
-
 const reasons = [
   { id: "me", label: "Me", icon: require("../../../../assets/reasons/me.png") },
   { id: "partner", label: "Partner", icon: require("../../../../assets/reasons/partner.png") },
@@ -41,6 +40,7 @@ export default function ReflectMood({ navigation }) {
   const [selectedMood, setSelectedMood] = useState(null);
   const [selectedReasons, setSelectedReasons] = useState([]);
   const [note, setNote] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const toggleReason = (id) => {
     setSelectedReasons((prev) =>
@@ -53,19 +53,26 @@ export default function ReflectMood({ navigation }) {
       ToastAndroid.show("Please select your mood first", ToastAndroid.SHORT);
       return;
     }
+    try {
+      setLoading(true)
+      const payload = {
+        feeling: selectedMood,
+        note: note?.trim() || "",
+        reason: selectedReasons,
+      };
+      // console.log("fianle ", payload);
+      const res = await dispatch(createFeeling({ payload, token }));
+      if (res?.payload?.status === "success") {
+        ToastAndroid.show("Mood saved successfully ❤️", ToastAndroid.SHORT);
+        navigation.goBack();
+      } else {
+        ToastAndroid.show("Mood saved successfully ❤️", ToastAndroid.SHORT);
+      }
 
-    const payload = {
-      feeling: selectedMood,
-      note: note?.trim() || "",
-      reason: selectedReasons,
-    };
-    // console.log("fianle ", payload);
-    const res = await dispatch(createFeeling({ payload, token }));
-    if (res?.payload?.status === "success") {
-      ToastAndroid.show("Mood saved successfully ❤️", ToastAndroid.SHORT);
-      navigation.goBack();
-    } else {
-      ToastAndroid.show("Mood saved successfully ❤️", ToastAndroid.SHORT);
+    } catch (error) {
+      ToastAndroid.show("Failed to add moode", ToastAndroid.LONG)
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -123,7 +130,7 @@ export default function ReflectMood({ navigation }) {
         />
 
         {/* Done Button */}
-        <Button title="Done" style={styles.doneButton} onPress={handleSubmit} />
+        <Button title={loading ? "Sending..." : "Done"} style={styles.doneButton} onPress={handleSubmit} />
       </ScrollView>
     </View>
   );

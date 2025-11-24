@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchTopPerformers } from "../../../redux/slices/communitySlice/communitySlice";
 import { getWeeklyCommunityRankings } from "../../../redux/slices/taskSlice/taskSlice";
 import CommunitySkeleton from "../../../components/skeletons/communitySkeleton/communitySkeleton";
+import CommunityRankCard from "../../../components/common/communityRankCard/communityRankCard";
 
 export default function CommunityHomePage() {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -21,7 +22,7 @@ export default function CommunityHomePage() {
   const { token, user } = useSelector(state => state.auth);
   const { profileData } = useSelector((state) => state.profile);
   // console.log("profileData", profileData)
-  // console.log("performers", performers)
+  console.log("communityRanking", performers)
 
   const yourEmail = user?.email;
 
@@ -81,7 +82,7 @@ export default function CommunityHomePage() {
               <FlatList
                 data={communityRanking}
                 keyExtractor={(item) => item?._id}
-                renderItem={({ item }) => <RankCard item={item} onPress={() => {
+                renderItem={({ item }) => <CommunityRankCard item={item} onPress={() => {
                   setSelected(item)
                   setVisible(true)
                 }} />}

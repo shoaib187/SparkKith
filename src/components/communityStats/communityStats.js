@@ -61,7 +61,8 @@ const styles = StyleSheet.create({
   },
   emojiImage: {
     width: 30,
-    height: 30
+    height: 30,
+    borderRadius: 50
   },
   statsRow: {
     flexDirection: "row",

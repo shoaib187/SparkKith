@@ -244,27 +244,6 @@ export default function CustomDateTimePicker({ onChange }) {
             </TouchableOpacity>
           ))}
         </View>
-
-        {/* Show chosen custom date */}
-        {selectedDate === "On Date" && customDate && (
-          <View style={{ marginTop: 10 }}>
-            <Text style={styles.selectedDateText}>
-              📅 {formattedDate}
-            </Text>
-          </View>
-        )}
-
-        {/* Show current selection and time info */}
-        <View style={{ marginTop: 8 }}>
-          <Text style={styles.debugText}>
-            Selected: {selectedDate} • {selectedTime}
-          </Text>
-          {selectedDate === "Today" && (
-            <Text style={styles.currentTimeText}>
-              Current Time: {getCurrentTime()}
-            </Text>
-          )}
-        </View>
       </View>
 
       {/* Time Section */}
@@ -329,7 +308,7 @@ export default function CustomDateTimePicker({ onChange }) {
         {selectedDate === "Today" && remind && (
           <View style={styles.warningContainer}>
             <Text style={styles.warningText}>
-              ⚠️ Times in the past are disabled. Select a future time for today.
+              Times in the past are disabled. Select a future time for today.
             </Text>
           </View>
         )}
@@ -364,7 +343,7 @@ export default function CustomDateTimePicker({ onChange }) {
 
         {remind && (
           <Text style={styles.reminderNote}>
-            🔔 You'll receive a notification at {timeFrames[selectedTime]?.label}
+            You'll receive a notification at {timeFrames[selectedTime]?.label}
           </Text>
         )}
       </View>
@@ -536,13 +515,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#FEF3F2",
     padding: 8,
     borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     marginTop: 8,
     borderWidth: 1,
-    borderColor: "#FECACA",
+    borderColor: "#FECACA60",
   },
   warningText: {
     fontSize: 12,
     color: "#DC2626",
-    textAlign: "center",
   },
 });

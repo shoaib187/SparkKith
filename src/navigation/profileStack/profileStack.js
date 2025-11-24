@@ -17,6 +17,8 @@ const ProfileStack = () => {
       <Stack.Screen name="Settings" component={screens.Settings} />
       <Stack.Screen name="EditProfile" component={screens.EditProfile} />
       <Stack.Screen name="Notifications" component={screens.Notifications} />
+      <Stack.Screen name="About" component={screens.About} />
+      <Stack.Screen name="Help" component={screens.HelpCenter} />
     </Stack.Navigator>
   );
 }
