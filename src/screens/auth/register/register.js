@@ -20,7 +20,7 @@ import { registerUser } from '../../../redux/slices/authSlice/authSlice';
 export default function Register({ navigation, route }) {
   const { activeItem, userInfo, chosen } = route.params;
   const dispatch = useDispatch()
-  // console.log("register activeItem", activeItem)
+  console.log("register activeItem", chosen)
   const user = userInfo?.data?.user
   // console.log("user", user)
 
@@ -102,7 +102,7 @@ export default function Register({ navigation, route }) {
       console.log('Error preparing image:', error);
     }
 
-    // console.log("formData", formData)
+    console.log("formData", formData)
     // return
 
     try {
