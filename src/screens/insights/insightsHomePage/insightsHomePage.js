@@ -24,7 +24,7 @@ export default function InsightsHomePage({ navigation }) {
   const { feelingsByDate, analytics } = useSelector(state => state.feelings)
   const { taskAnalytics, loading } = useSelector(state => state.tasks)
 
-  console.log("analytics", taskAnalytics)
+  // console.log("analytics", taskAnalytics)
 
   // Get current date
   const currentDay = new Date();

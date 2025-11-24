@@ -39,7 +39,7 @@ export default function Home({ navigation }) {
   const { triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
   const { token } = useSelector((state) => state.auth);
   const { profileData } = useSelector((state) => state.profile);
-  // console.log("profileData", profileData)
+  console.log("profileData", profileData)
   console.log("triggeredTasks", triggeredTasks)
   // console.log("tasks", tasks)
 
