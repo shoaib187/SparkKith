@@ -17,18 +17,18 @@ export default function HelpCenter({ navigation }) {
   const faqItems = [
     {
       id: '1',
-      question: 'How do I create a new project?',
-      answer: 'Go to the Projects tab and tap the "+" button...'
+      question: 'How do I create a new task?',
+      answer: 'Go to the homepage and tap the "+" button...'
     },
     {
       id: '2',
-      question: 'Can I collaborate with team members?',
-      answer: 'Yes, you can invite team members via email...'
+      question: 'Can I invite my friends on this app?',
+      answer: 'Yes, you can invite team friends via email...'
     },
     {
       id: '3',
       question: 'How do I reset my password?',
-      answer: 'Go to Settings > Account > Change Password...'
+      answer: 'Go to Settings > Edit profile > and simply change your Password...'
     },
     {
       id: '4',
@@ -37,8 +37,8 @@ export default function HelpCenter({ navigation }) {
     },
     {
       id: '5',
-      question: 'How do I export my work?',
-      answer: 'Open your project, go to Share > Export...'
+      question: 'How do I check my weekly daily mood?',
+      answer: 'Go to insights page on top right side click on calendar icon you will be redirected to histoy page where you can check your mood by date vise.'
     }
   ];
 
@@ -50,11 +50,6 @@ export default function HelpCenter({ navigation }) {
         Linking.openURL(
           'mailto:support@sparkith.com?subject=Sparkith Support&body=Hello, I need help with...'
         )
-    },
-    {
-      type: 'Live Chat',
-      details: 'Available 9AM-6PM EST',
-      action: () => Linking.openURL('https://sparkith.com/live-chat')
     },
     {
       type: 'Community Forum',

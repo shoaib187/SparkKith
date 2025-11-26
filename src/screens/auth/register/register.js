@@ -30,6 +30,7 @@ export default function Register({ navigation, route }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (userInfo?.type === 'success' && userInfo?.data?.user) {
@@ -45,29 +46,6 @@ export default function Register({ navigation, route }) {
       setEmail(''); // reset email if not from Google
     }
   }, [activeItem, userInfo, chosen]);
-
-  // Function to get image URI from local asset number
-  const getImageUriFromAsset = (imageAsset) => {
-    // For local assets, React Native uses numbers that reference bundled assets
-    if (typeof imageAsset === 'number') {
-      // Get image source from the asset
-      const imageSource = Image.resolveAssetSource(imageAsset);
-      return imageSource.uri;
-    }
-    return null;
-  };
-
-  // Function to get image as string (URI/path)
-  const getImageAsString = (imageAsset) => {
-    if (typeof imageAsset === 'number') {
-      // Local asset - get the URI
-      return getImageUriFromAsset(imageAsset);
-    } else if (typeof imageAsset === 'string') {
-      // Already a string (URL)
-      return imageAsset;
-    }
-    return null;
-  };
 
   // Handle registration
   const handleRegister = async () => {
@@ -85,21 +63,16 @@ export default function Register({ navigation, route }) {
 
     // Handle image as string
     try {
-      if (activeItem?.image) {
-        const imageUri = getImageAsString(activeItem.image);
-        if (imageUri) {
-          formData.append('profilePicture', {
-            uri: imageUri,
-            type: 'image/jpeg', // or 'image/png' depending on your image
-            name: 'profile.jpg',
-          });
-        }
-      } else if (activeItem?.imageUrl) {
-        // If imageUrl exists, use that instead
-        formData.append('profilePicture', activeItem.imageUrl);
+      if (activeItem.image) {
+        formData.append('profilePicture', {
+          uri: activeItem.image,
+          type: 'image/jpeg', // or 'image/png' depending on your image
+          name: 'profile.jpg',
+        });
       }
     } catch (error) {
       console.log('Error preparing image:', error);
+      setError(error)
     }
 
     console.log("formData", formData)
@@ -117,10 +90,10 @@ export default function Register({ navigation, route }) {
       if (res.payload.message === "Email already exists") {
         ToastAndroid.show("Email already in use!", ToastAndroid.LONG)
       }
-
     } catch (err) {
       setLoading(false);
       console.log('Error:', err.response?.data);
+      setError(err)
       Alert.alert('Error', err.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false)
@@ -164,6 +137,7 @@ export default function Register({ navigation, route }) {
           textColor="black"
           onPress={handleRegister}
         />
+        <Text>{error}</Text>
         <View style={{ justifyContent: 'center', alignItems: 'center', paddingVertical: 20 }}>
           <View style={styles.signUpWrapper}>
             <Text>Already have an Account? </Text>

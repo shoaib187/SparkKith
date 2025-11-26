@@ -131,6 +131,7 @@ export default function Home({ navigation }) {
       if (token) {
         await dispatch(getTriggeredTasks(token));
         await dispatch(fetchUserProfile(token));
+        await dispatch(triggerTasks(token))
       }
     } catch (err) {
       console.log("Refresh error:", err);
