@@ -3,7 +3,7 @@ import React from 'react';
 import colors from '../../constants/colors/colors';
 
 export default function RankCard({ item, onPress, your }) {
-
+  console.log("item", item)
   return (
     <TouchableOpacity
       key={item._id}
@@ -11,36 +11,27 @@ export default function RankCard({ item, onPress, your }) {
       activeOpacity={0.8}
       onPress={onPress}
     >
-      <View>
-        <View style={styles.rankLeft}>
-          {/* <Text style={styles.emoji}>{item?.emoji || ""}</Text> */}
-          <Image source={{ uri: item?.profilePicture || item?.imageUrl }} style={{ width: 24, height: 24, marginRight: 4, resizeMode: 'contain' }} />
-          <Text style={styles.rankName}>{item?.name || ""}</Text>
-
-
-          {item?.email === your && (
-            <View style={styles.youTag}>
-              <Text style={styles.youText}>You</Text>
-            </View>
-          )}
-
-          {(item?.isUserSpark) && (
-            <View style={styles.youTag}>
-              <Text style={styles.youText}>You</Text>
-            </View>
-          )}
-
-        </View>
-
-        {item?.streak && (
-          <View style={styles.streakContainer}>
-            <Image
-              source={require("../../../../assets/icons/fire.png")}
-              style={styles.icon}
-            />
-            <Text style={styles.streak}>{item?.streak || ""}{item?.streak > 1 ? " days streak" : " day streak"}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Image source={{ uri: item?.profilePicture || item?.imageUrl }} style={{ width: 34, height: 34, marginRight: 4, resizeMode: 'contain' }} />
+        <View>
+          <View style={styles.rankLeft}>
+            <Text style={styles.rankName}>{item?.name || ""}</Text>
+            {item?.email === your && (
+              <View style={styles.youTag}>
+                <Text style={styles.youText}>You</Text>
+              </View>
+            )}
           </View>
-        )}
+          {item?.streak && (
+            <View style={styles.streakContainer}>
+              <Image
+                source={require("../../../../assets/icons/fire.png")}
+                style={styles.icon}
+              />
+              <Text style={styles.streak}>{item?.streak || ""}{item?.streak > 1 ? " days streak" : " day streak"}</Text>
+            </View>
+          )}
+        </View>
       </View>
 
       <View style={styles.rankRight}>

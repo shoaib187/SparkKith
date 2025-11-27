@@ -39,8 +39,8 @@ export default function Home({ navigation }) {
   const { triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
   const { token } = useSelector((state) => state.auth);
   const { profileData } = useSelector((state) => state.profile);
-  console.log("profileData", profileData)
-  console.log("triggeredTasks", triggeredTasks)
+  // console.log("profileData", profileData)
+  // console.log("triggeredTasks", triggeredTasks)
   // console.log("tasks", tasks)
 
   const [visible, setVisible] = useState(false);
@@ -53,9 +53,22 @@ export default function Home({ navigation }) {
 
   const achievements = getAchievementsCount(profileData?.totalPoints || 0);
 
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+
+    if (hour >= 5 && hour < 12) return "Good morning";
+    if (hour >= 12 && hour < 17) return "Good afternoon";
+    if (hour >= 17 && hour < 21) return "Good evening";
+    return "Good night";
+  };
+
+
   /** -------------------------------
    * FETCH DATA WHEN SCREEN FOCUSES
    --------------------------------*/
+
+
   useEffect(() => {
     if (token) {
       dispatch(getTodayTasks(token));
@@ -169,8 +182,9 @@ export default function Home({ navigation }) {
 
         <View style={styles.greeting}>
           <Text style={styles.greetingSmall}>
-            Good morning, {profileData?.username || "User"}!
+            {getGreeting()}, {profileData?.username || "User"}!
           </Text>
+
           <Text style={styles.greetingLarge}>Ready for your Spark journey?</Text>
         </View>
       </View>

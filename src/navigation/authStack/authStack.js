@@ -14,7 +14,7 @@ const AuthStack = () => {
     const checkToken = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
-        setInitialRoute(token ? 'Login' : 'Onboarding');
+        setInitialRoute(token ? 'Login' : 'ContinueWith');
       } catch (e) {
         console.log('Error reading token:', e);
         setInitialRoute('Onboarding');
@@ -28,9 +28,9 @@ const AuthStack = () => {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={initialRoute}>
+      <Stack.Screen name="ContinueWith" component={screens.ContinueWith} />
       <Stack.Screen name="Onboarding" component={screens.OnboardingScreen} />
       <Stack.Screen name="Community" component={Community} />
-      <Stack.Screen name="ContinueWith" component={screens.ContinueWith} />
       <Stack.Screen name="Register" component={screens.Register} />
       <Stack.Screen name="Login" component={screens.Login} />
       <Stack.Screen name="Welcome" component={screens.WelcomPage} />

@@ -18,22 +18,22 @@ export default function HelpCenter({ navigation }) {
     {
       id: '1',
       question: 'How do I create a new task?',
-      answer: 'Go to the homepage and tap the "+" button...'
+      answer: 'Go to the homepage and tap the "+" button to add a new task.'
     },
     {
       id: '2',
       question: 'Can I invite my friends on this app?',
-      answer: 'Yes, you can invite team friends via email...'
+      answer: 'Yes, you can invite team friends via email'
     },
     {
       id: '3',
       question: 'How do I reset my password?',
-      answer: 'Go to Settings > Edit profile > and simply change your Password...'
+      answer: 'Go to Settings > Edit profile > and simply change your Password'
     },
     {
       id: '4',
       question: 'Where are my files stored?',
-      answer: 'Your files are stored securely in the cloud...'
+      answer: 'Your files are stored securely in the cloud'
     },
     {
       id: '5',
@@ -75,60 +75,58 @@ export default function HelpCenter({ navigation }) {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <View style={styles.container} showsVerticalScrollIndicator={false}>
       <Header navigation={navigation} title="Help center" showBack />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* FAQ Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
 
-      {/* FAQ Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+          {faqItems.map((item) => (
+            <View key={item.id} style={styles.faqItem}>
+              <TouchableOpacity
+                style={styles.question}
+                onPress={() => toggleItem(item.id)}
+              >
+                <Text style={[styles.questionText, { color: expandedItem === item.id ? colors.buttonColor : "black" }]}>{item.question}</Text>
+              </TouchableOpacity>
 
-        {faqItems.map((item) => (
-          <View key={item.id} style={styles.faqItem}>
-            <TouchableOpacity
-              style={styles.question}
-              onPress={() => toggleItem(item.id)}
-            >
-              <Text style={styles.questionText}>{item.question}</Text>
-              <Text style={styles.arrow}>
-                {expandedItem === item.id ? '▲' : '▼'}
-              </Text>
+              {expandedItem === item.id && (
+                <View style={styles.answer}>
+                  <Text style={styles.answerText}>{item.answer}</Text>
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+
+        {/* Contact Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Contact Support</Text>
+
+          {contactOptions.map((option, index) => (
+            <TouchableOpacity key={index} style={styles.contactItem} onPress={option.action}>
+              <Text style={styles.contactType}>{option.type}</Text>
+              <Text style={styles.contactDetails}>{option.details}</Text>
             </TouchableOpacity>
+          ))}
 
-            {expandedItem === item.id && (
-              <View style={styles.answer}>
-                <Text style={styles.answerText}>{item.answer}</Text>
-              </View>
-            )}
-          </View>
-        ))}
-      </View>
+          <Button title="Send Message" onPress={handleSendMessage} />
+        </View>
 
-      {/* Contact Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Contact Support</Text>
-
-        {contactOptions.map((option, index) => (
-          <TouchableOpacity key={index} style={styles.contactItem} onPress={option.action}>
-            <Text style={styles.contactType}>{option.type}</Text>
-            <Text style={styles.contactDetails}>{option.details}</Text>
+        {/* Quick Help */}
+        {/* <View style={styles.quickHelp}>
+          <Text style={styles.quickHelpTitle}>Need immediate help?</Text>
+          <Text style={styles.quickHelpText}>Our team is ready to assist you</Text>
+          <TouchableOpacity
+            onPress={handleEmergencySupport}
+            style={styles.emergencyButton}
+          >
+            <Text style={styles.emergencyButtonText}>Emergency Support</Text>
           </TouchableOpacity>
-        ))}
-
-        <Button title="Send Message" onPress={handleSendMessage} />
-      </View>
-
-      {/* Quick Help */}
-      <View style={styles.quickHelp}>
-        <Text style={styles.quickHelpTitle}>Need immediate help?</Text>
-        <Text style={styles.quickHelpText}>Our team is ready to assist you</Text>
-        <TouchableOpacity
-          onPress={handleEmergencySupport}
-          style={styles.emergencyButton}
-        >
-          <Text style={styles.emergencyButtonText}>Emergency Support</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        </View> */}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -179,7 +177,7 @@ const styles = StyleSheet.create({
   answerText: {
     fontSize: 14,
     color: '#666',
-    lineHeight: 20
+    // lineHeight: 20
   },
 
   contactItem: {
@@ -195,7 +193,7 @@ const styles = StyleSheet.create({
   },
   contactDetails: {
     fontSize: 14,
-    color: '#4F46E5'
+    color: colors.buttonColor
   },
 
   quickHelp: {

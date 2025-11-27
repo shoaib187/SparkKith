@@ -14,21 +14,22 @@ export default function CommunityStats({ stats }) {
       </View>
 
       <View style={styles.statsRow}>
+        {/* <View style={styles.statBox}>
+          <Image source={require("../../../assets/icons/fire.png")} style={styles.emojiImage} />
+          <Text style={styles.statValue}>{spark?.streak || 0}</Text>
+          <Text style={styles.statLabel}>Badge</Text>
+        </View> */}
         <View style={styles.statBox}>
           <Text style={styles.emoji}>👨🏿‍💼</Text>
           <Text style={styles.statValue}>{spark?.totalMembers}</Text>
           <Text style={styles.statLabel}>Members</Text>
         </View>
         <View style={styles.statBox}>
-          <Text style={styles.emoji}>⭐</Text>
+          <Image source={require("../../../assets/icons/star.png")} style={styles.emojiImage} />
           <Text style={styles.statValue}>{spark?.totalPoints}</Text>
           <Text style={styles.statLabel}>Points</Text>
         </View>
-        {/* <View style={styles.statBox}>
-          <Text style={styles.emoji}>🏅</Text>
-          <Text style={styles.statValue}>0</Text>
-          <Text style={styles.statLabel}>Badge</Text>
-        </View> */}
+
       </View>
     </View>
   )
@@ -60,9 +61,10 @@ const styles = StyleSheet.create({
     fontSize: 22
   },
   emojiImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 50
+    width: 26,
+    height: 26,
+    borderRadius: 50,
+    marginBottom: 6
   },
   statsRow: {
     flexDirection: "row",
@@ -77,8 +79,8 @@ const styles = StyleSheet.create({
     borderRadius: 12
   },
   statValue: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: 18,
+    fontWeight: "800",
     color: "#111827",
     marginVertical: 2,
   },

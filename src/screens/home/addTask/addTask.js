@@ -22,6 +22,20 @@ import Button from "../../../components/common/button/button";
 import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import { taskSuggestion } from "../../../utils/services/services";
 
+const categories = {
+  eat_smart: ["cooking", "cook", "healthy", "nutrition", "food", "market", "farmers", "recipe", "plant based", "vegan", "wholefood", "tasting", "demo", "workshop"],
+  move_more: ["walk", "walking", "hike", "hiking", "run", "running", "jog", "cycle", "cycling", "bike", "biking", "yoga", "pilates", "stretch", "mobility", "dance", "zumba", "tai chi", "qigong", "fitness", "strength", "workout", "outdoor", "park", "forest"],
+  connect_meaningfully: ["meetup", "community", "group", "circle", "book", "craft", "knit", "crochet", "art", "painting", "pottery", "board game", "games", "maker", "creative", "coffee", "social", "volunteer", "volunteering", "community garden", "gardening", "choir", "music", "sing", "storytelling", "poetry", "open mic", "comedy show"],
+  sleep_well: ["meditation", "mindfulness", "calm", "rest", "relax", "breath", "breathing", "guided", "yin yoga", "sound bath", "soothing", "gentle", "evening", "unwind"],
+  de_stress_daily: ["mindfulness", "meditate", "meditation", "breath", "breathing", "breathwork", "calm", "zen", "stillness", "restorative", "relaxation", "healing", "sound bath", "gong", "reiki", "energy", "wellbeing", "stress relief", "chakra", "slow flow", "gentle yoga"],
+  general_wellness: ["museum", "gallery", "exhibition", "festival", "nature", "outdoor", "retreat", "workshop", "creative", "movement", "park", "market"],
+};
+
+const priorityOrder = ["move_more", "de_stress_daily", "sleep_well", "connect_meaningfully", "eat_smart", "general_wellness"];
+
+const forbiddenTerms = ["therapy", "counselling", "clinical", "medical", "diagnosis", "treatment", "condition", "injury", "rehab", "physio", "addiction", "support group", "bereavement"];
+
+
 export default function AddTask({ navigation }) {
   const dispatch = useDispatch();
   const { token } = useSelector(state => state.auth)
@@ -40,22 +54,75 @@ export default function AddTask({ navigation }) {
     setFilteredSuggestions(shuffled.slice(0, 5));
   }, []);
 
+  const assignCategory = (title, description) => {
+    const text = `${title} ${description}`.toLowerCase();
+
+    // Skip if forbidden terms
+    if (forbiddenTerms.some(term => text.includes(term))) return null;
+
+    const matchedCategories = [];
+
+    Object.keys(categories).forEach(cat => {
+      if (categories[cat].some(keyword => text.includes(keyword))) {
+        matchedCategories.push(cat);
+      }
+    });
+
+    // Return highest priority category
+    if (matchedCategories.length === 0) return null;
+    for (let cat of priorityOrder) {
+      if (matchedCategories.includes(cat)) return cat;
+    }
+
+    return null;
+  };
+
+
 
   // Filter suggestions when user types
+  // useEffect(() => {
+  //   if (searchText.trim() === "") {
+  //     // Show 5 random if search is empty
+  //     const shuffled = taskSuggestion.sort(() => 0.5 - Math.random());
+  //     setFilteredSuggestions(shuffled.slice(0, 5));
+  //   } else {
+  //     const filtered = taskSuggestion.filter(
+  //       (item) =>
+  //         item.title.toLowerCase().includes(searchText.toLowerCase()) ||
+  //         item.description.toLowerCase().includes(searchText.toLowerCase())
+  //     );
+  //     setFilteredSuggestions(filtered);
+  //   }
+  // }, [searchText]);
+
   useEffect(() => {
     if (searchText.trim() === "") {
-      // Show 5 random if search is empty
-      const shuffled = taskSuggestion.sort(() => 0.5 - Math.random());
+      // pick random 5 suggestions that follow rules
+      const filtered = taskSuggestion
+        .map(item => ({
+          ...item,
+          category: assignCategory(item.title, item.description)
+        }))
+        .filter(item => item.category !== null);
+
+      const shuffled = filtered.sort(() => 0.5 - Math.random());
       setFilteredSuggestions(shuffled.slice(0, 5));
     } else {
-      const filtered = taskSuggestion.filter(
-        (item) =>
-          item.title.toLowerCase().includes(searchText.toLowerCase()) ||
-          item.description.toLowerCase().includes(searchText.toLowerCase())
-      );
+      const filtered = taskSuggestion
+        .map(item => ({
+          ...item,
+          category: assignCategory(item.title, item.description)
+        }))
+        .filter(item =>
+          item.category !== null &&
+          (item.title.toLowerCase().includes(searchText.toLowerCase()) ||
+            item.description.toLowerCase().includes(searchText.toLowerCase()))
+        );
+
       setFilteredSuggestions(filtered);
     }
   }, [searchText]);
+
 
 
   const [taskDateTime, setTaskDateTime] = useState({

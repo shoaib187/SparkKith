@@ -13,7 +13,7 @@ export default function CommunityRankCard({ item, onPress, your }) {
     >
       <View>
         <View style={styles.rankLeft}>
-          <Image source={{ uri: item?.imageUrl }} style={{ width: 24, height: 24, marginRight: 4, resizeMode: 'contain' }} />
+          <Image source={{ uri: item?.imageUrl }} style={{ width: 34, height: 34, marginRight: 4, resizeMode: 'contain' }} />
           <Text style={styles.rankName}>{item?.name || ""}</Text>
 
           {(item?.isUserSpark) && (

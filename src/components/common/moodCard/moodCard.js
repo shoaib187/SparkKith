@@ -2,6 +2,23 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import colors from "../../constants/colors/colors";
 
+const reasons = [
+  { id: "me", label: "Me", icon: require("../../../../assets/reasons/me.png") },
+  { id: "partner", label: "Partner", icon: require("../../../../assets/reasons/partner.png") },
+  { id: "family", label: "Family", icon: require("../../../../assets/reasons/family.png") },
+  { id: "friends", label: "Friends", icon: require("../../../../assets/reasons/friends.png") },
+  { id: "study", label: "Study", icon: require("../../../../assets/reasons/study.png") },
+  { id: "work", label: "Work", icon: require("../../../../assets/reasons/work.png") },
+  { id: "health", label: "Health", icon: require("../../../../assets/reasons/health.png") },
+];
+
+
+const getReasonIcon = (id) => {
+  const reason = reasons.find(r => r.id === id);
+  return reason ? reason.icon : null;
+};
+
+
 const MoodCard = ({ style, mood, time, icon, tags = [], note }) => {
   return (
     <View style={[styles.card, style]}>
@@ -17,12 +34,19 @@ const MoodCard = ({ style, mood, time, icon, tags = [], note }) => {
 
       {tags.length > 0 && (
         <View style={styles.tagsContainer}>
-          {tags.map((tag, index) => (
+          {/* {tags.map((tag, index) => (
             <View key={index} style={styles.tag}>
               {tag.icon && <Image source={tag.icon} style={styles.tagIcon} />}
               <Text numberOfLines={2} style={styles.tagText}>{tag.label}</Text>
             </View>
+          ))} */}
+          {tags.map((tag, index) => (
+            <View key={index} style={styles.tag}>
+              <Image source={getReasonIcon(tag.label)} style={styles.tagIcon} />
+              <Text numberOfLines={2} style={styles.tagText}>{tag.label}</Text>
+            </View>
           ))}
+
         </View>
       )}
 
@@ -70,6 +94,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 10,
+    gap: 10, justifyContent: 'space-between'
   },
   tag: {
     flexDirection: "row",
@@ -78,10 +103,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    margin: 4,
-    flex: 1,
-    flexWrap: 'wrap',
-    justifyContent: 'center'
+    // flex: 1,
+    // flexWrap: 'wrap',
+    justifyContent: 'center',
+    width: '31%'
   },
   tagIcon: {
     width: 16,
@@ -92,7 +117,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 13,
     color: "#333",
-    // textAlign: 'center'
+    textTransform: 'capitalize', flex: 1
   },
   noteText: {
     marginTop: 8,

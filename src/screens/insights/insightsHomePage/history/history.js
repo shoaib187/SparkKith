@@ -82,6 +82,8 @@ export default function History({ navigation }) {
     handleGetFeelings(dateStr);
   };
 
+  console.log("feelingsByDate", feelingsByDate)
+
   return (
     <View style={styles.container}>
       <Header title="History" navigation={navigation} />

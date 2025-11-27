@@ -3,6 +3,7 @@ import React from 'react'
 import colors from '../constants/colors/colors'
 
 export default function ProfileCard({ userInfo }) {
+  console.log(userInfo)
   return (
     <View style={styles.profileCard}>
       <Image
@@ -13,8 +14,8 @@ export default function ProfileCard({ userInfo }) {
             : require("../../../assets/png/twinkle.png")
         }
       />
-      <Text style={styles.profileName}>{userInfo?.firstName + " " + userInfo?.lastName}</Text>
-      <Text style={styles.profileSubText}>@{userInfo?.firstName} · Joined {userInfo?.joinedOn?.slice(0, 10)}</Text>
+      <Text style={styles.profileName}>{userInfo?.username + " " + userInfo?.lastName}</Text>
+      <Text style={styles.profileSubText}>@{userInfo?.username} · Joined {userInfo?.joinedOn?.slice(0, 10)}</Text>
       <Text style={styles.highlight}>
         You are a proud member of {userInfo?.spark?.name}
       </Text>
@@ -43,6 +44,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#111827",
     marginTop: 12,
+    textTransform: 'capitalize'
   },
   profileSubText: {
     color: "#6B7280",

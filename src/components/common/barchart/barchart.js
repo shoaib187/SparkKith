@@ -18,15 +18,15 @@ export default function MyBarChart({ analytics }) {
   const ICON_MAP = {
     happy: require('../../../../assets/icons/good.png'),
     sad: require('../../../../assets/icons/sad.png'),
-    angry: require('../../../../assets/icons/angry.png'),
-    neutral: require('../../../../assets/icons/okay.png'),
+    neutral: require('../../../../assets/icons/great.png'),
     excited: require('../../../../assets/icons/good.png'),
+    angry: require('../../../../assets/icons/angry.png'),
     stressed: require('../../../../assets/icons/fire.png'),
   };
 
   // convert analytics → chart values
   const chartData = analytics?.map((item, index) => ({
-    value: item.value * 20,   // 0–5 → convert to percent scale for Y axis
+    value: item.value * 1,   // 0–5 → convert to percent scale for Y axis
     svg: { fill: barColors[index] },
   })) || [];
 
@@ -82,7 +82,7 @@ export default function MyBarChart({ analytics }) {
 
       {/* Icons Row */}
       <View style={styles.iconRow}>
-        {icons.map((icon, index) => (
+        {icons?.map((icon, index) => (
           <Image key={index} source={icon} style={styles.icon} />
         ))}
       </View>
