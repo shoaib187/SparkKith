@@ -45,10 +45,10 @@ export default function HelpCenter({ navigation }) {
   const contactOptions = [
     {
       type: 'Email Support',
-      details: 'support@sparkith.com',
+      details: 'support@sparkkith.com',
       action: () =>
         Linking.openURL(
-          'mailto:support@sparkith.com?subject=Sparkith Support&body=Hello, I need help with...'
+          'mailto:support@sparkkith.com?subject=Sparkith Support&body=Hello, I need help with...'
         )
     },
     {
@@ -64,11 +64,6 @@ export default function HelpCenter({ navigation }) {
     );
   };
 
-  const handleEmergencySupport = () => {
-    Linking.openURL(
-      'mailto:emergency@sparkith.com?subject=URGENT: Sparkith Emergency Support&body=This is an emergency support request. Please help with:'
-    );
-  };
 
   const toggleItem = (id) => {
     setExpandedItem(expandedItem === id ? null : id);

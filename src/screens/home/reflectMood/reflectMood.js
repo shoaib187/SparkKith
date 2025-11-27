@@ -32,6 +32,7 @@ const reasons = [
   { id: "study", label: "Study", icon: require("../../../../assets/reasons/study.png") },
   { id: "work", label: "Work", icon: require("../../../../assets/reasons/work.png") },
   { id: "health", label: "Health", icon: require("../../../../assets/reasons/health.png") },
+  { id: "other", label: "Other", icon: require("../../../../assets/png/star.png") },
 ];
 
 export default function ReflectMood({ navigation }) {

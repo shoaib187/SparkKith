@@ -7,11 +7,37 @@ import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
 import Button from '../../../components/common/button/button';
 import SignoutModal from '../../../components/common/signoutModal/signoutModal';
 import { checkNotificationPermission, requestAndroidPermission } from '../../../utils/notification/api';
+import { DeleteAccountModal } from '../../../components/common/deleteModal/deleteModal';
+import { logout } from '../../../redux/slices/authSlice/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { baseUrl } from '../../../utils/api';
 
 export default function Settings({ navigation }) {
   const [visible, setVisible] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
+
+  const handleDeleteAccount = async () => {
+    try {
+      const res = await axios.delete(`${baseUrl}/api/user/delete`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      // console.log("Account deleted successfully:", res.data);
+      if (res.data.success) {
+        await dispatch(logout())
+      }
+    } catch (error) {
+      console.log("Error deleting account:", error)
+    } finally {
+      setShowDeleteModal(false);
+    }
+  };
 
   // Check permission on mount
   useEffect(() => {
@@ -49,7 +75,7 @@ export default function Settings({ navigation }) {
         {checking ? (
           <ActivityIndicator size="small" color={colors.buttonColor} style={styles.loader} />
         ) : hasPermission ? (
-          <Text style={styles.permissionText}>Notifications are enabled</Text>
+          <Text style={styles.permissionText}>Notifications access enabled</Text>
         ) : (
           <Button
             onPress={handleRequestPermission}
@@ -74,9 +100,20 @@ export default function Settings({ navigation }) {
           style={styles.signOutBg}
           textColor='red'
         />
+        <Button
+          onPress={() => setShowDeleteModal(true)}
+          title='Delete account'
+          style={{ marginTop: 12 }}
+          textColor='red'
+        />
       </View>
 
       <SignoutModal visible={visible} setVisible={setVisible} />
+      <DeleteAccountModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirmDelete={handleDeleteAccount}
+      />
     </View>
   );
 }

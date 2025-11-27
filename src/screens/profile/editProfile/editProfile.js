@@ -44,6 +44,7 @@ export default function EditProfile({ navigation }) {
 
     const res = await dispatch(editUserProfile({ updatedData: payload, token }))
     await dispatch(fetchUserProfile(token));
+    navigation.goBack();
     console.log("res", res)
   }
 
@@ -86,18 +87,18 @@ export default function EditProfile({ navigation }) {
         />
 
         <Button
-          title="Save"
+          title={!loading ? "Save" : "Updating profile..."}
           onPress={handleEdit}
           style={styles.saveButton}
           textColor="black"
         />
 
-        {loading && (
+        {/* {loading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color={colors.buttonColor} />
             <Text style={styles.loadingText}>Updating profile...</Text>
           </View>
-        )}
+        )} */}
       </ScrollView>
     </View>
   )

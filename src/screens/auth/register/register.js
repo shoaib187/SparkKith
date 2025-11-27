@@ -20,9 +20,9 @@ import { registerUser } from '../../../redux/slices/authSlice/authSlice';
 export default function Register({ navigation, route }) {
   const { userInfo, activeItem, chosen } = route.params;
   const dispatch = useDispatch()
-  // console.log("chosen", chosen,)
-  // console.log("userInfo", userInfo)
-  // console.log("activeItems", activeItem)
+  console.log("chosen", chosen,)
+  console.log("userInfo", userInfo)
+  console.log("activeItems", activeItem)
   // const user = userInfo?.data?.user
   // console.log("user", user)
 
@@ -31,6 +31,7 @@ export default function Register({ navigation, route }) {
   const [sparkId, setSparkId] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [avatarId, setAvatarId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -41,10 +42,12 @@ export default function Register({ navigation, route }) {
       setName(googleUser.name || '');
       setEmail(googleUser.email || '');
       setSparkId(chosen?._id || '');
+      setAvatarId(activeItem?.id || '');
     } else if (activeItem) {
       // Spark data
       setName(activeItem?.title || '');
       setSparkId(chosen?._id || '');
+      setAvatarId(activeItem?.id || '');
       setEmail(''); // reset email if not from Google
     }
   }, [activeItem, userInfo, chosen]);
@@ -62,6 +65,7 @@ export default function Register({ navigation, route }) {
     formData.append('sparkId', sparkId);
     formData.append('email', email);
     formData.append('password', password);
+    formData.append('avatarId', avatarId);
 
     // Handle image as string
     try {

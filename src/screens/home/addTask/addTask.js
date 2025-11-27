@@ -77,8 +77,6 @@ export default function AddTask({ navigation }) {
     return null;
   };
 
-
-
   // Filter suggestions when user types
   // useEffect(() => {
   //   if (searchText.trim() === "") {
@@ -123,8 +121,6 @@ export default function AddTask({ navigation }) {
     }
   }, [searchText]);
 
-
-
   const [taskDateTime, setTaskDateTime] = useState({
     date: null,
     time: null,
@@ -137,8 +133,6 @@ export default function AddTask({ navigation }) {
   const handleDateTimeChange = (data) => {
     setTaskDateTime(data);
   };
-
-
 
   // Function to schedule notification at the selected time
   const scheduleNotification = async (taskData) => {
@@ -282,10 +276,6 @@ export default function AddTask({ navigation }) {
 
     return `${dateStr} • ${taskDateTime.timeLabel}`;
   };
-
-
-
-
 
   return (
     <View style={styles.container}>

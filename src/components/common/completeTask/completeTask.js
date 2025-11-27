@@ -27,26 +27,26 @@ export default function CompleteTask({ onDone, onUndo, selectedTask }) {
       {/* Buttons */}
       <Button
         title="Undo"
-        textColor={selectedTask.done ? "#fff" : "#111827"}
+        textColor={selectedTask.completed ? "#fff" : "#111827"}
         style={{
           width: "100%",
-          backgroundColor: selectedTask.done ? colors.buttonColor : "transparent",
-          opacity: selectedTask.done ? 1 : 0.4,
+          backgroundColor: selectedTask.completed ? colors.buttonColor : "transparent",
+          opacity: selectedTask.completed ? 1 : 0.4,
         }}
         onPress={onUndo}
-        disabled={!selectedTask.done}
+        disabled={!selectedTask.completed}
       />
 
       <Button
         title="Done"
-        textColor={!selectedTask.done ? "#fff" : "#111827"}
+        textColor={!selectedTask.completed ? "#fff" : "#111827"}
         style={{
           width: "100%",
-          backgroundColor: !selectedTask.done ? colors.buttonColor : "transparent",
-          opacity: !selectedTask.done ? 1 : 0.4,
+          backgroundColor: !selectedTask.completed ? colors.buttonColor : "transparent",
+          opacity: !selectedTask.completed ? 1 : 0.4,
         }}
         onPress={onDone}
-        disabled={selectedTask.done}
+        disabled={selectedTask.completed}
       />
     </View>
   );

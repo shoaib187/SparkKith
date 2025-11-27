@@ -38,10 +38,10 @@ export default function Home({ navigation }) {
 
   const { triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
   const { token } = useSelector((state) => state.auth);
-  const { profileData } = useSelector((state) => state.profile);
+  const { profileData, loading: loadingProfile } = useSelector((state) => state.profile);
   // console.log("profileData", profileData)
-  // console.log("triggeredTasks", triggeredTasks)
-  // console.log("tasks", tasks)
+  console.log("triggeredTasks", triggeredTasks)
+  // console.log("tasks", triggerTasks)
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -74,7 +74,7 @@ export default function Home({ navigation }) {
       dispatch(getTodayTasks(token));
       dispatch(fetchUserProfile(token));
       dispatch(getTriggeredTasks(token));
-      dispatch(triggerTasks(token))
+      // dispatch(triggerTasks(token))
     }
   }, [dispatch, token, isFocused]);
 
@@ -104,7 +104,8 @@ export default function Home({ navigation }) {
 
     setLoading(true);
     try {
-      await dispatch(markAsDoneTask({ taskId: selectedTask._id, done: true, token }));
+      const res = await dispatch(markAsDoneTask({ taskId: selectedTask._id, token }));
+      console.log("res", res)
       ToastAndroid.show("Task marked as done!", ToastAndroid.SHORT);
 
       await dispatch(getTriggeredTasks(token));
@@ -144,7 +145,7 @@ export default function Home({ navigation }) {
       if (token) {
         await dispatch(getTriggeredTasks(token));
         await dispatch(fetchUserProfile(token));
-        await dispatch(triggerTasks(token))
+        // await dispatch(triggerTasks(token))
       }
     } catch (err) {
       console.log("Refresh error:", err);
@@ -156,12 +157,11 @@ export default function Home({ navigation }) {
   /** -------------------------------
    * TODAY'S TASK FILTER
    --------------------------------*/
-  const today = new Date().toISOString().split("T")[0];
-  const todaysTask = triggeredTasks?.find((t) => t.time?.split("T")[0] === today);
+  const todaysTask = triggeredTasks?.length > 0 ? triggeredTasks[1] : null;
 
 
   const streakValue = Number(profileData?.streak?.value || 0);
-  if (loadingTasks) {
+  if (loadingTasks || loadingProfile) {
     return <HomeSkeleton />
   }
 
@@ -182,7 +182,7 @@ export default function Home({ navigation }) {
 
         <View style={styles.greeting}>
           <Text style={styles.greetingSmall}>
-            {getGreeting()}, {profileData?.username || "User"}!
+            {getGreeting()}, {profileData?.firstName || "User"}!
           </Text>
 
           <Text style={styles.greetingLarge}>Ready for your Spark journey?</Text>
@@ -209,7 +209,7 @@ export default function Home({ navigation }) {
 
         {/* Tasks */}
         {todaysTask ? (
-          todaysTask.done ? (
+          todaysTask?.completed ? (
             <TaskCompletedMessage
               onPress={() => {
                 navigation.navigate("DailyStreak", { item: selectedTask, profileData })

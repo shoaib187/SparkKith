@@ -3,7 +3,7 @@ import React from 'react'
 import colors from '../constants/colors/colors'
 
 export default function ProfileCard({ userInfo }) {
-  console.log(userInfo)
+  // console.log(userInfo)
   return (
     <View style={styles.profileCard}>
       <Image

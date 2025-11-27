@@ -4,6 +4,7 @@ import colors from '../../constants/colors/colors';
 import Button from '../button/button';
 
 export default function TaskCard({ task, onDone, onSkip, onPress, selectedTask, loading }) {
+  // console.log(task)
   if (!task) return null;
 
   return (
@@ -16,8 +17,8 @@ export default function TaskCard({ task, onDone, onSkip, onPress, selectedTask, 
 
       {/* Title & Description */}
       <View style={styles.taskTitleWrap}>
-        <Text numberOfLines={1} style={styles.taskTitle}>{task?.title}</Text>
-        <Text numberOfLines={2} style={styles.taskSubtitle}>{task?.description}</Text>
+        <Text numberOfLines={2} style={styles.taskTitle}>{task?.title}</Text>
+        <Text numberOfLines={2} style={styles.taskSubtitle}>{task?.desc}</Text>
       </View>
 
       {/* Rewards */}
@@ -27,7 +28,7 @@ export default function TaskCard({ task, onDone, onSkip, onPress, selectedTask, 
             source={require('../../../../assets/icons/star.png')}
             style={styles.rewardIcon}
           />
-          <Text style={styles.rewardNumber}>+{task.points} points</Text>
+          <Text style={styles.rewardNumber}>+{task.points || 10} points</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={onPress} style={styles.rewardItem}>

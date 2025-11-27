@@ -38,11 +38,10 @@ export const updateTask = createAsyncThunk(
 // mark as done taks
 export const markAsDoneTask = createAsyncThunk(
   "tasks/markAsDoneTask",
-  async ({ taskId, done, token }, { rejectWithValue }) => {
+  async ({ taskId, token }, { rejectWithValue }) => {
     try {
       const res = await axios.patch(`${baseUrl}/api/user/tasks/mark-done`, {
-        taskId,
-        done,
+        taskId
       }, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -130,6 +129,7 @@ export const getTriggeredTasks = createAsyncThunk(
           'Authorization': `Bearer ${token}`
         }
       });
+      // console.log(res.data)
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error fetching triggered tasks");
