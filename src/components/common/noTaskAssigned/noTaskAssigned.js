@@ -12,11 +12,11 @@ export default function NoTaskAssigned({ navigation }) {
       <Text style={styles.noTaskSubtitle}>
         Enjoy your free time or create a new task to stay productive!
       </Text>
-      <Button
+      {/* <Button
         title='Create a Task'
         style={styles.createTaskButton}
         onPress={() => navigation.navigate("AddTask")}
-      />
+      /> */}
     </View>
   )
 }

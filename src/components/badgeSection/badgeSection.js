@@ -3,30 +3,24 @@ import React from 'react'
 import { FONT_SIZES } from '../constants/sizes/responsiveFont'
 
 export default function BadgeSection({ badges }) {
+  // console.log("badges", badges)
   return (
     <View style={styles.badgeWrapper}>
       <Text style={styles.sectionTitle}>Badge Gallery</Text>
       <View style={styles.badgeGrid}>
-        {badges.map((badge) => (
+        {badges?.map(badge => (
           <View
             key={badge.id}
-            style={[
-              styles.badgeCard,
-              !badge.active && styles.inactiveBadge,
-            ]}
+            style={[styles.badgeCard, !badge.unlocked && styles.inactiveBadge]}
           >
             <Image source={badge.emoji} style={{ width: 70, height: 70 }} />
-            <Text
-              style={[
-                styles.badgeName,
-                !badge.active && styles.inactiveText,
-              ]}
-            >
-              {badge.name}
+            <Text style={[styles.badgeName, !badge.unlocked && styles.inactiveText]}>
+              {badge?.title}
             </Text>
           </View>
         ))}
       </View>
+
     </View>
   )
 }

@@ -17,8 +17,8 @@ export default function TaskCard({ task, onDone, onSkip, onPress, selectedTask, 
 
       {/* Title & Description */}
       <View style={styles.taskTitleWrap}>
-        <Text numberOfLines={2} style={styles.taskTitle}>{task?.title}</Text>
-        <Text numberOfLines={2} style={styles.taskSubtitle}>{task?.desc}</Text>
+        <Text numberOfLines={2} style={styles.taskTitle}>{task?.taskTitle || task?.title}</Text>
+        <Text numberOfLines={2} style={styles.taskSubtitle}>{task?.taskDesc || task?.desc}</Text>
       </View>
 
       {/* Rewards */}

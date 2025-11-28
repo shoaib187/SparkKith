@@ -15,13 +15,13 @@ export default function CompleteTask({ onDone, onUndo, selectedTask }) {
 
       {/* Optional skipped or done label */}
       <Text style={[styles.taskSubtitle, { marginVertical: 6 }]}>
-        {selectedTask.done ? "Task Completed" : "Not yet completed!"}
+        {selectedTask.completed ? "Task Completed" : "Not yet completed!"}
       </Text>
 
       {/* Task Title & Description */}
       <View style={styles.taskTextContainer}>
-        <Text style={styles.taskTitle}>{selectedTask.title}</Text>
-        <Text style={styles.taskSubtitle}>{selectedTask.description}</Text>
+        <Text style={styles.taskTitle}>{selectedTask?.taskTitle || selectedTask?.title}</Text>
+        <Text style={styles.taskSubtitle}>{selectedTask?.taskDesc || selectedTask?.desc}</Text>
       </View>
 
       {/* Buttons */}

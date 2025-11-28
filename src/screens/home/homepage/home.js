@@ -24,7 +24,7 @@ import BottomSheet from "../../../components/common/bottomSheet/bottomSheet";
 import CompleteTask from "../../../components/common/completeTask/completeTask";
 import TaskCompletedMessage from "../../../components/common/taskCompletedMessage/taskCompletedMessage";
 import NoTaskAssigned from "../../../components/common/noTaskAssigned/noTaskAssigned";
-import { getTodayTasks, getTriggeredTasks, markAsDoneTask, triggerTasks, undoTask } from "../../../redux/slices/taskSlice/taskSlice";
+import { getTodayTasks, getTriggeredTasks, markAsDoneTask, undoTask } from "../../../redux/slices/taskSlice/taskSlice";
 
 import colors from "../../../components/constants/colors/colors";
 import { FONT_SIZES } from "../../../components/constants/sizes/responsiveFont";
@@ -40,8 +40,8 @@ export default function Home({ navigation }) {
   const { token } = useSelector((state) => state.auth);
   const { profileData, loading: loadingProfile } = useSelector((state) => state.profile);
   // console.log("profileData", profileData)
-  console.log("triggeredTasks", triggeredTasks)
-  // console.log("tasks", triggerTasks)
+  // console.log("triggeredTasks", triggeredTasks)
+  // console.log("tasks")
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -51,7 +51,11 @@ export default function Home({ navigation }) {
 
   const fallbackImage = require("../../../../assets/png/twinkle.png");
 
-  const achievements = getAchievementsCount(profileData?.totalPoints || 0);
+
+
+  const backendBadges = profileData?.badges || [];
+  const unlockedBadges = backendBadges.filter(b => b.unlocked === true).length;
+
 
 
   const getGreeting = () => {
@@ -109,6 +113,7 @@ export default function Home({ navigation }) {
       ToastAndroid.show("Task marked as done!", ToastAndroid.SHORT);
 
       await dispatch(getTriggeredTasks(token));
+      await dispatch(fetchUserProfile(token));
       setVisible(false);
 
       navigation.navigate("TaskCompleted", { selectedTask });
@@ -124,10 +129,13 @@ export default function Home({ navigation }) {
 
     setLoading(true);
     try {
-      await dispatch(undoTask({ taskId: selectedTask._id, token }));
+      const res = await dispatch(undoTask({ taskId: selectedTask._id, token }));
+      console.log("res", res)
+      console.log("res", selectedTask)
       ToastAndroid.show("Task reverted!", ToastAndroid.SHORT);
 
       await dispatch(getTriggeredTasks(token));
+      await dispatch(fetchUserProfile(token));
       setVisible(false);
     } catch {
       ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
@@ -157,7 +165,7 @@ export default function Home({ navigation }) {
   /** -------------------------------
    * TODAY'S TASK FILTER
    --------------------------------*/
-  const todaysTask = triggeredTasks?.length > 0 ? triggeredTasks[1] : null;
+  const todaysTask = triggeredTasks?.length > 0 ? triggeredTasks[0] : null;
 
 
   const streakValue = Number(profileData?.streak?.value || 0);
@@ -195,7 +203,7 @@ export default function Home({ navigation }) {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         contentContainerStyle={styles.container}
       >
-        <StatsSection stats={profileData} achievements={achievements} />
+        <StatsSection stats={profileData} unlockedBadges={unlockedBadges} />
         <StreakProgress progress={streakValue} title="Streak Saver Badge" />
 
         {/* Today's Task Header */}
@@ -217,7 +225,7 @@ export default function Home({ navigation }) {
               undoTask={() => {
                 setSelectedTask(todaysTask);
                 setVisible(true);
-              }}
+              }} q
             />
           ) : (
             <TaskCard

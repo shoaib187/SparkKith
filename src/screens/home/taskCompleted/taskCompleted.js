@@ -18,8 +18,8 @@ export default function TaskCompleted({ route, navigation }) {
           resizeMode="contain"
         />
 
-        <Text style={styles.title}>{selectedTask?.title || "Task Complete!"}</Text>
-        <Text numberOfLines={2} style={styles.description}>{selectedTask?.description}</Text>
+        <Text style={styles.title}>{selectedTask?.taskTitle || selectedTask?.title || "Task Complete!"}</Text>
+        <Text numberOfLines={2} style={styles.description}>{selectedTask?.taskDesc || selectedTask?.desc}</Text>
 
         <View style={styles.bottomRow}>
           {/* Left Card: Total Points */}

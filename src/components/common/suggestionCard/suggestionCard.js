@@ -1,17 +1,18 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import React from 'react'
 import { FONT_SIZES } from '../../constants/sizes/responsiveFont'
 import colors from '../../constants/colors/colors'
 
 export default function SuggestionCard({ item, onPress }) {
+  // console.log("item", item)
   return (
     <TouchableOpacity style={styles.suggestionCard} onPress={onPress}>
-      <View style={styles.suggestionIconBg}>
+      {/* <View style={styles.suggestionIconBg}>
         <Text style={styles.suggestionIcon}>{item?.emoji}</Text>
-      </View>
+      </View> */}
       <View style={styles.suggestionTextWrap}>
-        <Text style={styles.suggestionTitle}>{item.title}</Text>
-        <Text style={styles.suggestionDesc}>{item.description}</Text>
+        <Text numberOfLines={1} style={styles.suggestionTitle}>{item?.title}</Text>
+        <Text numberOfLines={2} style={styles.suggestionDesc}>{item?.desc}</Text>
       </View>
     </TouchableOpacity>
   )

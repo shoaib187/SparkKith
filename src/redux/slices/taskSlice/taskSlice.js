@@ -19,6 +19,24 @@ export const createTask = createAsyncThunk(
   }
 );
 
+// get suggestions
+export const getTaskSuggestions = createAsyncThunk(
+  "tasks/getTaskSuggestions",
+  async (token, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/user/tasks/get-suggestions`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      // console.log("res data is", res.data)
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Error creating task");
+    }
+  }
+);
+
 // update taks
 export const updateTask = createAsyncThunk(
   "tasks/updateTask",
@@ -58,11 +76,10 @@ export const markAsDoneTask = createAsyncThunk(
 // mark as undo taks
 export const undoTask = createAsyncThunk(
   "tasks/undoTask",
-  async ({ taskId, done, token }, { rejectWithValue }) => {
+  async ({ taskId, token }, { rejectWithValue }) => {
     try {
       const res = await axios.patch(`${baseUrl}/api/user/tasks/undo-task`, {
         taskId,
-        // done,
       }, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -129,29 +146,14 @@ export const getTriggeredTasks = createAsyncThunk(
           'Authorization': `Bearer ${token}`
         }
       });
-      // console.log(res.data)
+      // console.log("res data", res.data)
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error fetching triggered tasks");
     }
   }
 );
-// get triggered tasks
-export const triggerTasks = createAsyncThunk(
-  "tasks/triggerTasks",
-  async (token, { rejectWithValue }) => {
-    try {
-      const res = await axios.get(`${baseUrl}/api/user/tasks/trigger-tasks`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || "Error fetching triggerTasks ");
-    }
-  }
-);
+
 // get triggered tasks
 export const getTaskAnalytics = createAsyncThunk(
   "tasks/getTaskAnalytics",
@@ -177,6 +179,7 @@ const tasksSlice = createSlice({
     rankings: [],
     communityRanking: [],
     triggeredTasks: [],
+    suggestions: [],
     taskAnalytics: null,
     loading: false,
     error: null,
@@ -318,15 +321,16 @@ const tasksSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // get triggerTasks
-      .addCase(triggerTasks.pending, (state) => {
+      // get suggestions
+      .addCase(getTaskSuggestions.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(triggerTasks.fulfilled, (state, action) => {
+      .addCase(getTaskSuggestions.fulfilled, (state, action) => {
         state.loading = false;
+        state.suggestions = action.payload.tasks?.tasks;
       })
-      .addCase(triggerTasks.rejected, (state, action) => {
+      .addCase(getTaskSuggestions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

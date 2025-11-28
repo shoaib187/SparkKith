@@ -17,12 +17,13 @@ export default function MyBarChart({ analytics }) {
 
   const ICON_MAP = {
     happy: require('../../../../assets/icons/good.png'),
-    sad: require('../../../../assets/icons/sad.png'),
     neutral: require('../../../../assets/icons/great.png'),
-    excited: require('../../../../assets/icons/good.png'),
+    sad: require('../../../../assets/icons/sad.png'),
+    excited: require('../../../../assets/icons/okay.png'),
     angry: require('../../../../assets/icons/angry.png'),
-    stressed: require('../../../../assets/icons/fire.png'),
   };
+
+  // console.log(analytics)
 
   // convert analytics → chart values
   const chartData = analytics?.map((item, index) => ({

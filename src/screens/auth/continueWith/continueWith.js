@@ -1,4 +1,3 @@
-// src/screens/auth/ContinueWith.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import Button from '../../../components/common/button/button';

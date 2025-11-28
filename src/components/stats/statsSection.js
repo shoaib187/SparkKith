@@ -4,7 +4,7 @@ import { FONT_SIZES } from '../constants/sizes/responsiveFont'
 import colors from '../constants/colors/colors'
 
 
-export default function StatsSection({ stats, achievements }) {
+export default function StatsSection({ stats, unlockedBadges }) {
   return (
     <View style={styles.statsRow}>
       <View style={styles.statCard}>
@@ -21,7 +21,7 @@ export default function StatsSection({ stats, achievements }) {
 
       <View style={styles.statCard}>
         <Text style={styles.statEmoji}>🎖️</Text>
-        <Text style={styles.statNumber}>{achievements || 0}</Text>
+        <Text style={styles.statNumber}>{unlockedBadges || 0}</Text>
         <Text style={styles.statLabel}>Badge</Text>
       </View>
     </View>

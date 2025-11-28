@@ -17,7 +17,7 @@ import SuggestionCard from "../../../components/common/suggestionCard/suggestion
 import BottomSheet from "../../../components/common/bottomSheet/bottomSheet";
 import DateTimePicker from "../../../components/common/dateTimePicker/dateTimePicker";
 import { useDispatch, useSelector } from "react-redux";
-import { createTask, getTodayTasks } from "../../../redux/slices/taskSlice/taskSlice";
+import { createTask, getTaskSuggestions, getTodayTasks } from "../../../redux/slices/taskSlice/taskSlice";
 import Button from "../../../components/common/button/button";
 import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import { taskSuggestion } from "../../../utils/services/services";
@@ -39,7 +39,8 @@ const forbiddenTerms = ["therapy", "counselling", "clinical", "medical", "diagno
 export default function AddTask({ navigation }) {
   const dispatch = useDispatch();
   const { token } = useSelector(state => state.auth)
-  const { loading } = useSelector(state => state?.tasks)
+  const { loading, suggestions } = useSelector(state => state?.tasks)
+  console.log("suggestions", suggestions)
 
   const [visible, setVisible] = useState(false)
   const [title, setTitle] = useState("");
@@ -47,6 +48,10 @@ export default function AddTask({ navigation }) {
 
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [searchText, setSearchText] = useState("");
+
+  useEffect(() => {
+    dispatch(getTaskSuggestions(token))
+  }, [dispatch])
 
   // On mount, pick 5 random suggestions
   useEffect(() => {
@@ -339,17 +344,17 @@ export default function AddTask({ navigation }) {
         {/* Suggestions Section */}
         <Text style={styles.suggestionHeading}>Suggestions</Text>
         <FlatList
-          data={filteredSuggestions}
-          keyExtractor={(item) => item?.description}
+          data={suggestions}
+          keyExtractor={(item) => item?.desc}
           contentContainerStyle={{ paddingHorizontal: 14 }}
           renderItem={({ item }) => (
             <SuggestionCard
               onPress={() => {
                 setTitle(item.title);
-                setDescription(item.description);
+                setDescription(item.desc);
               }}
               item={item}
-              key={item?.description}
+              key={item?.desc}
             />
           )}
           scrollEnabled={false}
