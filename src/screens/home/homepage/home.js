@@ -30,7 +30,6 @@ import colors from "../../../components/constants/colors/colors";
 import { FONT_SIZES } from "../../../components/constants/sizes/responsiveFont";
 import HomeSkeleton from "../../../components/skeletons/homeSkeleton/homeSkeleton";
 import { fetchUserProfile } from "../../../redux/slices/profileSlice/profileSlice";
-import { getAchievementsCount } from "../../../utils/services/services";
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
@@ -39,9 +38,8 @@ export default function Home({ navigation }) {
   const { triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
   const { token } = useSelector((state) => state.auth);
   const { profileData, loading: loadingProfile } = useSelector((state) => state.profile);
-  // console.log("profileData", profileData)
+  console.log("profileData", profileData)
   // console.log("triggeredTasks", triggeredTasks)
-  // console.log("tasks")
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -169,6 +167,8 @@ export default function Home({ navigation }) {
 
 
   const streakValue = Number(profileData?.streak?.value || 0);
+  const streakPercentage = (streakValue / 14) * 100;
+
   if (loadingTasks || loadingProfile) {
     return <HomeSkeleton />
   }
@@ -190,7 +190,7 @@ export default function Home({ navigation }) {
 
         <View style={styles.greeting}>
           <Text style={styles.greetingSmall}>
-            {getGreeting()}, {profileData?.firstName || "User"}!
+            {getGreeting()}, {profileData?.username || "User"}!
           </Text>
 
           <Text style={styles.greetingLarge}>Ready for your Spark journey?</Text>
@@ -204,7 +204,7 @@ export default function Home({ navigation }) {
         contentContainerStyle={styles.container}
       >
         <StatsSection stats={profileData} unlockedBadges={unlockedBadges} />
-        <StreakProgress progress={streakValue} title="Streak Saver Badge" />
+        <StreakProgress streakValue={streakValue} progress={streakPercentage} title="Streak Saver Badge" />
 
         {/* Today's Task Header */}
         <View style={styles.header}>

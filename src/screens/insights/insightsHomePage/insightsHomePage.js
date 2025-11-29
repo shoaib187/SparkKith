@@ -18,7 +18,7 @@ export default function InsightsHomePage({ navigation }) {
   const [selected, setSelected] = useState('');
   const [activeTab, setActiveTab] = useState("task");
   const [visible, setVisible] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState("Weekly"); // Add this state
+  const [selectedPeriod, setSelectedPeriod] = useState("Monthly"); // Add this state
 
   const { token } = useSelector(state => state.auth)
   const { feelingsByDate, analytics } = useSelector(state => state.feelings)
@@ -75,14 +75,16 @@ export default function InsightsHomePage({ navigation }) {
     switch (feeling.toLowerCase()) {
       case 'sad':
         return require("../../../../assets/icons/sad.png");
-      case 'good':
+      case 'happy':
         return require("../../../../assets/icons/good.png");
       case 'great':
         return require("../../../../assets/icons/great.png");
       case 'excited':
-        return require("../../../../assets/icons/fire.png");
+        return require("../../../../assets/icons/great.png");
+      case 'neutral':
+        return require("../../../../assets/icons/okay.png");
       default:
-        return require("../../../../assets/icons/good.png");
+        return require("../../../../assets/icons/angry.png");
     }
   };
 

@@ -20,111 +20,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { createTask, getTaskSuggestions, getTodayTasks } from "../../../redux/slices/taskSlice/taskSlice";
 import Button from "../../../components/common/button/button";
 import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
-import { taskSuggestion } from "../../../utils/services/services";
+import Loading from "../../../components/common/loading/loading";
 
-const categories = {
-  eat_smart: ["cooking", "cook", "healthy", "nutrition", "food", "market", "farmers", "recipe", "plant based", "vegan", "wholefood", "tasting", "demo", "workshop"],
-  move_more: ["walk", "walking", "hike", "hiking", "run", "running", "jog", "cycle", "cycling", "bike", "biking", "yoga", "pilates", "stretch", "mobility", "dance", "zumba", "tai chi", "qigong", "fitness", "strength", "workout", "outdoor", "park", "forest"],
-  connect_meaningfully: ["meetup", "community", "group", "circle", "book", "craft", "knit", "crochet", "art", "painting", "pottery", "board game", "games", "maker", "creative", "coffee", "social", "volunteer", "volunteering", "community garden", "gardening", "choir", "music", "sing", "storytelling", "poetry", "open mic", "comedy show"],
-  sleep_well: ["meditation", "mindfulness", "calm", "rest", "relax", "breath", "breathing", "guided", "yin yoga", "sound bath", "soothing", "gentle", "evening", "unwind"],
-  de_stress_daily: ["mindfulness", "meditate", "meditation", "breath", "breathing", "breathwork", "calm", "zen", "stillness", "restorative", "relaxation", "healing", "sound bath", "gong", "reiki", "energy", "wellbeing", "stress relief", "chakra", "slow flow", "gentle yoga"],
-  general_wellness: ["museum", "gallery", "exhibition", "festival", "nature", "outdoor", "retreat", "workshop", "creative", "movement", "park", "market"],
-};
-
-const priorityOrder = ["move_more", "de_stress_daily", "sleep_well", "connect_meaningfully", "eat_smart", "general_wellness"];
-
-const forbiddenTerms = ["therapy", "counselling", "clinical", "medical", "diagnosis", "treatment", "condition", "injury", "rehab", "physio", "addiction", "support group", "bereavement"];
 
 
 export default function AddTask({ navigation }) {
   const dispatch = useDispatch();
   const { token } = useSelector(state => state.auth)
   const { loading, suggestions } = useSelector(state => state?.tasks)
-  console.log("suggestions", suggestions)
+  // console.log("suggestions", suggestions)
 
   const [visible, setVisible] = useState(false)
+  const [selectedTask, setSelectedTask] = useState(null)
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
-  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-  const [searchText, setSearchText] = useState("");
-
+  // console.log("selected", selectedTask)
   useEffect(() => {
     dispatch(getTaskSuggestions(token))
-  }, [dispatch])
-
-  // On mount, pick 5 random suggestions
-  useEffect(() => {
-    const shuffled = taskSuggestion.sort(() => 0.5 - Math.random());
-    setFilteredSuggestions(shuffled.slice(0, 5));
-  }, []);
-
-  const assignCategory = (title, description) => {
-    const text = `${title} ${description}`.toLowerCase();
-
-    // Skip if forbidden terms
-    if (forbiddenTerms.some(term => text.includes(term))) return null;
-
-    const matchedCategories = [];
-
-    Object.keys(categories).forEach(cat => {
-      if (categories[cat].some(keyword => text.includes(keyword))) {
-        matchedCategories.push(cat);
-      }
-    });
-
-    // Return highest priority category
-    if (matchedCategories.length === 0) return null;
-    for (let cat of priorityOrder) {
-      if (matchedCategories.includes(cat)) return cat;
-    }
-
-    return null;
-  };
-
-  // Filter suggestions when user types
-  // useEffect(() => {
-  //   if (searchText.trim() === "") {
-  //     // Show 5 random if search is empty
-  //     const shuffled = taskSuggestion.sort(() => 0.5 - Math.random());
-  //     setFilteredSuggestions(shuffled.slice(0, 5));
-  //   } else {
-  //     const filtered = taskSuggestion.filter(
-  //       (item) =>
-  //         item.title.toLowerCase().includes(searchText.toLowerCase()) ||
-  //         item.description.toLowerCase().includes(searchText.toLowerCase())
-  //     );
-  //     setFilteredSuggestions(filtered);
-  //   }
-  // }, [searchText]);
-
-  useEffect(() => {
-    if (searchText.trim() === "") {
-      // pick random 5 suggestions that follow rules
-      const filtered = taskSuggestion
-        .map(item => ({
-          ...item,
-          category: assignCategory(item.title, item.description)
-        }))
-        .filter(item => item.category !== null);
-
-      const shuffled = filtered.sort(() => 0.5 - Math.random());
-      setFilteredSuggestions(shuffled.slice(0, 5));
-    } else {
-      const filtered = taskSuggestion
-        .map(item => ({
-          ...item,
-          category: assignCategory(item.title, item.description)
-        }))
-        .filter(item =>
-          item.category !== null &&
-          (item.title.toLowerCase().includes(searchText.toLowerCase()) ||
-            item.description.toLowerCase().includes(searchText.toLowerCase()))
-        );
-
-      setFilteredSuggestions(filtered);
-    }
-  }, [searchText]);
+  }, [dispatch, token])
 
   const [taskDateTime, setTaskDateTime] = useState({
     date: null,
@@ -142,17 +55,13 @@ export default function AddTask({ navigation }) {
   // Function to schedule notification at the selected time
   const scheduleNotification = async (taskData) => {
     try {
-      console.log('Scheduling notification for:', taskData.notificationTime);
-
-      // Request permission first
       const settings = await notifee.requestPermission();
-
       if (settings.authorizationStatus < 1) {
         console.warn('Notification permission not granted');
         return;
       }
 
-      // Create notification channel
+      // create notification channel
       const channelId = await notifee.createChannel({
         id: 'task-reminders',
         name: 'Task Reminders',
@@ -185,13 +94,9 @@ export default function AddTask({ navigation }) {
         }
       );
 
-      console.log('✅ Notification scheduled successfully for:', taskData.notificationTime.toString());
       return true;
 
     } catch (error) {
-      console.error('❌ Failed to schedule notification:', error);
-
-      // Fallback: Try alternative method for newer Notifee versions
       try {
         await notifee.displayNotification({
           id: `task-${Date.now()}`,
@@ -204,7 +109,7 @@ export default function AddTask({ navigation }) {
             sound: "default",
           },
         });
-        console.log('✅ Fallback notification shown immediately');
+        console.log('✅Fallback notification shown immediately');
         return true;
       } catch (fallbackError) {
         console.error('❌ Fallback notification also failed:', fallbackError);
@@ -226,13 +131,6 @@ export default function AddTask({ navigation }) {
 
     // Use the notification time that was calculated in DateTimePicker
     const isoTime = taskDateTime.notificationTime.toISOString();
-
-    // Debug logs
-    // console.log('Final payload time:', isoTime);
-    // console.log('Selected time frame:', taskDateTime.selectedTimeFrame);
-    // console.log('Notification time:', taskDateTime.notificationTime.toString());
-    // console.log('Reminder enabled:', taskDateTime.reminder);
-
     const payload = {
       title,
       description,
@@ -240,31 +138,31 @@ export default function AddTask({ navigation }) {
       reminder: taskDateTime.reminder,
       timeFrame: taskDateTime.selectedTimeFrame,
     };
-    dispatch(createTask({ taskData: payload, token }))
-      .unwrap()
-      .then(async (response) => {
-        // Schedule notification if reminder is enabled
-        if (taskDateTime.reminder) {
-          const notificationScheduled = await scheduleNotification({
-            ...payload,
-            notificationTime: taskDateTime.notificationTime
-          });
+    const payload1 = { taskId: selectedTask?._id, token }
+    // console.log("payload1", payload1)
+    const res = await dispatch(createTask(payload1))
+    // console.log("res", res)
 
-          if (notificationScheduled) {
-            ToastAndroid.show("Task Created with Reminder! 🔔", ToastAndroid.LONG);
-          } else {
-            ToastAndroid.show("Task Created but notification failed", ToastAndroid.LONG);
-          }
+    if (res.payload?.success === "success") {
+
+      if (taskDateTime.reminder) {
+        const notificationScheduled = await scheduleNotification({
+          ...payload,
+          notificationTime: taskDateTime.notificationTime
+        });
+
+        if (notificationScheduled) {
+          ToastAndroid.show("Task Created with Reminder!", ToastAndroid.LONG);
         } else {
-          ToastAndroid.show("Task Created!", ToastAndroid.LONG);
+          ToastAndroid.show("Task Created but notification failed", ToastAndroid.LONG);
         }
-        await dispatch(getTodayTasks(token))
-        navigation.goBack();
-      })
-      .catch((error) => {
-        console.error('Task creation failed:', error);
-        ToastAndroid.show("Failed to create task", ToastAndroid.LONG);
-      });
+      } else {
+        ToastAndroid.show("Task Created!", ToastAndroid.LONG);
+      }
+      await dispatch(getTodayTasks(token))
+      navigation.goBack();
+    }
+
   };
 
   // Get display text for selected time
@@ -300,11 +198,7 @@ export default function AddTask({ navigation }) {
               placeholder="Task title..."
               placeholderTextColor="#9CA3AF"
               value={title}
-              // onChangeText={setTitle}
-              onChangeText={(text) => {
-                setTitle(text);
-                setSearchText(text);
-              }}
+              onChangeText={setTitle}
             />
           </View>
 
@@ -342,28 +236,42 @@ export default function AddTask({ navigation }) {
         </View>
 
         {/* Suggestions Section */}
-        <Text style={styles.suggestionHeading}>Suggestions</Text>
-        <FlatList
-          data={suggestions}
-          keyExtractor={(item) => item?.desc}
-          contentContainerStyle={{ paddingHorizontal: 14 }}
-          renderItem={({ item }) => (
-            <SuggestionCard
-              onPress={() => {
-                setTitle(item.title);
-                setDescription(item.desc);
-              }}
-              item={item}
-              key={item?.desc}
+        {loading ? (
+          <Loading />
+        ) : (
+          <View>
+            <Text style={styles.suggestionHeading}>Suggestions</Text>
+            <FlatList
+              data={suggestions}
+              keyExtractor={(item) => item?.desc}
+              contentContainerStyle={{ paddingHorizontal: 14 }}
+              renderItem={({ item }) => (
+                <SuggestionCard
+                  onPress={() => {
+                    setTitle(item.title);
+                    setDescription(item.desc);
+                    setSelectedTask(item)
+                  }}
+                  item={item}
+                  key={item?.desc}
+                />
+              )}
+              scrollEnabled={false}
+              ListEmptyComponent={() => (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "#6B7280",
+                    marginTop: 20,
+                  }}
+                >
+                  No suggestions found.
+                </Text>
+              )}
             />
-          )}
-          scrollEnabled={false}
-          ListEmptyComponent={() => (
-            <Text style={{ textAlign: "center", color: "#6B7280", marginTop: 20 }}>
-              No suggestions found.
-            </Text>
-          )}
-        />
+          </View>
+        )}
+
       </ScrollView>
 
       <BottomSheet visible={visible} onClose={() => setVisible(!visible)}>

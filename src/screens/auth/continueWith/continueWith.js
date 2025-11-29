@@ -24,7 +24,8 @@ export default function ContinueWith({ navigation, route }) {
       const userInfo = await GoogleSignin.signIn();
       if (userInfo) {
         // Pass userInfo object directly — your Register screen reads userInfo.user or userInfo
-        navigation.navigate('Onboarding', { userInfo });
+        // navigation.navigate('Onboarding', { userInfo });
+        navigation.navigate('Welcome', { userInfo });
       }
     } catch (error) {
       // Better error handling for release builds
@@ -66,7 +67,7 @@ export default function ContinueWith({ navigation, route }) {
 
         <Button
           title="Continue with Email"
-          onPress={() => navigation.navigate('Onboarding')}
+          onPress={() => navigation.navigate('Welcome')}
           icon={require('../../../../assets/png/email.png')}
           style={[styles.button, { backgroundColor: 'black' }]}
         />

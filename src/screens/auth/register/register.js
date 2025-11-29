@@ -20,9 +20,9 @@ import { registerUser } from '../../../redux/slices/authSlice/authSlice';
 export default function Register({ navigation, route }) {
   const { userInfo, activeItem, chosen } = route.params;
   const dispatch = useDispatch()
-  console.log("chosen", chosen,)
-  console.log("userInfo", userInfo)
-  console.log("activeItems", activeItem)
+  // console.log("chosen", chosen,)
+  // console.log("userInfo", userInfo)
+  // console.log("activeItems", activeItem)
   // const user = userInfo?.data?.user
   // console.log("user", user)
 
@@ -91,7 +91,7 @@ export default function Register({ navigation, route }) {
       if (res.payload.status === "success") {
         setLoading(false);
         ToastAndroid.show('Registration successful!', ToastAndroid.LONG);
-        navigation.navigate('Welcome');
+        navigation.navigate('Login');
       }
       if (res.payload.message === "Email already exists") {
         ToastAndroid.show("Email already in use!", ToastAndroid.LONG)

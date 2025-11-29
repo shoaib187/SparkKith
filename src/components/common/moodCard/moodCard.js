@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 10,
-    gap: 10, justifyContent: 'space-between'
+    gap: 10,
   },
   tag: {
     flexDirection: "row",

@@ -34,7 +34,7 @@ export default function History({ navigation }) {
 
   const [activeTab, setActiveTab] = useState('task');
   const [selectedDate, setSelectedDate] = useState(new Date());
-
+  // console.log("triggered", triggeredTasks)
   // Fetch triggered tasks on mount
   useEffect(() => {
     if (token) {
@@ -58,9 +58,9 @@ export default function History({ navigation }) {
   const suggestions = useMemo(() => {
     return tasksForSelectedDate.map(task => ({
       id: task._id,
-      title: task.title,
-      desc: task.description,
-      status: Boolean(task.done),
+      title: task.taskTitle,
+      desc: task.taskDesc,
+      status: Boolean(task?.completed),
       date: task.date,
     }));
   }, [tasksForSelectedDate]);
@@ -82,7 +82,7 @@ export default function History({ navigation }) {
     handleGetFeelings(dateStr);
   };
 
-  console.log("feelingsByDate", feelingsByDate)
+  // console.log("feelingsByDate", feelingsByDate)
 
   return (
     <View style={styles.container}>
@@ -119,6 +119,7 @@ export default function History({ navigation }) {
         {activeTab === 'task' ? (
           <FlatList
             data={suggestions}
+            showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContainer}
             ListEmptyComponent={

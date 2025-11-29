@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, TouchableWithoutFeedback, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, TouchableWithoutFeedback, Animated, Dimensions, ScrollView } from 'react-native';
 import IconButton from '../iconbutton/iconButton';
 
 const { height } = Dimensions.get('window');
@@ -84,7 +84,12 @@ export default function BottomSheet({ visible, onClose, children }) {
             transform: [{ rotate: "45deg" }]
           }}
         />
-        <View style={styles.sheetContent}>{children}</View>
+        <View style={styles.sheetContent}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+
+            {children}
+          </ScrollView>
+        </View>
       </Animated.View>
     </View>
   );
@@ -109,7 +114,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     paddingHorizontal: 20,
-    paddingVertical: 24,
     justifyContent: 'center',
+    maxHeight: 500,
+    paddingVertical: 20
   },
 });

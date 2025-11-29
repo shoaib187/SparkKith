@@ -3,7 +3,7 @@ import React from 'react';
 import colors from '../../constants/colors/colors';
 
 export default function RankCard({ item, onPress, your }) {
-  console.log("item", item)
+  // console.log("item", item)
   return (
     <TouchableOpacity
       key={item._id}

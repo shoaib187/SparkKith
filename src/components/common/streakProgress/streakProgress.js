@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import { FONT_SIZES } from '../../constants/sizes/responsiveFont'
 
-export default function StreakProgress({ title, progress = 0 }) {
+export default function StreakProgress({ title, progress = 0, isProfile = true, streakValue }) {
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -14,14 +14,24 @@ export default function StreakProgress({ title, progress = 0 }) {
             { width: `${progress}%` }
           ]}
         />
-
-        <Text style={{
+        {streakValue > 0 && <Text style={{
           left: `${progress}%`,
           position: 'absolute',
-          transform: [{ translateX: -26 }],
+          transform: [{ translateX: -36 }],
         }}>
-          {Math.round(progress)}
+          {streakValue}/14
         </Text>
+        }
+
+        {!streakValue &&
+          <Text style={{
+            left: `${progress}%`,
+            position: 'absolute',
+            transform: [{ translateX: -36 }],
+          }}>
+            {Math.round(progress)} {isProfile && "%"}
+          </Text>
+        }
         <View style={[styles.progressBarLine, { width: `${progress - 4}%` }]} />
       </View>
     </View>

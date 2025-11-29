@@ -22,7 +22,7 @@ export default function CommunityHomePage() {
   const { token, user } = useSelector(state => state.auth);
   const { profileData } = useSelector((state) => state.profile);
   // console.log("profileData", profileData)
-  console.log("communityRanking", performers)
+  // console.log("communityRanking", performers)
 
   const yourEmail = user?.email;
 

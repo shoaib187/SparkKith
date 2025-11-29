@@ -4,7 +4,9 @@ import Button from '../../../components/common/button/button';
 import { FONT_SIZES } from '../../../components/constants/sizes/responsiveFont';
 import colors from '../../../components/constants/colors/colors';
 
-export default function WelcomePage({ navigation }) {
+export default function WelcomePage({ navigation, route }) {
+  const userInfo = route?.params?.userInfo ?? null;
+  console.log("params", userInfo)
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -28,7 +30,7 @@ export default function WelcomePage({ navigation }) {
       </Text>
 
       <Button
-        onPress={() => navigation.navigate('Login')}
+        onPress={() => navigation.navigate('Onboarding', { userInfo })}
         title="Let's Go!"
         style={styles.button}
       />

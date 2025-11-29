@@ -17,10 +17,10 @@ export default function BadgeSection({ badges }) {
             <Text style={[styles.badgeName, !badge.unlocked && styles.inactiveText]}>
               {badge?.title}
             </Text>
+            {/* <Text style={{ textAlign: 'center', fontSize: 8 }}>Progress: {badge.progress}/10</Text> */}
           </View>
         ))}
       </View>
-
     </View>
   )
 }

@@ -51,11 +51,11 @@ export default function HelpCenter({ navigation }) {
           'mailto:support@sparkkith.com?subject=Sparkith Support&body=Hello, I need help with...'
         )
     },
-    {
-      type: 'Community Forum',
-      details: 'community.sparkith.com',
-      action: () => Linking.openURL('https://community.sparkith.com')
-    }
+    // {
+    //   type: 'Community Forum',
+    //   details: 'community.sparkith.com',
+    //   action: () => Linking.openURL('https://community.sparkith.com')
+    // }
   ];
 
   const handleSendMessage = () => {
@@ -106,7 +106,7 @@ export default function HelpCenter({ navigation }) {
             </TouchableOpacity>
           ))}
 
-          <Button title="Send Message" onPress={handleSendMessage} />
+          {/* <Button title="Send Message" onPress={handleSendMessage} /> */}
         </View>
 
         {/* Quick Help */}
@@ -177,9 +177,9 @@ const styles = StyleSheet.create({
 
   contactItem: {
     marginBottom: 15,
-    paddingBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0'
+    // paddingBottom: 15,
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#f0f0f0'
   },
   contactType: {
     fontSize: 16,
