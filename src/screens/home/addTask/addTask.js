@@ -28,7 +28,7 @@ export default function AddTask({ navigation }) {
   const dispatch = useDispatch();
   const { token } = useSelector(state => state.auth)
   const { loading, suggestions } = useSelector(state => state?.tasks)
-  // console.log("suggestions", suggestions)
+  console.log("suggestions", suggestions)
 
   const [visible, setVisible] = useState(false)
   const [selectedTask, setSelectedTask] = useState(null)
@@ -128,8 +128,7 @@ export default function AddTask({ navigation }) {
       ToastAndroid.show("Please choose date & time", ToastAndroid.LONG);
       return;
     }
-
-    // Use the notification time that was calculated in DateTimePicker
+    // for notification
     const isoTime = taskDateTime.notificationTime.toISOString();
     const payload = {
       title,
@@ -138,12 +137,27 @@ export default function AddTask({ navigation }) {
       reminder: taskDateTime.reminder,
       timeFrame: taskDateTime.selectedTimeFrame,
     };
-    const payload1 = { taskId: selectedTask?._id, token }
-    // console.log("payload1", payload1)
-    const res = await dispatch(createTask(payload1))
+
+    const deadlineDate = new Date(taskDateTime.date);
+    deadlineDate.setHours(23, 0, 0, 0); // 11 PM
+
+    const finalPayload = {
+      taskId: selectedTask?._id,
+      title,
+      description,
+      time: isoTime,
+      reminder: taskDateTime.reminder,
+      timeFrame: taskDateTime.selectedTimeFrame,
+      deadline: deadlineDate.toISOString(),
+      token
+    };
+
+    console.log("payload1", finalPayload)
+    // return
+    const res = await dispatch(createTask(finalPayload))
     // console.log("res", res)
 
-    if (res.payload?.success === "success") {
+    if (res.payload?.status === "success") {
 
       if (taskDateTime.reminder) {
         const notificationScheduled = await scheduleNotification({

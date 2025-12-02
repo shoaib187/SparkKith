@@ -1,15 +1,17 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { View, Text } from 'react-native'
+import { Text } from 'react-native'
 import React from 'react'
 import Button from "../button/button";
 
-export default function TaskCompletedMessage({ undoTask, onPress }) {
+export default function TaskCompletedMessage({ undoTask, onPress, message, isSkipped }) {
   return (
     <TouchableOpacity style={styles.completedContainer} onPress={onPress} activeOpacity={1}>
       <Text style={styles.completedEmoji}>🎉</Text>
-      <Text style={styles.completedTitle}>You completed your daily task!</Text>
+      <Text style={styles.completedTitle}>{message}</Text>
       <Text style={styles.completedSubtitle}>Great job staying consistent! 🌟</Text>
-      <Button title="Undo Task" onPress={undoTask} style={{ width: '100%', marginTop: 20 }} />
+      {!isSkipped &&
+        <Button title="Undo Task" onPress={undoTask} style={{ width: '100%', marginTop: 20 }} />
+      }
     </TouchableOpacity>
   )
 }

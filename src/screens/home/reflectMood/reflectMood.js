@@ -15,30 +15,14 @@ import Button from "../../../components/common/button/button";
 import colors from "../../../components/constants/colors/colors";
 import { useDispatch, useSelector } from "react-redux";
 import { createFeeling } from "../../../redux/slices/feelingSlice/feelingSlice";
+import { moods, reasons } from "../../../utils/services/services";
 
-const moods = [
-  { id: "neutral", label: "Okay", icon: require("../../../../assets/icons/okay.png") },
-  { id: "happy", label: "Good", icon: require("../../../../assets/icons/good.png") },
-  { id: "excited", label: "Great", icon: require("../../../../assets/icons/great.png") },
-  { id: "sad", label: "Sad", icon: require("../../../../assets/icons/sad.png") },
-  { id: "angry", label: "Angry", icon: require("../../../../assets/icons/angry.png") },
-];
-
-const reasons = [
-  { id: "me", label: "Me", icon: require("../../../../assets/reasons/me.png") },
-  { id: "partner", label: "Partner", icon: require("../../../../assets/reasons/partner.png") },
-  { id: "family", label: "Family", icon: require("../../../../assets/reasons/family.png") },
-  { id: "friends", label: "Friends", icon: require("../../../../assets/reasons/friends.png") },
-  { id: "study", label: "Study", icon: require("../../../../assets/reasons/study.png") },
-  { id: "work", label: "Work", icon: require("../../../../assets/reasons/work.png") },
-  { id: "health", label: "Health", icon: require("../../../../assets/reasons/health.png") },
-  { id: "other", label: "Other", icon: require("../../../../assets/png/star.png") },
-];
-
-export default function ReflectMood({ navigation }) {
+export default function ReflectMood({ navigation, route }) {
   const dispatch = useDispatch();
+  const { selectedMood: newSelectedMood } = route?.params
+  // console.log("reflectMood", newSelectedMood)
   const { token } = useSelector(state => state.auth)
-  const [selectedMood, setSelectedMood] = useState(null);
+  const [selectedMood, setSelectedMood] = useState(newSelectedMood);
   const [selectedReasons, setSelectedReasons] = useState([]);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false)
@@ -62,12 +46,13 @@ export default function ReflectMood({ navigation }) {
         reason: selectedReasons,
       };
       // console.log("fianle ", payload);
+      // return
       const res = await dispatch(createFeeling({ payload, token }));
       if (res?.payload?.status === "success") {
-        ToastAndroid.show("Mood saved successfully ❤️", ToastAndroid.SHORT);
+        ToastAndroid.show("Mood saved successfully", ToastAndroid.SHORT);
         navigation.goBack();
       } else {
-        ToastAndroid.show("Mood saved successfully ❤️", ToastAndroid.SHORT);
+        ToastAndroid.show("Mood saved successfully", ToastAndroid.SHORT);
       }
 
     } catch (error) {

@@ -4,23 +4,16 @@ import React from 'react';
 import { FONT_SIZES } from '../../constants/sizes/responsiveFont';
 import colors from '../../constants/colors/colors';
 import Button from '../button/button';
+import { moods } from '../../../utils/services/services';
 
 export default function MoodSection({ navigation, selectedMood, setSelectedMood }) {
-
-  const moods = [
-    { id: 1, label: 'Okay', image: require('../../../../assets/icons/okay.png') },
-    { id: 2, label: 'Good', image: require('../../../../assets/icons/good.png') },
-    { id: 3, label: 'Great', image: require('../../../../assets/icons/great.png') },
-    { id: 4, label: 'Sad', image: require('../../../../assets/icons/sad.png') },
-    { id: 5, label: 'Angry', image: require('../../../../assets/icons/angry.png') },
-  ];
 
   return (
     <View style={styles.moodSection}>
       <Text style={styles.sectionTitle}>How are you feeling right now?</Text>
       <View style={styles.moodContent}>
         <View style={styles.moodRow}>
-          {moods.map((mood) => (
+          {moods?.map((mood) => (
             <TouchableOpacity
               key={mood.id}
               style={[
@@ -29,12 +22,10 @@ export default function MoodSection({ navigation, selectedMood, setSelectedMood 
               ]}
               onPress={() => {
                 setSelectedMood(mood.id);
-                // navigation.navigate("ReflectMood")
-              }
-              }
+              }}
               activeOpacity={0.8}
             >
-              <Image source={mood.image} style={styles.moodImage} />
+              <Image source={mood.icon} style={styles.moodImage} />
               <Text
                 style={[
                   styles.moodLabel,
@@ -48,7 +39,7 @@ export default function MoodSection({ navigation, selectedMood, setSelectedMood 
         </View>
         {selectedMood &&
           <View style={styles.actionWrapper}>
-            <Button style={{ width: '48%' }} title='Reflect' onPress={() => navigation.navigate("ReflectMood")} />
+            <Button style={{ width: '48%' }} title='Reflect' onPress={() => navigation.navigate("ReflectMood", { selectedMood })} />
             <Button style={{ width: '48%', backgroundColor: colors.lightBg, borderWidth: 1, borderColor: '#eee' }} title='Cancel' onPress={() => setSelectedMood(null)} textColor='black' />
           </View>
         }
@@ -96,7 +87,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   selectedMood: {
-    backgroundColor: '#FDE68A',
+    backgroundColor: '#FDE68A30',
     borderColor: '#F59E0B',
     borderWidth: 1,
   },

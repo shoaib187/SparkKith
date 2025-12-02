@@ -18,7 +18,7 @@ export default function InsightsHomePage({ navigation }) {
   const [selected, setSelected] = useState('');
   const [activeTab, setActiveTab] = useState("task");
   const [visible, setVisible] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState("Monthly"); // Add this state
+  const [selectedPeriod, setSelectedPeriod] = useState("Weekly"); // Add this state
 
   const { token } = useSelector(state => state.auth)
   const { feelingsByDate, analytics } = useSelector(state => state.feelings)
@@ -77,14 +77,13 @@ export default function InsightsHomePage({ navigation }) {
         return require("../../../../assets/icons/sad.png");
       case 'happy':
         return require("../../../../assets/icons/good.png");
-      case 'great':
-        return require("../../../../assets/icons/great.png");
+      case 'angry':
+        return require("../../../../assets/icons/angry.png");
+      // return require("../../../../assets/icons/great.png");
       case 'excited':
         return require("../../../../assets/icons/great.png");
       case 'neutral':
         return require("../../../../assets/icons/okay.png");
-      default:
-        return require("../../../../assets/icons/angry.png");
     }
   };
 
@@ -98,7 +97,7 @@ export default function InsightsHomePage({ navigation }) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bgColor }}>
       <Header onSettingPress={() => navigation.navigate("History")} navigation={navigation} title={"Insights"} showCalendar showBack={false} />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
         {activeTab === "task" ? (
           <TaskActivityChart

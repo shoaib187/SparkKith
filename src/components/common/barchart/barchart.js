@@ -7,8 +7,8 @@ import colors from '../../constants/colors/colors';
 export default function MyBarChart({ analytics }) {
 
   const barColors = [
-    '#F7E78B',
     '#7DE973',
+    '#F7E78B',
     '#FFB02E',
     '#9BE5FA',
     '#F8312F',
@@ -67,7 +67,7 @@ export default function MyBarChart({ analytics }) {
         />
 
         <BarChart
-          style={{ flex: 1, marginLeft: 10 }}
+          style={{ flex: 1, marginLeft: 6 }}
           data={chartData}
           yAccessor={({ item }) => item.value}
           contentInset={{ top: 10, bottom: 10 }}
@@ -80,13 +80,14 @@ export default function MyBarChart({ analytics }) {
           <RoundedTopBar data={chartData} />
         </BarChart>
       </View>
-
-      {/* Icons Row */}
       <View style={styles.iconRow}>
-        {icons?.map((icon, index) => (
-          <Image key={index} source={icon} style={styles.icon} />
+        {chartData.map((_, index) => (
+          <View key={index} style={[styles.iconWrapper]}>
+            <Image source={icons[index]} style={[styles.icon, { marginLeft: 30 }]} />
+          </View>
         ))}
       </View>
+
     </View>
   );
 }
@@ -103,13 +104,19 @@ const styles = StyleSheet.create({
   iconRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '86%',
-    marginTop: 8,
-    marginLeft: 25,
+    width: '100%',
   },
+
+  iconWrapper: {
+    width: "20%",
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   icon: {
     width: 28,
     height: 28,
     resizeMode: 'contain',
   },
+
 });

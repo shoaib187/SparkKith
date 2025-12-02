@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, Image } from 'react-native'
 import React from 'react'
 import { FONT_SIZES } from '../constants/sizes/responsiveFont'
+import colors from '../constants/colors/colors'
 
 export default function BadgeSection({ badges }) {
-  // console.log("badges", badges)
   return (
     <View style={styles.badgeWrapper}>
       <Text style={styles.sectionTitle}>Badge Gallery</Text>
@@ -17,14 +17,22 @@ export default function BadgeSection({ badges }) {
             <Text style={[styles.badgeName, !badge.unlocked && styles.inactiveText]}>
               {badge?.title}
             </Text>
-            {/* <Text style={{ textAlign: 'center', fontSize: 8 }}>Progress: {badge.progress}/10</Text> */}
+
+            {/* Progress Bar */}
+            <View style={styles.progressBarContainer}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  { width: `${(badge.progress / 10) * 100}%` }
+                ]}
+              />
+            </View>
           </View>
         ))}
       </View>
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   badgeWrapper: {
@@ -63,5 +71,26 @@ const styles = StyleSheet.create({
   },
   inactiveText: {
     color: "#9CA3AF",
+  },
+  // Progress Bar Styles
+  progressBarContainer: {
+    width: '100%',
+    height: 4,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 3,
+    marginTop: 8,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 6
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: colors.buttonColor,
+    borderRadius: 3,
+  },
+  progressText: {
+    fontSize: 8,
+    marginTop: 4,
+    color: '#6B7280',
   },
 })

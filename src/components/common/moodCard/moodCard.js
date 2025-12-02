@@ -1,16 +1,7 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import colors from "../../constants/colors/colors";
-
-const reasons = [
-  { id: "me", label: "Me", icon: require("../../../../assets/reasons/me.png") },
-  { id: "partner", label: "Partner", icon: require("../../../../assets/reasons/partner.png") },
-  { id: "family", label: "Family", icon: require("../../../../assets/reasons/family.png") },
-  { id: "friends", label: "Friends", icon: require("../../../../assets/reasons/friends.png") },
-  { id: "study", label: "Study", icon: require("../../../../assets/reasons/study.png") },
-  { id: "work", label: "Work", icon: require("../../../../assets/reasons/work.png") },
-  { id: "health", label: "Health", icon: require("../../../../assets/reasons/health.png") },
-];
+import { reasons } from "../../../utils/services/services";
 
 
 const getReasonIcon = (id) => {
@@ -20,6 +11,7 @@ const getReasonIcon = (id) => {
 
 
 const MoodCard = ({ style, mood, time, icon, tags = [], note }) => {
+  // console.log("mood", mood)
   return (
     <View style={[styles.card, style]}>
       <View style={styles.header}>
@@ -34,12 +26,6 @@ const MoodCard = ({ style, mood, time, icon, tags = [], note }) => {
 
       {tags.length > 0 && (
         <View style={styles.tagsContainer}>
-          {/* {tags.map((tag, index) => (
-            <View key={index} style={styles.tag}>
-              {tag.icon && <Image source={tag.icon} style={styles.tagIcon} />}
-              <Text numberOfLines={2} style={styles.tagText}>{tag.label}</Text>
-            </View>
-          ))} */}
           {tags.map((tag, index) => (
             <View key={index} style={styles.tag}>
               <Image source={getReasonIcon(tag.label)} style={styles.tagIcon} />

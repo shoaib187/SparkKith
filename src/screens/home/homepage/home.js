@@ -24,7 +24,7 @@ import BottomSheet from "../../../components/common/bottomSheet/bottomSheet";
 import CompleteTask from "../../../components/common/completeTask/completeTask";
 import TaskCompletedMessage from "../../../components/common/taskCompletedMessage/taskCompletedMessage";
 import NoTaskAssigned from "../../../components/common/noTaskAssigned/noTaskAssigned";
-import { getTodayTasks, getTriggeredTasks, markAsDoneTask, undoTask } from "../../../redux/slices/taskSlice/taskSlice";
+import { getTodayTasks, getTriggeredTasks, markAsDoneTask, skipTask, undoTask } from "../../../redux/slices/taskSlice/taskSlice";
 
 import colors from "../../../components/constants/colors/colors";
 import { FONT_SIZES } from "../../../components/constants/sizes/responsiveFont";
@@ -38,8 +38,8 @@ export default function Home({ navigation }) {
   const { triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
   const { token } = useSelector((state) => state.auth);
   const { profileData, loading: loadingProfile } = useSelector((state) => state.profile);
-  console.log("profileData", profileData)
-  // console.log("triggeredTasks", triggeredTasks)
+  // console.log("profileData", profileData)
+  console.log("triggeredTasks", triggeredTasks)
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -49,16 +49,11 @@ export default function Home({ navigation }) {
 
   const fallbackImage = require("../../../../assets/png/twinkle.png");
 
-
-
   const backendBadges = profileData?.badges || [];
   const unlockedBadges = backendBadges.filter(b => b.unlocked === true).length;
 
-
-
   const getGreeting = () => {
     const hour = new Date().getHours();
-
     if (hour >= 5 && hour < 12) return "Good morning";
     if (hour >= 12 && hour < 17) return "Good afternoon";
     if (hour >= 17 && hour < 21) return "Good evening";
@@ -142,6 +137,26 @@ export default function Home({ navigation }) {
     }
   };
 
+  const handleSkip = async () => {
+    if (!selectedTask) return;
+
+    setLoading(true);
+    try {
+      const res = await dispatch(skipTask({ taskId: selectedTask._id, token }));
+      console.log("res", res)
+      if (res?.payload?.status === 200) {
+        ToastAndroid.show("Task Skipped!", ToastAndroid.SHORT);
+        await dispatch(getTriggeredTasks(token));
+        await dispatch(fetchUserProfile(token));
+        setVisible(false);
+      }
+    } catch {
+      ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   /** -------------------------------
    * PULL TO REFRESH
    --------------------------------*/
@@ -163,8 +178,40 @@ export default function Home({ navigation }) {
   /** -------------------------------
    * TODAY'S TASK FILTER
    --------------------------------*/
-  const todaysTask = triggeredTasks?.length > 0 ? triggeredTasks[0] : null;
+  // const todaysTask = triggeredTasks?.length > 0 ? triggeredTasks[0] : null;
 
+  const todayStr = new Date().toDateString();
+
+  // Filter today's tasks and exclude skipped tasks
+  const todaysTasks = triggeredTasks?.filter(t => {
+    const taskDateStr = new Date(t.date).toDateString();
+    return taskDateStr === todayStr && !t.skipped; // exclude skipped tasks
+  }) || [];
+
+  // Sort tasks by time
+  const sortedTasks = todaysTasks.sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
+
+  // const todayStr = new Date().toDateString();
+
+  // // Filter for today's tasks that are NOT completed AND NOT skipped
+  // const todaysTasks = triggeredTasks?.filter(t => {
+  //   const isToday = new Date(t.date).toDateString() === todayStr;
+  //   const isNotCompleted = !t.completed;
+  //   const isNotSkipped = !t.skipped;
+
+  //   return isToday && isNotCompleted && isNotSkipped;
+  // }) || [];
+
+  // console.log("Pending tasks for today:", todaysTasks);
+
+  // // Sort by date (optional)
+  // const sortedTasks = todaysTasks.sort(
+  //   (a, b) => new Date(a.date) - new Date(b.date)
+  // );
+
+  // console.log("Sorted pending tasks:", sortedTasks);
 
   const streakValue = Number(profileData?.streak?.value || 0);
   const streakPercentage = (streakValue / 14) * 100;
@@ -216,37 +263,60 @@ export default function Home({ navigation }) {
         </View>
 
         {/* Tasks */}
-        {todaysTask ? (
-          todaysTask?.completed ? (
-            <TaskCompletedMessage
-              onPress={() => {
-                navigation.navigate("DailyStreak", { item: selectedTask, profileData })
-              }}
-              undoTask={() => {
-                setSelectedTask(todaysTask);
-                setVisible(true);
-              }} q
-            />
-          ) : (
-            <TaskCard
-              task={todaysTask}
-              navigation={navigation}
-              onPress={() => navigation.navigate("DailyStreak", { item: selectedTask, profileData })}
-              onSkip={() => {
-                setSelectedTask(todaysTask);
-                setVisible(true);
-              }}
-              onDone={() => {
-                setSelectedTask(todaysTask);
-                setVisible(true);
-              }}
-              loading={loading}
-            />
-          )
+        {sortedTasks.length > 0 ? (
+          sortedTasks.map((task, index) => {
+            // If skipped → show skipped message
+            if (task.skipped) {
+              return (
+                <TaskCompletedMessage
+                  key={index}
+                  isSkipped={true}
+                  message="You skipped this task"
+                  undoTask={() => {
+                    setSelectedTask(task);
+                    setVisible(true);
+                  }}
+                />
+              );
+            }
+
+            // 2️⃣ If completed → show completed UI
+            if (task.completed) {
+              return (
+                <TaskCompletedMessage
+                  key={index}
+                  message="You completed your daily task!"
+                  onPress={() => navigation.navigate("DailyStreak", { item: task, profileData })}
+                  undoTask={() => {
+                    setSelectedTask(task);
+                    setVisible(true);
+                  }}
+                />
+              );
+            }
+
+            // 3️⃣ Pending task → show TaskCard
+            return (
+              <TaskCard
+                key={index}
+                task={task}
+                navigation={navigation}
+                onPress={() => navigation.navigate("DailyStreak", { item: task, profileData })}
+                onSkip={() => {
+                  setSelectedTask(task);
+                  setVisible(true)
+                }}
+                onDone={() => {
+                  setSelectedTask(task);
+                  setVisible(true);
+                }}
+                loading={loading}
+              />
+            );
+          })
         ) : (
           <NoTaskAssigned navigation={navigation} />
         )}
-
         <QuotesSection />
         <MoodSection navigation={navigation} selectedMood={selectedMood} setSelectedMood={setSelectedMood} />
       </ScrollView>
@@ -257,6 +327,8 @@ export default function Home({ navigation }) {
           selectedTask={selectedTask}
           onUndo={handleUndo}
           onDone={handleDone}
+          handleSkip={handleSkip}
+          setVisible={setVisible}
         />
       </BottomSheet>
     </SafeAreaView>

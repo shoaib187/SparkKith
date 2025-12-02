@@ -1,4 +1,3 @@
-// --- imports remain the same ---
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import StreakProgress from "../../../components/common/streakProgress/streakProgress";
@@ -79,6 +78,7 @@ export default function ProfileHomePage({ navigation }) {
   };
 
   const finalBadges = getFinalBadges();
+  const unlockedBadgesCount = finalBadges.filter(badge => badge.unlocked).length;
 
   // -------------------------------
   // SIMPLIFIED BADGE CALCULATION
@@ -130,6 +130,8 @@ export default function ProfileHomePage({ navigation }) {
 
   const nextBadgeInfo = calculateNextBadgeProgress();
 
+
+
   // refresh function
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -154,7 +156,7 @@ export default function ProfileHomePage({ navigation }) {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
         <ProfileCard userInfo={profileData} />
-        <ProfileOverview stats={profileData} />
+        <ProfileOverview unlockedBadgesCount={unlockedBadgesCount} stats={profileData} />
 
         <StreakProgress progress={nextBadgeInfo.progress * 10} title={"Next Badge"} />
         <Text style={{ color: colors.description, marginBottom: 8 }}>
@@ -163,7 +165,7 @@ export default function ProfileHomePage({ navigation }) {
             : "Congratulations! All badges unlocked! 🎉"
           }
         </Text>
-        {/* {nextBadgeInfo.multipleSameProgress && (
+        {nextBadgeInfo.multipleSameProgress && (
           <Text style={[styles.multipleBadgesText, { color: colors.description }]}>
             Multiple badges at same progress: {nextBadgeInfo.badgeTitle}
           </Text>
@@ -172,7 +174,7 @@ export default function ProfileHomePage({ navigation }) {
           <Text style={[styles.nextBadgeText, { color: colors.description }]}>
             Next: {nextBadgeInfo.badgeTitle}
           </Text>
-        )} */}
+        )}
         <BadgeSection badges={finalBadges} />
       </ScrollView>
     </View>
@@ -194,136 +196,3 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 });
-
-
-// // --- imports remain the same ---
-// import React, { useEffect } from "react";
-// import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
-// import StreakProgress from "../../../components/common/streakProgress/streakProgress";
-// import ProfileCard from "../../../components/profileCard/profileCard";
-// import Header from "../../../components/common/header/header";
-// import ProfileOverview from "../../../components/profileOverview/profileOverview";
-// import BadgeSection from "../../../components/badgeSection/badgeSection";
-// import { useDispatch, useSelector } from "react-redux";
-// import { fetchUserProfile } from "../../../redux/slices/profileSlice/profileSlice";
-// import ProfileSkeleton from "../../../components/skeletons/profileSkeleton/profileSkeleton";
-// import colors from "../../../components/constants/colors/colors";
-
-// export default function ProfileHomePage({ navigation }) {
-//   const dispatch = useDispatch();
-//   const { token } = useSelector(state => state.auth);
-//   const { profileData, loading } = useSelector(state => state.profile);
-//   console.log("profileData", profileData)
-
-//   const [refreshing, setRefreshing] = React.useState(false);
-
-//   useEffect(() => {
-//     if (token) {
-//       dispatch(fetchUserProfile(token));
-//     }
-//   }, [dispatch, token]);
-
-
-//   // -------------------------------
-//   // UPDATED BADGES LOGIC
-//   // -------------------------------
-
-//   const defaultBadges = [
-//     { id: 1, emoji: require("../../../../assets/badges/badge1.png"), title: "Hydration Hero", name: "hydration" },
-//     { id: 2, emoji: require("../../../../assets/badges/badge2.png"), title: "Zen Den", name: "zen" },
-//     { id: 3, emoji: require("../../../../assets/badges/badge3.png"), title: "Sleep Star", name: "sleepStar" },
-//     { id: 4, emoji: require("../../../../assets/badges/badge4.png"), title: "Energy Booster", name: "energyBooster" },
-//     { id: 5, emoji: require("../../../../assets/badges/badge5.png"), title: "Streak Saver", name: "streakSaver" },
-//     { id: 6, emoji: require("../../../../assets/badges/badge6.png"), title: "Challenge Champion", name: "challengeChamp" },
-//   ];
-
-//   // User badge array from API
-//   const userBadges = profileData?.badges || [];
-
-//   // Logic for merging badges
-//   const getFinalBadges = () => {
-//     // If no badges from backend, show all default badges as locked
-//     if (!userBadges || userBadges.length === 0) {
-//       return defaultBadges.map(badge => ({
-//         ...badge,
-//         progress: 0,
-//         unlocked: false
-//       }));
-//     }
-
-//     // If badges from backend, merge with default badges
-//     return defaultBadges.map(defaultBadge => {
-//       // Find matching badge from user badges
-//       const userBadge = userBadges.find(ub =>
-//         ub.name.toLowerCase() === defaultBadge.name.toLowerCase()
-//       );
-
-//       if (userBadge) {
-//         // If user has this badge, use backend data
-//         return {
-//           ...defaultBadge,
-//           progress: userBadge.progress || 0,
-//           unlocked: userBadge.unlocked || false
-//         };
-//       } else {
-//         // If user doesn't have this badge, show as locked
-//         return {
-//           ...defaultBadge,
-//           progress: 0,
-//           unlocked: false
-//         };
-//       }
-//     });
-//   };
-
-//   const finalBadges = getFinalBadges();
-
-//   // Calculate points to next badge (you can modify this logic as needed)
-//   const calculatePointsToNextBadge = () => {
-//     const nextUnlockedBadge = finalBadges.find(badge => !badge.unlocked);
-//     return nextUnlockedBadge ? 10 - (nextUnlockedBadge.progress || 0) : 0;
-//   };
-
-//   const pointsToNextBadge = calculatePointsToNextBadge();
-
-//   // refresh function
-//   const handleRefresh = async () => {
-//     setRefreshing(true);
-//     await dispatch(fetchUserProfile(token));
-//     setRefreshing(false);
-//   };
-
-//   if (loading) return <ProfileSkeleton />;
-
-//   return (
-//     <View style={styles.container}>
-//       <Header
-//         title={"Profile"}
-//         showBack={false}
-//         onSettingPress={() => navigation.navigate("Settings")}
-//         showSettings
-//       />
-
-//       <ScrollView
-//         contentContainerStyle={{ paddingHorizontal: 16 }}
-//         showsVerticalScrollIndicator={false}
-//         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
-//       >
-//         <ProfileCard userInfo={profileData} />
-//         <ProfileOverview stats={profileData} />
-
-//         <StreakProgress progress={10} title={"Next Badge"} />
-//         <Text style={{ color: colors.description }}>
-//           {pointsToNextBadge} points to your next badge
-//         </Text>
-//         <BadgeSection badges={finalBadges} />
-//       </ScrollView>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-// });

@@ -48,21 +48,10 @@ export default function HelpCenter({ navigation }) {
       details: 'support@sparkkith.com',
       action: () =>
         Linking.openURL(
-          'mailto:support@sparkkith.com?subject=Sparkith Support&body=Hello, I need help with...'
+          'mailto:support@sparkkith.com?subject=SparkKith Support&body=Hello, I need help with...'
         )
     },
-    // {
-    //   type: 'Community Forum',
-    //   details: 'community.sparkith.com',
-    //   action: () => Linking.openURL('https://community.sparkith.com')
-    // }
   ];
-
-  const handleSendMessage = () => {
-    Linking.openURL(
-      'mailto:support@sparkith.com?subject=Sparkith Support Request&body=Dear Support Team,'
-    );
-  };
 
 
   const toggleItem = (id) => {

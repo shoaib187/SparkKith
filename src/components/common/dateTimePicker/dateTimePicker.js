@@ -21,7 +21,27 @@ export default function CustomDateTimePicker({ onChange }) {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [customTime, setCustomTime] = useState(null);
 
+  const getRandomFutureTime = (baseDate) => {
+    const now = new Date();
 
+    // Start with today's date or selected date
+    let randomTime = new Date(baseDate);
+
+    // Generate random hour + minute
+    randomTime.setHours(
+      Math.floor(Math.random() * 24),
+      Math.floor(Math.random() * 60),
+      0,
+      0
+    );
+
+    // If random time is already in past → push to next day
+    if (randomTime <= now) {
+      randomTime.setDate(randomTime.getDate() + 1);
+    }
+
+    return randomTime;
+  };
   // Time frame configurations with specific hours
   const timeFrames = {
     "Anytime": { hour: 12, minute: 0, label: "12:00 PM" }, // 12 PM
@@ -38,7 +58,6 @@ export default function CustomDateTimePicker({ onChange }) {
     const timeConfig = timeFrames[timeFrame];
     const selectedDateTime = new Date();
     selectedDateTime.setHours(timeConfig.hour, timeConfig.minute, 0, 0);
-
     return selectedDateTime <= now;
   };
 
@@ -82,9 +101,17 @@ export default function CustomDateTimePicker({ onChange }) {
     }
 
     // Handle time frame selection
-    const timeConfig = timeFrames[selectedTime];
-    const finalTime = new Date(finalDate);
-    finalTime.setHours(timeConfig.hour, timeConfig.minute, 0, 0);
+    let finalTime;
+
+    if (selectedTime === "Anytime") {
+      finalTime = getRandomFutureTime(finalDate);
+
+    } else {
+      const timeConfig = timeFrames[selectedTime];
+      finalTime = new Date(finalDate);
+      finalTime.setHours(timeConfig.hour, timeConfig.minute, 0, 0);
+    }
+
 
     const notificationTime = new Date(finalTime);
 
@@ -95,19 +122,16 @@ export default function CustomDateTimePicker({ onChange }) {
       notificationTime.setDate(notificationTime.getDate() + 1);
     }
 
-    // Debug logs to see what's happening
-    console.log('Selected Date:', selectedDate);
-    console.log('Final Date:', finalDate.toISOString());
-    console.log('Notification Time:', notificationTime.toISOString());
-    console.log('Selected Time Frame:', selectedTime);
-
     onChange({
       date: finalDate,
       time: finalTime,
       notificationTime: notificationTime,
       reminder: remind,
       selectedTimeFrame: selectedTime,
-      timeLabel: timeFrames[selectedTime]?.label,
+      timeLabel:
+        selectedTime === "Anytime"
+          ? finalTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : timeFrames[selectedTime]?.label,
     });
   }, [customDate, selectedTime, selectedDate, remind]);
 
@@ -150,20 +174,6 @@ export default function CustomDateTimePicker({ onChange }) {
     setSelectedTime(timeFrame);
   };
 
-  // const onDateChange = (event, date) => {
-  //   if (event.type === "set") {
-  //     setShowDatePicker(false);
-  //     setCustomDate(date);
-  //   } else {
-  //     setShowDatePicker(false);
-  //     // If user cancels date picker and was on "On Date", revert to Today
-  //     if (selectedDate === "On Date") {
-  //       setSelectedDate("Today");
-  //     }
-  //   }
-  // };
-
-
   const onDateChange = (event, date) => {
     if (event.type === "set" && date) {
       setShowDatePicker(false);
@@ -188,15 +198,6 @@ export default function CustomDateTimePicker({ onChange }) {
   };
 
 
-
-  const formattedDate = customDate
-    ? customDate.toLocaleDateString()
-    : "Select date";
-
-  // Get current time for display
-  const getCurrentTime = () => {
-    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
 
   return (
     <View style={styles.container}>

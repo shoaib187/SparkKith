@@ -3,8 +3,7 @@ import React from 'react';
 import colors from '../../constants/colors/colors';
 import Button from '../button/button';
 
-export default function TaskCard({ task, onDone, onSkip, onPress, selectedTask, loading }) {
-  // console.log(task)
+export default function TaskCard({ task, onDone, onSkip, onPress, loading }) {
   if (!task) return null;
 
   return (

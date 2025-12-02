@@ -89,7 +89,7 @@ export default function Settings({ navigation }) {
         <Text style={styles.sectionTitle}>Support</Text>
         <View style={styles.innerSection}>
           <TextButton title={"Help Center"} onPress={() => navigation.navigate("Help")} />
-          <TextButton onPress={() => navigation.navigate("About")} title={"About Sparkith"} />
+          <TextButton onPress={() => navigation.navigate("About")} title={"About SparkKith"} />
         </View>
       </View>
 

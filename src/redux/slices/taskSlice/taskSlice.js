@@ -91,6 +91,24 @@ export const undoTask = createAsyncThunk(
     }
   }
 );
+// mark as undo taks
+export const skipTask = createAsyncThunk(
+  "tasks/skipTask",
+  async ({ taskId, token }, { rejectWithValue }) => {
+    try {
+      const res = await axios.patch(`${baseUrl}/api/user/tasks/skip-task`, {
+        taskId,
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return res;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Error updating task");
+    }
+  }
+);
 
 // get today's tasks
 export const getTodayTasks = createAsyncThunk(
@@ -251,6 +269,18 @@ const tasksSlice = createSlice({
         );
       })
       .addCase(undoTask.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // undo task
+      .addCase(skipTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(skipTask.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(skipTask.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

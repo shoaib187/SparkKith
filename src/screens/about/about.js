@@ -31,7 +31,7 @@ export default function About({ navigation }) {
   }, []);
 
   const handleContact = () => {
-    Linking.openURL('mailto:support@sparkith.com');
+    Linking.openURL('mailto:support@sparkkith.com');
   };
 
   return (
@@ -39,7 +39,7 @@ export default function About({ navigation }) {
       <Header showBack navigation={navigation} />
       <View style={{ padding: 14 }}>
         <View style={styles.header}>
-          <Text style={styles.title}>About {appInfo.appName || 'Sparkith'}</Text>
+          <Text style={styles.title}>About {appInfo.appName || 'SparkKith'}</Text>
           <Text style={styles.subtitle}>Version {appInfo.version} (Build {appInfo.buildNumber})</Text>
         </View>
 
@@ -60,7 +60,7 @@ export default function About({ navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Contact Us</Text>
           <Text style={styles.contactText} onPress={handleContact}>
-            support@sparkith.com
+            support@sparkkith.com
           </Text>
         </View>
       </View>
