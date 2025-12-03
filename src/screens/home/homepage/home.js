@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
@@ -21,7 +22,6 @@ import TaskCard from "../../../components/common/taskCard/taskCard";
 import QuotesSection from "../../../components/common/qoutesSection/qoutesSection";
 import MoodSection from "../../../components/common/moodSection/moodSection";
 import BottomSheet from "../../../components/common/bottomSheet/bottomSheet";
-import CompleteTask from "../../../components/common/completeTask/completeTask";
 import TaskCompletedMessage from "../../../components/common/taskCompletedMessage/taskCompletedMessage";
 import NoTaskAssigned from "../../../components/common/noTaskAssigned/noTaskAssigned";
 import { getTodayTasks, getTriggeredTasks, markAsDoneTask, skipTask, undoTask } from "../../../redux/slices/taskSlice/taskSlice";
@@ -30,22 +30,30 @@ import colors from "../../../components/constants/colors/colors";
 import { FONT_SIZES } from "../../../components/constants/sizes/responsiveFont";
 import HomeSkeleton from "../../../components/skeletons/homeSkeleton/homeSkeleton";
 import { fetchUserProfile } from "../../../redux/slices/profileSlice/profileSlice";
+import SkipSheet from "../skipSheet/skipSheet";
+import ConfirmCompleteTask from "../confirmCompleteTask/confirmCompleteTask";
+import CompleteTaskSheet from "../completeTaskSheet/completeTaskSheet";
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
 
-  const { triggeredTasks, loading: loadingTasks } = useSelector((state) => state.tasks);
+  const { triggeredTasks } = useSelector((state) => state.tasks);
   const { token } = useSelector((state) => state.auth);
-  const { profileData, loading: loadingProfile } = useSelector((state) => state.profile);
-  // console.log("profileData", profileData)
-  console.log("triggeredTasks", triggeredTasks)
+  const { profileData } = useSelector((state) => state.profile);
+  // console.log("profileData", token)
+  // console.log("today tasks", tasks)
+  // console.log("triggeredTasks", triggeredTasks)
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedMood, setSelectedMood] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [skipVisible, setSkipVisible] = useState(false)
+  const [undoTaskVisible, setUndoTaskVisible] = useState(false)
 
   const fallbackImage = require("../../../../assets/png/twinkle.png");
 
@@ -67,12 +75,22 @@ export default function Home({ navigation }) {
 
 
   useEffect(() => {
-    if (token) {
-      dispatch(getTodayTasks(token));
-      dispatch(fetchUserProfile(token));
-      dispatch(getTriggeredTasks(token));
-      // dispatch(triggerTasks(token))
+    const fetchData = async () => {
+      setInitialLoad(true)
+      try {
+        if (token) {
+          dispatch(getTodayTasks(token));
+          dispatch(fetchUserProfile(token));
+          dispatch(getTriggeredTasks(token));
+          // dispatch(triggerTasks(token))
+        }
+      } catch (error) {
+        console.log("err", error)
+      } finally {
+        setInitialLoad(false)
+      }
     }
+    fetchData()
   }, [dispatch, token, isFocused]);
 
   /** -------------------------------
@@ -101,16 +119,31 @@ export default function Home({ navigation }) {
 
     setLoading(true);
     try {
-      const res = await dispatch(markAsDoneTask({ taskId: selectedTask._id, token }));
-      console.log("res", res)
-      ToastAndroid.show("Task marked as done!", ToastAndroid.SHORT);
+      const result = await dispatch(markAsDoneTask({ taskId: selectedTask._id, token }));
+      console.log("handleDone result:", result);
 
-      await dispatch(getTriggeredTasks(token));
-      await dispatch(fetchUserProfile(token));
-      setVisible(false);
+      // Check if the action was fulfilled
+      if (result.meta?.requestStatus === 'fulfilled') {
+        ToastAndroid.show("Task marked as done!", ToastAndroid.SHORT);
 
-      navigation.navigate("TaskCompleted", { selectedTask });
-    } catch {
+        // Close all sheet states
+        setVisible(false);
+        setSkipVisible(false);
+        setUndoTaskVisible(false);
+
+        // Refresh data
+        await Promise.all([
+          dispatch(getTriggeredTasks(token)),
+          dispatch(fetchUserProfile(token))
+        ]);
+
+        // Navigate after refreshing
+        navigation.navigate("TaskCompleted", { selectedTask });
+      } else {
+        ToastAndroid.show("Failed to mark task as done!", ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.error("Error in handleDone:", error);
       ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
     } finally {
       setLoading(false);
@@ -122,15 +155,28 @@ export default function Home({ navigation }) {
 
     setLoading(true);
     try {
-      const res = await dispatch(undoTask({ taskId: selectedTask._id, token }));
-      console.log("res", res)
-      console.log("res", selectedTask)
-      ToastAndroid.show("Task reverted!", ToastAndroid.SHORT);
+      const result = await dispatch(undoTask({ taskId: selectedTask._id, token }));
+      console.log("handleUndo result:", result);
 
-      await dispatch(getTriggeredTasks(token));
-      await dispatch(fetchUserProfile(token));
-      setVisible(false);
-    } catch {
+      // Check if the action was fulfilled
+      if (result.meta?.requestStatus === 'fulfilled') {
+        ToastAndroid.show("Task reverted!", ToastAndroid.SHORT);
+
+        // Close all sheet states
+        setVisible(false);
+        setSkipVisible(false);
+        setUndoTaskVisible(false);
+
+        // Refresh data
+        await Promise.all([
+          dispatch(getTriggeredTasks(token)),
+          dispatch(fetchUserProfile(token))
+        ]);
+      } else {
+        ToastAndroid.show("Failed to revert task!", ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.error("Error in handleUndo:", error);
       ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
     } finally {
       setLoading(false);
@@ -142,20 +188,34 @@ export default function Home({ navigation }) {
 
     setLoading(true);
     try {
-      const res = await dispatch(skipTask({ taskId: selectedTask._id, token }));
-      console.log("res", res)
-      if (res?.payload?.status === 200) {
+      const result = await dispatch(skipTask({ taskId: selectedTask._id, token }));
+      console.log("handleSkip result:", result);
+
+      // Check if the action was fulfilled
+      if (result.meta?.requestStatus === 'fulfilled') {
         ToastAndroid.show("Task Skipped!", ToastAndroid.SHORT);
-        await dispatch(getTriggeredTasks(token));
-        await dispatch(fetchUserProfile(token));
+
+        // Close all sheet states
         setVisible(false);
+        setSkipVisible(false);
+        setUndoTaskVisible(false);
+
+        // Refresh data
+        await Promise.all([
+          dispatch(getTriggeredTasks(token)),
+          dispatch(fetchUserProfile(token))
+        ]);
+      } else {
+        ToastAndroid.show("Failed to skip task!", ToastAndroid.SHORT);
       }
-    } catch {
+    } catch (error) {
+      console.error("Error in handleSkip:", error);
       ToastAndroid.show("Something went wrong!", ToastAndroid.SHORT);
     } finally {
       setLoading(false);
     }
   };
+
 
   /** -------------------------------
    * PULL TO REFRESH
@@ -164,9 +224,9 @@ export default function Home({ navigation }) {
     setRefreshing(true);
     try {
       if (token) {
+        await dispatch(getTodayTasks(token));
         await dispatch(getTriggeredTasks(token));
         await dispatch(fetchUserProfile(token));
-        // await dispatch(triggerTasks(token))
       }
     } catch (err) {
       console.log("Refresh error:", err);
@@ -175,48 +235,47 @@ export default function Home({ navigation }) {
     }
   };
 
-  /** -------------------------------
-   * TODAY'S TASK FILTER
-   --------------------------------*/
-  // const todaysTask = triggeredTasks?.length > 0 ? triggeredTasks[0] : null;
 
+  // const todayStr = new Date().toDateString();
+
+  // // Filter today's tasks and exclude skipped tasks
+  // const todaysTasks = triggeredTasks?.filter(t => {
+  //   const taskDateStr = new Date(t.date).toDateString();
+  //   return taskDateStr === todayStr && !t.skipped; // exclude skipped tasks
+  // }) || [];
+
+  // // Sort tasks by time
+  // const sortedTasks = todaysTasks.sort(
+  //   (a, b) => new Date(a.date) - new Date(b.date)
+  // );
   const todayStr = new Date().toDateString();
 
-  // Filter today's tasks and exclude skipped tasks
+  // Step 1 & 2 → get today's tasks without skipped
   const todaysTasks = triggeredTasks?.filter(t => {
     const taskDateStr = new Date(t.date).toDateString();
-    return taskDateStr === todayStr && !t.skipped; // exclude skipped tasks
+    return taskDateStr === todayStr && !t.skipped;
   }) || [];
 
-  // Sort tasks by time
+  // Step 3 → sort by date/time
   const sortedTasks = todaysTasks.sort(
     (a, b) => new Date(a.date) - new Date(b.date)
   );
 
-  // const todayStr = new Date().toDateString();
+  // Step 4 → get incomplete tasks
+  const notCompleted = sortedTasks.filter(task => !task.completed);
 
-  // // Filter for today's tasks that are NOT completed AND NOT skipped
-  // const todaysTasks = triggeredTasks?.filter(t => {
-  //   const isToday = new Date(t.date).toDateString() === todayStr;
-  //   const isNotCompleted = !t.completed;
-  //   const isNotSkipped = !t.skipped;
+  // Step 5 & 6 → final output
+  const finalTasksToShow = notCompleted.length > 0
+    ? [notCompleted[0]]        // show only first incomplete
+    : sortedTasks;             // else show all completed tasks
 
-  //   return isToday && isNotCompleted && isNotSkipped;
-  // }) || [];
-
-  // console.log("Pending tasks for today:", todaysTasks);
-
-  // // Sort by date (optional)
-  // const sortedTasks = todaysTasks.sort(
-  //   (a, b) => new Date(a.date) - new Date(b.date)
-  // );
 
   // console.log("Sorted pending tasks:", sortedTasks);
 
   const streakValue = Number(profileData?.streak?.value || 0);
   const streakPercentage = (streakValue / 14) * 100;
 
-  if (loadingTasks || loadingProfile) {
+  if (initialLoad) {
     return <HomeSkeleton />
   }
 
@@ -263,8 +322,8 @@ export default function Home({ navigation }) {
         </View>
 
         {/* Tasks */}
-        {sortedTasks.length > 0 ? (
-          sortedTasks.map((task, index) => {
+        {finalTasksToShow.length > 0 ? (
+          finalTasksToShow.map((task, index) => {
             // If skipped → show skipped message
             if (task.skipped) {
               return (
@@ -280,7 +339,7 @@ export default function Home({ navigation }) {
               );
             }
 
-            // 2️⃣ If completed → show completed UI
+            // 2 If completed → show completed UI
             if (task.completed) {
               return (
                 <TaskCompletedMessage
@@ -289,13 +348,13 @@ export default function Home({ navigation }) {
                   onPress={() => navigation.navigate("DailyStreak", { item: task, profileData })}
                   undoTask={() => {
                     setSelectedTask(task);
-                    setVisible(true);
+                    setUndoTaskVisible(true)
                   }}
                 />
               );
             }
 
-            // 3️⃣ Pending task → show TaskCard
+            // 3️ Pending task → show TaskCard
             return (
               <TaskCard
                 key={index}
@@ -304,13 +363,13 @@ export default function Home({ navigation }) {
                 onPress={() => navigation.navigate("DailyStreak", { item: task, profileData })}
                 onSkip={() => {
                   setSelectedTask(task);
-                  setVisible(true)
+                  setSkipVisible(true)
                 }}
                 onDone={() => {
                   setSelectedTask(task);
                   setVisible(true);
                 }}
-                loading={loading}
+              // loading={loading}
               />
             );
           })
@@ -322,14 +381,34 @@ export default function Home({ navigation }) {
       </ScrollView>
 
       {/* Bottom Sheet */}
-      <BottomSheet visible={visible} onClose={() => setVisible(false)}>
-        <CompleteTask
-          selectedTask={selectedTask}
-          onUndo={handleUndo}
-          onDone={handleDone}
-          handleSkip={handleSkip}
-          setVisible={setVisible}
-        />
+      <BottomSheet
+        visible={visible || skipVisible || undoTaskVisible}
+        onClose={() => {
+          setVisible(false);
+          setSkipVisible(false);
+          setUndoTaskVisible(false);
+        }}
+      >
+        {skipVisible ? (
+          <SkipSheet
+            selectedTask={selectedTask}
+            setSkipVisible={setSkipVisible}
+            handleSkip={handleSkip}
+            loading={loading}
+          />
+        ) : undoTaskVisible ? (
+          <CompleteTaskSheet
+            selectedTask={selectedTask}
+            onUndo={handleUndo}
+            loading={loading}
+          />
+        ) : (
+          <ConfirmCompleteTask
+            selectedTask={selectedTask}
+            onDone={handleDone}
+            loading={loading}
+          />
+        )}
       </BottomSheet>
     </SafeAreaView>
   );

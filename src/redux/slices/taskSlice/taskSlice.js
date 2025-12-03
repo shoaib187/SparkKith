@@ -37,21 +37,6 @@ export const getTaskSuggestions = createAsyncThunk(
   }
 );
 
-// update taks
-export const updateTask = createAsyncThunk(
-  "tasks/updateTask",
-  async ({ taskId, done }, { rejectWithValue }) => {
-    try {
-      const res = await axios.patch(`${baseUrl}/api/user/tasks/update`, {
-        taskId,
-        done,
-      });
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || "Error updating task");
-    }
-  }
-);
 
 // mark as done taks
 export const markAsDoneTask = createAsyncThunk(
@@ -66,7 +51,7 @@ export const markAsDoneTask = createAsyncThunk(
         }
       });
       console.log("markAsDoneTask", res)
-      return res;
+      return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error updating task");
     }
@@ -85,7 +70,7 @@ export const undoTask = createAsyncThunk(
           'Authorization': `Bearer ${token}`
         }
       });
-      return res;
+      return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error updating task");
     }
@@ -103,7 +88,7 @@ export const skipTask = createAsyncThunk(
           'Authorization': `Bearer ${token}`
         }
       });
-      return res;
+      return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error updating task");
     }
@@ -115,16 +100,20 @@ export const getTodayTasks = createAsyncThunk(
   "tasks/getTodayTasks",
   async (token, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${baseUrl}/api/user/tasks/get`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.post(
+        `${baseUrl}/api/user/tasks/assign-daily-task`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("res", res)
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error fetching today's tasks");
     }
   }
 );
-
 
 // get weekly ranking
 export const getWeeklyRankings = createAsyncThunk(
@@ -207,7 +196,6 @@ const tasksSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-
       // create task
       .addCase(createTask.pending, (state) => {
         state.loading = true;
@@ -215,26 +203,8 @@ const tasksSlice = createSlice({
       })
       .addCase(createTask.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks.push(action.payload.data); // push new task
       })
       .addCase(createTask.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      // update task
-      .addCase(updateTask.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateTask.fulfilled, (state, action) => {
-        state.loading = false;
-        const updated = action.payload.data;
-        state.tasks = state.tasks.map(task =>
-          task._id === updated.taskId ? { ...task, done: updated.done } : task
-        );
-      })
-      .addCase(updateTask.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -246,10 +216,6 @@ const tasksSlice = createSlice({
       })
       .addCase(markAsDoneTask.fulfilled, (state, action) => {
         state.loading = false;
-        const updated = action.payload.data;
-        state.tasks = state.tasks.map(task =>
-          task._id === updated.taskId ? { ...task, done: true } : task
-        );
       })
       .addCase(markAsDoneTask.rejected, (state, action) => {
         state.loading = false;
@@ -263,10 +229,6 @@ const tasksSlice = createSlice({
       })
       .addCase(undoTask.fulfilled, (state, action) => {
         state.loading = false;
-        const updated = action.payload.data;
-        state.tasks = state.tasks.map(task =>
-          task._id === updated.taskId ? { ...task, done: false } : task
-        );
       })
       .addCase(undoTask.rejected, (state, action) => {
         state.loading = false;
@@ -292,7 +254,7 @@ const tasksSlice = createSlice({
       })
       .addCase(getTodayTasks.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks = action.payload.tasks; // replace current tasks with today's tasks
+        state.tasks = action.payload.data;
       })
       .addCase(getTodayTasks.rejected, (state, action) => {
         state.loading = false;

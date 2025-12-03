@@ -28,12 +28,12 @@ export default function AddTask({ navigation }) {
   const dispatch = useDispatch();
   const { token } = useSelector(state => state.auth)
   const { loading, suggestions } = useSelector(state => state?.tasks)
-  console.log("suggestions", suggestions)
 
   const [visible, setVisible] = useState(false)
   const [selectedTask, setSelectedTask] = useState(null)
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isCreatingTask, setIsCreating] = useState(false)
   // console.log("selected", selectedTask)
   useEffect(() => {
     dispatch(getTaskSuggestions(token))
@@ -128,56 +128,147 @@ export default function AddTask({ navigation }) {
       ToastAndroid.show("Please choose date & time", ToastAndroid.LONG);
       return;
     }
-    // for notification
-    const isoTime = taskDateTime.notificationTime.toISOString();
-    const payload = {
-      title,
-      description,
-      time: isoTime,
-      reminder: taskDateTime.reminder,
-      timeFrame: taskDateTime.selectedTimeFrame,
-    };
 
-    const deadlineDate = new Date(taskDateTime.date);
-    deadlineDate.setHours(23, 0, 0, 0); // 11 PM
+    setIsCreating(true);
 
-    const finalPayload = {
-      taskId: selectedTask?._id,
-      title,
-      description,
-      time: isoTime,
-      reminder: taskDateTime.reminder,
-      timeFrame: taskDateTime.selectedTimeFrame,
-      deadline: deadlineDate.toISOString(),
-      token
-    };
+    try {
+      // for notification
+      const isoTime = taskDateTime.notificationTime.toISOString();
+      const deadlineDate = new Date(taskDateTime.date);
+      deadlineDate.setHours(23, 0, 0, 0); // 11 PM
 
-    console.log("payload1", finalPayload)
-    // return
-    const res = await dispatch(createTask(finalPayload))
-    // console.log("res", res)
+      const finalPayload = {
+        taskId: selectedTask?._id,
+        title,
+        description,
+        time: isoTime,
+        reminder: taskDateTime.reminder,
+        timeFrame: taskDateTime.selectedTimeFrame,
+        deadline: deadlineDate.toISOString(),
+        token
+      };
 
-    if (res.payload?.status === "success") {
+      console.log("Creating task with payload:", finalPayload);
 
-      if (taskDateTime.reminder) {
-        const notificationScheduled = await scheduleNotification({
-          ...payload,
-          notificationTime: taskDateTime.notificationTime
-        });
+      const result = await dispatch(createTask(finalPayload));
+      console.log("Create task result:", result);
 
-        if (notificationScheduled) {
-          ToastAndroid.show("Task Created with Reminder!", ToastAndroid.LONG);
+      // Check if the action was fulfilled
+      if (result.meta?.requestStatus === 'fulfilled') {
+        const payload = result.payload;
+
+        // Check the payload structure
+        if (payload?.status === "success" || payload?.statusCode === 200) {
+
+          if (taskDateTime.reminder) {
+            const notificationScheduled = await scheduleNotification({
+              title,
+              description,
+              notificationTime: taskDateTime.notificationTime
+            });
+
+            if (notificationScheduled) {
+              ToastAndroid.show("Task Created with Reminder!", ToastAndroid.LONG);
+            } else {
+              ToastAndroid.show("Task Created but notification failed", ToastAndroid.LONG);
+            }
+          } else {
+            ToastAndroid.show("Task Created!", ToastAndroid.LONG);
+          }
+
+          // Refresh tasks
+          await dispatch(getTodayTasks(token));
+
+          // Reset form and navigate
+          setTitle("");
+          setDescription("");
+          setSelectedTask(null);
+          setTaskDateTime({
+            date: null,
+            time: null,
+            notificationTime: null,
+            reminder: false,
+            selectedTimeFrame: "Anytime",
+            timeLabel: "12:00 PM",
+          });
+
+          navigation.goBack();
         } else {
-          ToastAndroid.show("Task Created but notification failed", ToastAndroid.LONG);
+          ToastAndroid.show(payload?.message || "Failed to create task", ToastAndroid.LONG);
         }
       } else {
-        ToastAndroid.show("Task Created!", ToastAndroid.LONG);
+        ToastAndroid.show("Failed to create task", ToastAndroid.LONG);
       }
-      await dispatch(getTodayTasks(token))
-      navigation.goBack();
+    } catch (error) {
+      console.error("Error in handleCreateTask:", error);
+      ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+    } finally {
+      setIsCreating(false);
     }
-
   };
+
+  // const handleCreateTask = async () => {
+  //   if (!title) {
+  //     ToastAndroid.show("Please enter a title", ToastAndroid.LONG);
+  //     return;
+  //   }
+
+  //   if (!taskDateTime.date || !taskDateTime.time) {
+  //     ToastAndroid.show("Please choose date & time", ToastAndroid.LONG);
+  //     return;
+  //   }
+  //   setIsCreating(true)
+  //   // for notification
+  //   const isoTime = taskDateTime.notificationTime.toISOString();
+  //   const payload = {
+  //     title,
+  //     description,
+  //     time: isoTime,
+  //     reminder: taskDateTime.reminder,
+  //     timeFrame: taskDateTime.selectedTimeFrame,
+  //   };
+
+  //   const deadlineDate = new Date(taskDateTime.date);
+  //   deadlineDate.setHours(23, 0, 0, 0); // 11 PM
+
+  //   const finalPayload = {
+  //     taskId: selectedTask?._id,
+  //     title,
+  //     description,
+  //     time: isoTime,
+  //     reminder: taskDateTime.reminder,
+  //     timeFrame: taskDateTime.selectedTimeFrame,
+  //     deadline: deadlineDate.toISOString(),
+  //     token
+  //   };
+
+  //   console.log("payload1", finalPayload)
+  //   // return
+  //   const res = await dispatch(createTask(finalPayload))
+  //   // console.log("res", res)
+
+  //   if (res.payload?.status === "success") {
+
+  //     if (taskDateTime.reminder) {
+  //       const notificationScheduled = await scheduleNotification({
+  //         ...payload,
+  //         notificationTime: taskDateTime.notificationTime
+  //       });
+
+  //       if (notificationScheduled) {
+  //         ToastAndroid.show("Task Created with Reminder!", ToastAndroid.LONG);
+  //       } else {
+  //         ToastAndroid.show("Task Created but notification failed", ToastAndroid.LONG);
+  //       }
+  //     } else {
+  //       ToastAndroid.show("Task Created!", ToastAndroid.LONG);
+  //     }
+  //     await dispatch(getTodayTasks(token))
+  //     setIsCreating(false)
+  //     navigation.goBack();
+  //   }
+
+  // };
 
   // Get display text for selected time
   const getTimeDisplayText = () => {
@@ -294,7 +385,7 @@ export default function AddTask({ navigation }) {
 
       <View style={styles.bottomButton}>
         <Button
-          title={!loading ? "Add Task" : "Adding..."}
+          title={!isCreatingTask ? "Add Task" : "Adding..."}
           onPress={handleCreateTask}
         />
       </View>

@@ -5,7 +5,9 @@ import colors from '../../constants/colors/colors';
 import { getEmojiForTask } from '../../../utils/services/services';
 
 export default function Task({ item }) {
-  const isDone = item.status;
+  const isDone = item.completed;
+  const isSkipped = item.skipped;
+  // console.log("item", item)
   const emoji = getEmojiForTask(item.title, item.desc);
 
   // check if task is today
@@ -14,7 +16,7 @@ export default function Task({ item }) {
   const isToday = todayStr === taskDateStr;
 
   // If task is done OR not today => apply opacity and disable
-  const disabled = isDone || !isToday;
+  const disabled = isDone || !isToday || isSkipped;
   const opacity = disabled ? 0.6 : 1;
 
   return (
@@ -37,6 +39,7 @@ export default function Task({ item }) {
       {/* Text Section */}
       <View style={styles.textContainer}>
         <Text
+          numberOfLines={2}
           style={[
             styles.title,
             {
@@ -45,13 +48,13 @@ export default function Task({ item }) {
             },
           ]}
         >
-          {item.title}
+          {item.taskTitle}
         </Text>
-        <Text numberOfLines={2} style={styles.desc}>{item.desc}</Text>
+        <Text numberOfLines={2} style={styles.desc}>{item.taskDesc}</Text>
       </View>
 
       {/* Skipped Label */}
-      {!isDone && !isToday && (
+      {isSkipped && (
         <Text style={styles.skippedLabel}>Skipped</Text>
       )}
     </TouchableOpacity>
