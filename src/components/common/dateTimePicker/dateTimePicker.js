@@ -15,7 +15,7 @@ import colors from "../../constants/colors/colors";
 export default function CustomDateTimePicker({ onChange }) {
   const [selectedDate, setSelectedDate] = useState("Today");
   const [selectedTime, setSelectedTime] = useState("Anytime");
-  const [remind, setRemind] = useState(false);
+  const [remind, setRemind] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDate, setCustomDate] = useState(null);
   const [showTimePicker, setShowTimePicker] = useState(false);

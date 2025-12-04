@@ -137,7 +137,7 @@ export default function AddTask({ navigation }) {
       const deadlineDate = new Date(taskDateTime.date);
       deadlineDate.setHours(23, 0, 0, 0); // 11 PM
 
-      const finalPayload = {
+      const payload = {
         taskId: selectedTask?._id,
         title,
         description,
@@ -148,9 +148,9 @@ export default function AddTask({ navigation }) {
         token
       };
 
-      console.log("Creating task with payload:", finalPayload);
+      // console.log("Creating task with payload:", payload);
 
-      const result = await dispatch(createTask(finalPayload));
+      const result = await dispatch(createTask(payload));
       console.log("Create task result:", result);
 
       // Check if the action was fulfilled

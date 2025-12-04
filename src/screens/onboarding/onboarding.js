@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -21,17 +20,28 @@ const { width } = Dimensions.get('window');
 const ITEM_WIDTH = width * 0.4;
 const SPACER_ITEM_SIZE = (width - ITEM_WIDTH) / 2;
 
+// Default emoji for each avatar title (fallback if API doesn't provide emoji)
+const DEFAULT_EMOJIS = {
+  'Twinkle': '✨',
+  'Paws': '🐾',
+  'Willow': '🌿',
+  'Bolt': '⚡',
+  'Chirpy': '🐦',
+  'Flare': '🔥',
+  'Bliss': '😊',
+};
+
 const OnboardingScreen = ({ navigation, route }) => {
   const userInfo = route?.params?.userInfo ?? null;
-  console.log("params", userInfo)
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [activeIndex, setActiveIndex] = useState(1); // Start with first real item (index 1)
-  const [loading, setLoading] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [activeEmoji, setActiveEmoji] = useState('✨'); // Default emoji
 
   useEffect(() => {
-    getAvatars()
-  }, [])
+    getAvatars();
+  }, []);
 
   const getAvatars = async () => {
     setLoading(true);
@@ -45,20 +55,24 @@ const OnboardingScreen = ({ navigation, route }) => {
           id: item._id,
           image: item.image,
           title: item.title,
-          description: item.description
+          description: item.description,
+          emoji: item.emoji || DEFAULT_EMOJIS[item.title] || '✨' // Use API emoji or fallback
         })),
         { id: "right-spacer" }
       ];
 
       setData(formatted);
+      // Set initial emoji based on first real item
+      if (formatted.length > 2) {
+        setActiveEmoji(formatted[1]?.emoji || '✨');
+      }
     } catch (error) {
       console.log("error ", error);
       ToastAndroid.show("Something went wrong", ToastAndroid.SHORT);
     } finally {
       setLoading(false);
     }
-  }
-
+  };
 
   const handleScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { x: scrollX } } }],
@@ -68,6 +82,11 @@ const OnboardingScreen = ({ navigation, route }) => {
         const offsetX = event.nativeEvent.contentOffset.x;
         const index = Math.round(offsetX / ITEM_WIDTH) + 1; // +1 to account for left spacer
         setActiveIndex(index);
+
+        // Update active emoji when index changes
+        if (data[index] && data[index].emoji) {
+          setActiveEmoji(data[index].emoji);
+        }
       }
     }
   );
@@ -93,7 +112,7 @@ const OnboardingScreen = ({ navigation, route }) => {
   };
 
   if (loading) {
-    return <Loading />
+    return <Loading />;
   }
 
   return (
@@ -102,12 +121,13 @@ const OnboardingScreen = ({ navigation, route }) => {
         <Text style={styles.upperTitle}>Choose your Spark</Text>
         <Text style={styles.uppderDes}>Pick an avatar that resonates with you</Text>
       </View>
+
       {/* Carousel */}
       <View style={{ flex: .6 }}>
         <Animated.FlatList
           data={data}
           horizontal
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item.id} // Changed from item._id to item.id
           bounces={false}
           decelerationRate="fast"
           snapToInterval={ITEM_WIDTH}
@@ -116,7 +136,6 @@ const OnboardingScreen = ({ navigation, route }) => {
           scrollEventThrottle={16}
           onScroll={handleScroll}
           renderItem={({ item, index }) => {
-            // console.log(item)
             if (!item.image) return <View style={{ width: SPACER_ITEM_SIZE }} />;
 
             const inputRange = [
@@ -148,6 +167,7 @@ const OnboardingScreen = ({ navigation, route }) => {
             );
           }}
         />
+
         {/* Fixed Text Section */}
         <View style={styles.textWrapper}>
           {data.map((item, index) => {
@@ -173,7 +193,7 @@ const OnboardingScreen = ({ navigation, route }) => {
 
             return (
               <Animated.View
-                key={item?._id}
+                key={item?.id} // Changed from item._id to item.id
                 style={[
                   styles.textContainer,
                   { opacity, transform: [{ translateY }] },
@@ -188,7 +208,11 @@ const OnboardingScreen = ({ navigation, route }) => {
       </View>
 
       <View style={{ flexDirection: 'column', marginTop: 100, flex: .3, justifyContent: 'space-between', paddingHorizontal: 14 }}>
-        <Image source={require("../../../assets/png/image.png")} style={{ width: 60, height: 60, alignSelf: 'center', marginBottom: 20, resizeMode: 'contain' }} />
+        {/* Dynamic Emoji Display */}
+        <View style={styles.emojiContainer}>
+          <Text style={styles.emojiText}>{activeEmoji}</Text>
+        </View>
+
         <Button title={"Continue"} onPress={handleContinue} />
       </View>
     </View>
@@ -211,8 +235,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   image: {
-    // width: '100%',
-    // height: '100%',
     width: 100,
     height: 100,
     resizeMode: 'contain'
@@ -247,9 +269,18 @@ const styles = StyleSheet.create({
   },
   uppderDes: {
     fontSize: FONT_SIZES.md,
+  },
+  emojiContainer: {
+    alignSelf: 'center',
+    marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emojiText: {
+    fontSize: 50, // Adjust size as needed
+    textAlign: 'center',
   }
 });
-
 
 
 // import React, { useEffect, useRef, useState } from 'react';
@@ -274,7 +305,9 @@ const styles = StyleSheet.create({
 // const ITEM_WIDTH = width * 0.4;
 // const SPACER_ITEM_SIZE = (width - ITEM_WIDTH) / 2;
 
-// const OnboardingScreen = ({ navigation }) => {
+// const OnboardingScreen = ({ navigation, route }) => {
+//   const userInfo = route?.params?.userInfo ?? null;
+//   // console.log("params", userInfo)
 //   const [data, setData] = useState([])
 //   const scrollX = useRef(new Animated.Value(0)).current;
 //   const [activeIndex, setActiveIndex] = useState(1); // Start with first real item (index 1)
@@ -289,6 +322,7 @@ const styles = StyleSheet.create({
 //     try {
 //       const res = await axios.get(`${baseUrl}/api/avatar/get-all`);
 //       const fetched = res?.data?.data;
+//       console.log(fetched)
 
 //       const formatted = [
 //         { id: "left-spacer" },
@@ -337,7 +371,7 @@ const styles = StyleSheet.create({
 //     if (activeItem) {
 //       console.log('Selected Active Image:', activeItem.image);
 //       await AsyncStorage.setItem('userToken', "dummyToken");
-//       navigation.navigate("Community", { activeItem })
+//       navigation.navigate("Community", { activeItem, userInfo })
 //     } else {
 //       console.log('No active item found');
 //     }

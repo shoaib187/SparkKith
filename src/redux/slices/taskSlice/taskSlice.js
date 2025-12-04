@@ -5,9 +5,11 @@ import { baseUrl } from "../../../utils/api";
 // create task
 export const createTask = createAsyncThunk(
   "tasks/createTask",
-  async ({ taskId, token }, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${baseUrl}/api/user/tasks/create`, { taskId }, {
+      const { token } = payload
+      // console.log("toe", token)
+      const res = await axios.post(`${baseUrl}/api/user/tasks/create`, payload, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

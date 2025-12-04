@@ -43,13 +43,13 @@ export default function Home({ navigation }) {
   const { profileData } = useSelector((state) => state.profile);
   // console.log("profileData", token)
   // console.log("today tasks", tasks)
-  // console.log("triggeredTasks", triggeredTasks)
+  console.log("triggeredTasks", triggeredTasks)
 
   const [visible, setVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedMood, setSelectedMood] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const [skipVisible, setSkipVisible] = useState(false)
@@ -235,39 +235,32 @@ export default function Home({ navigation }) {
     }
   };
 
+  const now = new Date();
+  const todayStr = now.toDateString();
 
-  // const todayStr = new Date().toDateString();
+  const todayActiveDeadlineTasks = triggeredTasks?.filter(task => {
+    if (!task.deadline) return false;
 
-  // // Filter today's tasks and exclude skipped tasks
-  // const todaysTasks = triggeredTasks?.filter(t => {
-  //   const taskDateStr = new Date(t.date).toDateString();
-  //   return taskDateStr === todayStr && !t.skipped; // exclude skipped tasks
-  // }) || [];
+    const deadlineDate = new Date(task.deadline);
 
-  // // Sort tasks by time
-  // const sortedTasks = todaysTasks.sort(
-  //   (a, b) => new Date(a.date) - new Date(b.date)
-  // );
-  const todayStr = new Date().toDateString();
+    const sameDay = deadlineDate.toDateString() === todayStr;
+    const withinTime = now <= deadlineDate;
+    const notSkipped = !task.skipped;
 
-  // Step 1 & 2 → get today's tasks without skipped
-  const todaysTasks = triggeredTasks?.filter(t => {
-    const taskDateStr = new Date(t.date).toDateString();
-    return taskDateStr === todayStr && !t.skipped;
+    return sameDay && withinTime && notSkipped;
   }) || [];
 
-  // Step 3 → sort by date/time
-  const sortedTasks = todaysTasks.sort(
-    (a, b) => new Date(a.date) - new Date(b.date)
+  const sortedDeadlineTasks = todayActiveDeadlineTasks.sort(
+    (a, b) => new Date(a.deadline) - new Date(b.deadline)
   );
 
-  // Step 4 → get incomplete tasks
-  const notCompleted = sortedTasks.filter(task => !task.completed);
 
-  // Step 5 & 6 → final output
+  const notCompleted = sortedDeadlineTasks.filter(task => !task.completed);
+
   const finalTasksToShow = notCompleted.length > 0
-    ? [notCompleted[0]]        // show only first incomplete
-    : sortedTasks;             // else show all completed tasks
+    ? [notCompleted[0]]
+    : sortedDeadlineTasks;
+
 
 
   // console.log("Sorted pending tasks:", sortedTasks);
